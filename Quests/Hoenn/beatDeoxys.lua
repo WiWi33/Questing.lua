@@ -1,4 +1,4 @@
--- Copyright © 2016 g0ld <g0ld@tuta.io>
+-- Copyright Â© 2016 g0ld <g0ld@tuta.io>
 -- This work is free. You can redistribute it and/or modify it under the
 -- terms of the Do What The Fuck You Want To Public License, Version 2,
 -- as published by Sam Hocevar. See the COPYING file for more details.
@@ -352,7 +352,7 @@ function beatDeoxys:SootopolisCityGym1F()
 		moveToCell(22,29)
 	elseif game.inRectangle(17,5,25,23) and not dialogs.firstChamp.state then
 		talkToNpcOnCell(22,6)
-	elseif game.inRectangle(17,4,27,16) and dialogs.firstChamp.state then
+	elseif game.inRectangle(17,4,27,23) and dialogs.firstChamp.state then
 		moveToCell(22,17)
 	end
 end
