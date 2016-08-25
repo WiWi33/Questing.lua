@@ -23,7 +23,7 @@ local dialogs = {
 		"xxx"
 	}),
 	koga = Dialog:new({ 
-		"xxx"
+		"xxgx"
 	}),
 	karen = Dialog:new({ 
 		"Good luck on facing"
@@ -33,6 +33,9 @@ local dialogs = {
 	}),
 	champ = Dialog:new({ 
 		"Go, your destiny waits you!"
+	}),
+	silverGuard = Dialog:new({ 
+		"You are not ready to go to Mount Silver yet!"
 	})
 }
 
@@ -128,9 +131,10 @@ function Elite4Johto:Route26()
 end
 
 function Elite4Johto:PokemonLeagueReceptionGate()
-	if checkRattata() then
-		 moveToMap("Victory Road Kanto 1F")
-		
+	if checkRattata() or not isNpcOnCell(2,11) then
+		moveToMap("Victory Road Kanto 1F")
+	elseif not dialogs.silverGuard.state then 
+		talkToNpcOnCell(2,11)
 	else
 		 moveToMap("Route 22")
 		log("dd")
@@ -281,11 +285,11 @@ end
 
 function Elite4Johto:SeafoamB4F()
 	if self:isTrainingOver() then
-		return moveToCell(53,28)
+		moveToCell(53,28)
 	elseif not self:needPokecenter() then
-	    return moveToRectangle(50,10,62,32)			
+	     moveToRectangle(50,10,62,32)			
 	elseif self:canUseNurse() then -- if have 1500 money
-		return talkToNpcOnCell(59,13)
+		 talkToNpcOnCell(59,13)
 	else
 		fatal("don't have enough Pokemons for farm 1500 money and heal the team")
 	end
@@ -338,6 +342,12 @@ function Elite4Johto:IndigoPlateauCenterJohto()
 			end
 		end
 	else moveToCell(10,3)
+		dialogs.will.state = false 
+		dialogs.karen.state = false
+		dialogs.koga.state = false
+		dialogs.bruno.state = false
+		dialogs.champ.state = false
+		return
 	end
 end
 
@@ -345,7 +355,7 @@ function Elite4Johto:EliteFourWillRoom()
 	if self:useReviveItems() ~= false then
 		return
 	elseif not dialogs.will.state then	
-		if not game.inRectangle(6,13) then
+		if not game.inRectangle(6,13,6,13) then
 			moveToCell(6,13)
 		else 
 		talkToNpcOnCell(6,12) 
@@ -361,7 +371,7 @@ function Elite4Johto:EliteFourKogaRoom()
 	if self:useReviveItems() ~= false then
 		return
 	elseif not dialogs.koga.state then
-		if not not game.inRectangle(20,25) then
+		if not game.inRectangle(20,25,20,25) then
 			moveToCell(20,25)
 		else
 		talkToNpcOnCell(20,24) 
@@ -377,7 +387,7 @@ function Elite4Johto:EliteFourBrunoRoomJohto()
 	if self:useReviveItems() ~= false then
 		return
 	elseif not dialogs.bruno.state then
-		if not game.inRectangle(22,25) then	
+		if not game.inRectangle(22,25,22,25) then	
 			moveToCell(22,25)
 		else
 		talkToNpcOnCell(22,24) 
@@ -432,5 +442,22 @@ function checkRattata()
 		return false
 	end
 end
+
+function Elite4Johto:useReviveItems() --Return false if team don't need heal
+	if not hasItem("Revive") or not hasItem("Hyper Potion") then
+		return false
+	end
+	for pokemonId=1, getTeamSize(), 1 do
+		if getPokemonHealth(pokemonId) == 0 then
+			return useItemOnPokemon("Revive", pokemonId)
+		end
+		if getPokemonHealthPercent(pokemonId) < 70 then
+			return useItemOnPokemon("Hyper Potion", pokemonId)
+		end		
+	end
+	return false
+end
+
+
 
 return Elite4Johto
