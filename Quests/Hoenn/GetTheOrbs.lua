@@ -10,8 +10,8 @@ local game   = require "Libs/gamelib"
 local Quest  = require "Quests/Quest"
 local Dialog = require "Quests/Dialog"
 
-local name		  = ' '
-local description = ' '
+local name		  = 'Get the Orbs'
+local description = 'Will get the Blue and Red Orbs'
 local level = 55
 
 local dialogs = {
@@ -105,9 +105,13 @@ function GetTheOrbs:MtPyreSummit()
 		talkToNpcOnCell(27,12)
 	elseif isNpcOnCell(26,11) then
 		talkToNpcOnCell(26,11)
+	elseif not isNpcOnCell(27,4) then
+		dialogs.jack.state = true
+		talkToNpcOnCell(26,4)
+		return
 	elseif not dialogs.jack.state then
 		moveToCell(27,6)
-	else talkToNpcOnCell(26,4)
+	
 	end	
 end
 

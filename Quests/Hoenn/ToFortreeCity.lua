@@ -10,8 +10,8 @@ local game   = require "Libs/gamelib"
 local Quest  = require "Quests/Quest"
 local Dialog = require "Quests/Dialog"
 
-local name		  = 'dfsfsfd '
-local description = ' '
+local name		  = 'To Fortree City'
+local description = 'Will save the Weather Institute and get the Devon Scope'
 local level = 40
 
 local dialogs = {

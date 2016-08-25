@@ -10,8 +10,8 @@ local game   = require "Libs/gamelib"
 local Quest  = require "Quests/Quest"
 local Dialog = require "Quests/Dialog"
 
-local name		  = ' '
-local description = ' '
+local name		  = 'The Magma HideOut '
+local description = 'Clear the Magma Hideout and give the Red Orb'
 local level = 000
 
 local dialogs = {

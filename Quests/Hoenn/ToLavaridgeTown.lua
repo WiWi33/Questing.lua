@@ -10,8 +10,8 @@ local game   = require "Libs/gamelib"
 local Quest  = require "Quests/Quest"
 local Dialog = require "Quests/Dialog"
 
-local name		  = 'Cool '
-local description = 'Cool '
+local name		  = 'To Lavaridge Town'
+local description = 'Will go to the Mt. Pyre and defeat Max'
 local level = 40
 
 local dialogs = {

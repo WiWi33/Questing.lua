@@ -10,8 +10,8 @@ local game   = require "Libs/gamelib"
 local Quest  = require "Quests/Quest"
 local Dialog = require "Quests/Dialog"
 
-local name		  = 'ehe '
-local description = ' ehe'
+local name		  = 'To Balance Badge'
+local description = 'Will earn the 4th and the 5th badge'
 local level = 40
 local joey = false 
 local sarah = false

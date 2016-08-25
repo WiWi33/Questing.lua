@@ -9,7 +9,7 @@ local game   = require "Libs/gamelib"
 local Quest  = require "Quests/Quest"
 local Dialog = require "Quests/Dialog"
 
-local name        = 'ToMauville'
+local name        = 'To Mauville City'
 local description = 'Beat Museum,May and go to Mauville '
 
 local level       = 25

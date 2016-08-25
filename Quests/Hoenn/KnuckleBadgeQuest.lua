@@ -10,8 +10,8 @@ local game   = require "Libs/gamelib"
 local Quest  = require "Quests/Quest"
 local Dialog = require "Quests/Dialog"
 
-local name        = 'KnuckleBadgeQuest '
-local description = 'Will meet Steven, earn 2nd badge and get back to devon corp '
+local name        = 'Knuckle Badge'
+local description = 'Will meet Steven, earn 2nd badge and get back to Devon corp '
 
 local level       = 21
 local clock = os.clock

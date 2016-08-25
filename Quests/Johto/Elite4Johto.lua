@@ -10,8 +10,8 @@ local game   = require "Libs/gamelib"
 local Quest  = require "Quests/Quest"
 local Dialog = require "Quests/Dialog"
 
-local name		  = ' '
-local description = ' '
+local name		  = 'Elite 4 Johto'
+local description = 'Will get a Rattata lv 80 and beat the E4'
 local level = 80
 local teamManaged = false
 

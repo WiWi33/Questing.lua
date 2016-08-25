@@ -10,8 +10,8 @@ local game   = require "Libs/gamelib"
 local Quest  = require "Quests/Quest"
 local Dialog = require "Quests/Dialog"
 
-local name        = 'FromLittlerootToWoodsQuest'
-local description = 'From Littleroot to Petalburg Woods '
+local name        = 'From Littleroot To Woods Quest'
+local description = 'Pick Mudkip as start, and stop at Petalburg Woods'
 local level       = 9
 local FromLittlerootToWoodsQuest = Quest:new()
 

@@ -10,8 +10,8 @@ local game   = require "Libs/gamelib"
 local Quest  = require "Quests/Quest"
 local Dialog = require "Quests/Dialog"
 
-local name		  = ' '
-local description = ' '
+local name		  = 'To Mossdeep City'
+local description = 'Clear the Aqua Hideout of Lilycove and earn the 7th badge'
 local level = 60
 
 local dialogs = {

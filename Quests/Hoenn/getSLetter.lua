@@ -10,8 +10,8 @@ local game   = require "Libs/gamelib"
 local Quest  = require "Quests/Quest"
 local Dialog = require "Quests/Dialog"
 
-local name        = 'getSgetSLetter'
-local description = 'getSgetSLetter '
+local name        = 'Get S Letter'
+local description = 'We will save Peeko ♥,and get the SLetter from Devon Corp'
 
 local level       = 15
 local clock = os.clock

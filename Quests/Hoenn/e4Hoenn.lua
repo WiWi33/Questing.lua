@@ -10,8 +10,8 @@ local game   = require "Libs/gamelib"
 local Quest  = require "Quests/Quest"
 local Dialog = require "Quests/Dialog"
 
-local name		  = ' '
-local description = ' '
+local name		  = 'E4 Hoenn'
+local description = 'Go at the Hoenn Pokemon League and beat the E4'
 local level = 000
 
 local dialogs = {

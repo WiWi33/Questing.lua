@@ -10,8 +10,8 @@ local game   = require "Libs/gamelib"
 local Quest  = require "Quests/Quest"
 local Dialog = require "Quests/Dialog"
 
-local name		  = ' '
-local description = ' '
+local name		  = 'Meet Kyogre'
+local description = 'Clear the underwater hideout'
 local level = 60
 local dive = nil 
 

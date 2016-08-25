@@ -9,6 +9,7 @@ local sys    = require "Libs/syslib"
 local game   = require "Libs/gamelib"
 local Quest  = require "Quests/Quest"
 local Dialog = require "Quests/Dialog"
+
 local name        = 'StoneBadgeQuestQuest'
 local description = 'Will get the 1st badge'
 
