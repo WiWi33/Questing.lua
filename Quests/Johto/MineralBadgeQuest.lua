@@ -12,7 +12,7 @@ local Dialog = require "Quests/Dialog"
 
 local name		  = 'Mineral Badge Quest'
 local description = 'Will Exp to lv 52 and earn the 6th Badge'
-local level = 52
+local level = 65
 
 local dialogs = {
 	phare = Dialog:new({ 
@@ -54,12 +54,15 @@ function MineralBadgeQuest:CianwoodCity()
 end
 
 function MineralBadgeQuest:Route41()
-	moveToMap("Route 40")
+	if not self:isTrainingOver() and not self:needPokecenter() then 
+		moveToWater()
+	else moveToMap("Route 40")
+	end
 end
 
 function MineralBadgeQuest:Route40()
 	if not self:isTrainingOver() and not self:needPokecenter() then 
-		moveToWater()
+		moveToMap("Route 41")
 	else moveToMap("Olivine City")
 	end
 	

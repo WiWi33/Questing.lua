@@ -12,7 +12,7 @@ local Dialog = require "Quests/Dialog"
 
 local name		  = 'To Balance Badge'
 local description = 'Will earn the 4th and the 5th badge'
-local level = 40
+local level = 41
 local joey = false 
 local sarah = false
 local stan = false
@@ -32,7 +32,7 @@ function ToBalanceBadge:new()
 end
 
 function ToBalanceBadge:isDoable()
-	if self:hasMap() and (not hasItem("Balance Badge") or getMapName() == "Petalburg City Gym") then
+	if self:hasMap() and not hasItem("Balance Badge") and hasItem("Dynamo Badge") then
 		return true
 	end
 	return false
@@ -105,61 +105,113 @@ function ToBalanceBadge:Route112()
 	end
 end
 
+function ToBalanceBadge:Route111Desert()
+	if self:needPokecenter() or self:isTrainingOver() then
+		moveToMap("Route 111 South")
+	else moveToRectangle(22,26,52,52)
+	end
+end
+	
 function ToBalanceBadge:JaggedPass()
 	 moveToMap("Route 112")
 	end
 
 
 function ToBalanceBadge:Route111South()
-	moveToMap("Mauville City Stop House 3")
+	if self:needPokecenter() or self:isTrainingOver() then
+		moveToMap("Mauville City Stop House 3")
+	else moveToMap("Route 111 Desert")
+	end
 end
 
 function ToBalanceBadge:MauvilleCityStopHouse3()
-	moveToMap("Mauville City")
+	if self:needPokecenter() or self:isTrainingOver() then 
+		moveToMap("Mauville City")
+	else moveToMap("Route 111 South")
+	end
+end
+
+function ToBalanceBadge:PokecenterMauvilleCity()
+	return self:pokecenter("Mauville City")
 end
 
 function ToBalanceBadge:MauvilleCity()
-	moveToMap("Mauville City Stop House 2")
+	if self:needPokecenter() then
+		moveToMap("Pokecenter Mauville City")
+	elseif not self:isTrainingOver() then
+		moveToMap("Mauville City Stop House 3")
+	else moveToMap("Mauville City Stop House 2")
+	end
 end
 
 function ToBalanceBadge:MauvilleCityStopHouse2()
-	moveToMap("Route 117")
+	if not self:isTrainingOver() then
+		moveToMap("Mauville City")
+	else moveToMap("Route 117")
+	end
 end
 
 function ToBalanceBadge:Route117()
-	moveToMap("Verdanturf Town")
+	if not self:isTrainingOver() then
+		moveToMap("Mauville City Stop House 2")
+	else moveToMap("Verdanturf Town")
+	end
 end
 
 function ToBalanceBadge:VerdanturfTown()
-	moveToMap("Rusturf Tunnel")
+	if not self:isTrainingOver() then
+		moveToMap("Route 117") 
+	else moveToMap("Rusturf Tunnel")
+	end
 end
 
 function ToBalanceBadge:RusturfTunnel()
-	moveToCell(11,19)
+	if not self:isTrainingOver() then 
+		moveToMap("Verdanturf Town") 
+	else moveToCell(11,19)
+	end
 end
 
 function ToBalanceBadge:Route116()
-	moveToMap("Rustboro City")
+	if not self:isTrainingOver() then
+		moveToMap("Rusturf Tunnel")
+	else moveToMap("Rustboro City")
+	end
 end
 
 function ToBalanceBadge:RustboroCity()
-	moveToCell(37,65)
+	if not self:isTrainingOver() then 
+		moveToMap("Route 116")
+	else moveToCell(37,65)
+	end
 end
 
 function ToBalanceBadge:Route104()
-	if game.inRectangle(7,0,41,67) then 
-		moveToMap("Petalburg Woods")
-	else moveToMap("Petalburg City")
+	if game.inRectangle(7,0,60,67) then 
+		if not self:isTrainingOver() then
+			moveToCell(40,0)
+		else moveToMap("Petalburg Woods")
+		end
+	elseif not game.inRectangle(7,0,60,67) then
+		if not self:isTrainingOver() then 
+			moveToCell(36,79)
+		else moveToMap("Petalburg City")
+		end
 	end
 end
 
 function ToBalanceBadge:PetalburgWoods()
-	moveToCell(24,60)
+	if not self:isTrainingOver() then 
+		moveToCell(22,0)
+	else moveToCell(24,60)
+	end
 end
 
 function ToBalanceBadge:PetalburgCity()
 	if self:needPokecenter() or not game.isTeamFullyHealed() or self.registeredPokecenter ~= "Pokecenter Petalburg City" then
 		moveToMap("Pokecenter Petalburg City")
+	elseif not self:isTrainingOver() then 
+		moveToMap("Route 104") 
 	else moveToMap("Petalburg City Gym")
 	end
 end

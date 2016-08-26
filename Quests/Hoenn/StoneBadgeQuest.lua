@@ -76,7 +76,7 @@ function StoneBadgeQuest:Route104()
 		moveToCell(40,0)
 	elseif not self:isTrainingOver() then
 		moveToGrass()
-	else moveToCell(40.0)
+	else moveToCell(40,0)
 	end
 end	
 
