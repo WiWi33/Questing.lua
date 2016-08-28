@@ -33,7 +33,7 @@ local dialogs = {
 }
 
 local templatequest = Quest:new()
-
+local beastteam = false
 function templatequest:new()
 	local o = Quest.new(templatequest, name, description, level, dialogs)
 	o.qnt_revive = 32
@@ -176,6 +176,29 @@ end
 function templatequest:PokemonLeagueHoenn()
 	if self:needPokecenter() or not game.isTeamFullyHealed() then
 		talkToNpcOnCell(4,22)
+	end
+	if not isTeamSortedByLevelAscending() then
+			sortTeamByLevelAscending()
+	elseif getPokemonLevel(1) < 96 and not beastteam then
+		if isPCOpen() then
+			if isCurrentPCBoxRefreshed() then
+				if getCurrentPCBoxSize() ~= 0 then
+					for pokemon=1, getCurrentPCBoxSize() do
+						if getPokemonLevelFromPC(getCurrentPCBoxId(), pokemon) > 95 then
+						return swapPokemonFromPC(getCurrentPCBoxId(),pokemon,1) 	
+						end
+					end
+					return openPCBox(getCurrentPCBoxId()+1)
+				else
+					beastteam = true
+					return
+				end
+			else
+				return
+			end
+		else
+			return usePC()
+		end
 	elseif getItemQuantity("Revive") < self.qnt_revive or getItemQuantity("Hyper Potion") < self.qnt_hyperpot then
 		if not isShopOpen() then
 			log("ff")

@@ -155,21 +155,22 @@ function toMauville:SlateportMuseum1F()
 	end
 end
 
-function toMauville:SlateportMuseum2F()
-	if isNpcOnCell(11,14) then 
-		talkToNpcOnCell (11,14)
-		log("lol")
-	elseif isNpcVisible("Devon") and not dialogs.goingO.state then 
-		talkToNpc("Devon")
-		log("lel")
-	elseif dialogs.devonVic.state then 
-		moveToMap("Slateport Museum 1F")
-		dialogs.ingenieur.state = false
-	else dialogs.devonVic.state = true
-		dialogs.ingenieur.state = false
-	end
-	
-end
+ function toMauville:SlateportMuseum2F()
+    if isNpcOnCell(11,14) and game.inRectangle(9,12,12,15) then 
+        talkToNpcOnCell (11,14)
+        log("lol")
+    elseif isNpcOnCell(11,14) and not game.inRectangle(9,12,12,15) then 
+        talkToNpcOnCell(10,16)
+    elseif isNpcVisible("Devon") and not dialogs.goingO.state then 
+        talkToNpc("Devon")
+        log("lel")
+    elseif dialogs.devonVic.state then 
+        moveToMap("Slateport Museum 1F")
+        dialogs.ingenieur.state = false
+    else dialogs.devonVic.state = true
+        dialogs.ingenieur.state = false
+    end
+end 
 
 function toMauville:Route110()
 	if self:needPokecenter() then

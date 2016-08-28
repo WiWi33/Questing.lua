@@ -106,8 +106,8 @@ function GetTheOrbs:MtPyreSummit()
 	elseif isNpcOnCell(26,11) then
 		talkToNpcOnCell(26,11)
 	elseif not isNpcOnCell(27,4) then
-		dialogs.jack.state = true
 		talkToNpcOnCell(26,4)
+		dialogs.jack.state = true
 		return
 	elseif not dialogs.jack.state then
 		moveToCell(27,6)

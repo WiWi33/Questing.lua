@@ -14,7 +14,7 @@ local name		  = 'Elite 4 Johto'
 local description = 'Will get a Rattata lv 80 and beat the E4'
 local level = 80
 local teamManaged = false
-
+local bestteam = false
 local dialogs = {
 	leagueDefeated = Dialog:new({ 
 		"I am already the Champ, don't need to go in there..."
@@ -59,7 +59,7 @@ function Elite4Johto:PokecenterBlackthorn()
 end
 
 function Elite4Johto:isDoable()
-	if self:hasMap() and not hasItem("Stone Badge") then
+	if self:hasMap() and not hasItem("Stone Badge") and hasItem("Rising Badge") then
 		return true
 	end
 	return false
@@ -234,11 +234,35 @@ function Elite4Johto:Cinnabarmansion1()
 end
 
 function Elite4Johto:PokecenterCinnabar()
-    self:pokecenter("Cinnabar Island")
+	if self:needPokecenter() then
+		self:pokecenter("Cinnabar Island")
+	end
     if self.forceCaught and not hasPokemonInTeam("Rattata") then
-        fatal("Need PC Lib Fix")-- get Rattata in PC
+		if isPCOpen() then
+			if isCurrentPCBoxRefreshed() then
+				if getCurrentPCBoxSize() ~= 0 then
+					for pokemon=1, getCurrentPCBoxSize() do
+						if getPokemonNameFromPC(getCurrentPCBoxId(),pokemon) == "Rattata" then
+							return swapPokemonFromPC(getCurrentPCBoxId(),pokemon,1) 
+						end
+						end
+					end
+					return openPCBox(getCurrentPCBoxId()+1)
+				else
+					log("dd")
+					return
+				end
+			else
+				return usePC()
+			end
+		else
+			return moveToMap("Cinnabar Island")
+	end
+	
     end
-end
+	
+
+
 
 function Elite4Johto:Cinnabarmansion2()
 	return moveToMap("Cinnabar mansion 1")
@@ -261,7 +285,7 @@ function Elite4Johto:Seafoam1F()
 end
 
 function Elite4Johto:SeafoamB1F()
-	if not self:isTrainingOver() then
+	if not self:isTrainingOver()  then
 		return moveToCell(64,25) --Seafoam B2F
 	else
 		return moveToCell(85,22)
@@ -269,10 +293,14 @@ function Elite4Johto:SeafoamB1F()
 end
 
 function Elite4Johto:SeafoamB2F()
-	if not self:isTrainingOver() then
+	if isNpcOnCell(67,31) then 
+		talkToNpcOnCell(67,31)
+	else
+	if not self:isTrainingOver()  then
 		return moveToCell(63,19) --Seafoam B3F
 	else
 		return moveToCell(51,27)
+	end
 	end
 end
 function Elite4Johto:SeafoamB3F()
@@ -328,7 +356,49 @@ function Elite4Johto:IndigoPlateauCenterJohto()
 	if self:needPokecenter() or not game.isTeamFullyHealed() then
 		talkToNpcOnCell(4,22)
 	elseif dialogs.leagueDefeated.state then
-		moveToMap("Indigo Plateau")
+		if not hasPokemonInTeam("Rattata") then 
+		if isPCOpen() then
+			if isCurrentPCBoxRefreshed() then
+				if getCurrentPCBoxSize() ~= 0 then
+					for pokemon=1, getCurrentPCBoxSize() do
+						if getPokemonNameFromPC(getCurrentPCBoxId(),pokemon) == "Rattata" then
+							return swapPokemonFromPC(getCurrentPCBoxId(),pokemon,1) 
+						end
+						end
+					end
+					return openPCBox(getCurrentPCBoxId()+1)
+				else
+					log("dd")
+					return
+				end
+			else
+				return usePC()
+			end
+			else
+				moveToMap("Indigo Plateau")
+			end
+	elseif not isTeamSortedByLevelAscending() then
+			sortTeamByLevelAscending()
+	elseif getPokemonLevel(1) < 96 and not bestteam then
+		if isPCOpen() then
+			if isCurrentPCBoxRefreshed() then
+				if getCurrentPCBoxSize() ~= 0 then
+					for pokemon=1, getCurrentPCBoxSize() do
+						if getPokemonLevelFromPC(getCurrentPCBoxId(), pokemon) > 95 then
+						return swapPokemonFromPC(getCurrentPCBoxId(),pokemon,1) 	
+						end
+					end
+					return openPCBox(getCurrentPCBoxId()+1)
+				else
+					bestteam = true
+					return
+				end
+			else
+				return
+			end
+		else
+			return usePC()
+		end
 	elseif getItemQuantity("Revive") < self.qnt_revive or getItemQuantity("Hyper Potion") < self.qnt_hyperpot then
 		if not isShopOpen() then
 			

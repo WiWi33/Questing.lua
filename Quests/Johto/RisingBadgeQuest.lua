@@ -42,7 +42,7 @@ function RisingBadgeQuest:isDone()
 end
 
 function RisingBadgeQuest:MahoganyTownGym()
-	if game.inRectangle(15,66,21,50) then 
+	if game.inRectangle(15,50,21,66) then 
 		moveToCell(18,67)
 	elseif game.inRectangle(12,33,18,45) then  
 		moveToCell(17,46)
@@ -71,14 +71,14 @@ function RisingBadgeQuest:Route44()
 end
 
 function RisingBadgeQuest:IcePath1F()
-	if game.inRectangle(11,61,49,15) or game.inRectangle(47,13,58,19) then
+	if game.inRectangle(11,15,49,61) or game.inRectangle(47,13,58,19) then
 		moveToCell(57,15)
 	else moveToMap("Blackthorn City")
 	end
 end
 
 function RisingBadgeQuest:IcePathB1F()
-	if game.inRectangle (41,41,24,49) or game.inRectangle (24,45,17,43) then
+	if game.inRectangle (24,41,41,49) or game.inRectangle (14,45,24,43) then
 		moveToCell(18,45)
 	else
 	moveToCell(21,25)
@@ -86,7 +86,7 @@ function RisingBadgeQuest:IcePathB1F()
 end
 
 function RisingBadgeQuest:IcePathB2F()
-	if game.inRectangle (58,9,49,30) then
+	if game.inRectangle (49,9,58,30) then
 		moveToCell(50,27)
 	else
 		moveToCell(23,22)
