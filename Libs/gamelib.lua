@@ -43,6 +43,15 @@ function game.hasPokemonWithMove(Move)
 	return false
 end
 
+function game.hasPokemonWithName(PokemonName)
+	for pokemonId=1, getTeamSize(), 1 do
+		if getPokemonName(pokemonId) == PokemonName then
+			return pokemonId
+		end
+	end
+	return false
+end
+
 local function returnSorted(valueA, valueB)
 	if valueA > valueB then
 		return valueB, valueA
