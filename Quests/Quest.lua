@@ -120,7 +120,7 @@ end
 
 function Quest:useBike()
 	if hasItem("Bicycle") then
-		if isOutside() and not isMounted() and not isSurfing() then
+		if isOutside() and not isMounted() and not isSurfing() and getMapName() != "Cianwood City" and getMapName() != "Route 41"  then
 			useItem("Bicycle")
 			log("Using: Bicycle")
 			return true --Mounting the Bike
@@ -299,13 +299,28 @@ function Quest:wildBattle()
 	end
 end
 
+function useReviveThing() --Return false if team don't need heal
+	if not hasItem("Revive") or not hasItem("Hyper Potion") then
+		return false
+	end
+	for pokemonId=1, getTeamSize(), 1 do
+		if getPokemonHealth(pokemonId) == 0 then
+			return useItemOnPokemon("Revive", pokemonId)
+		end
+		if getPokemonHealthPercent(pokemonId) < 70 then
+			return useItemOnPokemon("Hyper Potion", pokemonId)
+		end		
+	end
+	return false
+end
+
 function Quest:trainerBattle()
 	-- bug: if last pokemons have only damaging but type ineffective
 	-- attacks, then we cannot use the non damaging ones to continue.
 	if not self.canRun then -- trying to switch while a pokemon is squeezed end up in an infinity loop
 		return attack() or game.useAnyMove()
 	end
-	return attack() or sendUsablePokemon() or sendAnyPokemon() -- or game.useAnyMove()
+	return attack() or useReviveThing() or sendUsablePokemon() or sendAnyPokemon() --or game.useAnyMove() todo: use revive only on error
 end
 
 function Quest:battle()

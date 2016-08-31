@@ -457,10 +457,10 @@ function Elite4Johto:EliteFourBrunoRoomJohto()
 	if self:useReviveItems() ~= false then
 		return
 	elseif not dialogs.bruno.state then
-		if not game.inRectangle(22,25,22,25) then	
-			moveToCell(22,25)
+		if not game.inRectangle(21,25,21,25) then	
+			moveToCell(21,25)
 		else
-		talkToNpcOnCell(22,24) 
+		talkToNpcOnCell(21,24) 
 		dialogs.bruno.state = true
 		return
 		end
@@ -470,7 +470,7 @@ function Elite4Johto:EliteFourBrunoRoomJohto()
 end
 
 
-function Elite4Johto:EliteFourKarenRoomJohto()
+function Elite4Johto:EliteFourKarenRoom()
 	if self:useReviveItems() ~= false then
 		return
 	elseif not dialogs.karen.state then
