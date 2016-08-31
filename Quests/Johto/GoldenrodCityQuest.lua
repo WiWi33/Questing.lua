@@ -333,10 +333,10 @@ function GoldenrodCityQuest:GoldenrodMartB1F()
 	if hasItem("Basement Key") and not hasItem("SquirtBottle") and dialogs.guardQuestPart2.state and game.hasPokemonWithMove("Sleep Powder") then
 		if isNpcOnCell(13,8) then
 			pushDialogAnswer(2)
-			if not game.hasPokemonWithName("Oddish") == false then
-			pushDialogAnswer(game.hasPokemonWithName("Oddish"))
-			elseif not game.hasPokemonWithName("Gloom") == false then
-			pushDialogAnswer(game.hasPokemonWithName("Gloom"))
+			if not hasPokemonInTeam("Gloom") == false then
+			pushDialogAnswer(1)
+			elseif not hasPokemonInTeam("Oddish") == false then
+			pushDialogAnswer(2)
 			else
 			fatal("Error . - No Oddish or Gloom in this team")
 			end
