@@ -115,7 +115,7 @@ function GoldenrodCityQuest:PokecenterGoldenrod()
 					if getCurrentPCBoxSize() ~= 0 then
 						for pokemon=1, getCurrentPCBoxSize() do
 							if getPokemonNameFromPC(getCurrentPCBoxId(),pokemon) == "Oddish" and getPokemonRegionFromPC(getCurrentPCBoxId(),pokemon) == "Johto" then	
-								if not game.hasPokemonWithName("Gastly") == false then		
+								if not hasPokemonInTeam("Gastly") == false then		
 									log("LOG: Oddish Found on BOX: " .. getCurrentPCBoxId() .."  Slot: ".. pokemon .. "  Swapping with Gastly on Slot: " .. game.hasPokemonWithName("Gastly"))
 									return swapPokemonFromPC(getCurrentPCBoxId(),pokemon,game.hasPokemonWithName("Gastly")) --swap with gastly useless against Gavin Director
 								else
