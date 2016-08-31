@@ -1,4 +1,4 @@
--- Copyright © 2016 g0ld <g0ld@tuta.io>
+-- Copyright Â© 2016 g0ld <g0ld@tuta.io>
 -- This work is free. You can redistribute it and/or modify it under the
 -- terms of the Do What The Fuck You Want To Public License, Version 2,
 -- as published by Sam Hocevar. See the COPYING file for more details.
@@ -39,7 +39,7 @@ function VolcanoBadgeQuest:PokecenterCinnabar()
 end
 
 function VolcanoBadgeQuest:CinnabarIsland()
-	if self:needPokecenter() or not game.isTeamFullyHealed() or not self.registeredPokecenter == "Pokecenter Cinnabar" then
+	if self:needPokecenter() or not self.registeredPokecenter == "Pokecenter Cinnabar" then
 		return moveToMap("Pokecenter Cinnabar")
 	elseif not self:isTrainingOver() then
 		return moveToMap("Route 20")
