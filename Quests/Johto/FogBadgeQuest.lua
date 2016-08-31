@@ -1,4 +1,4 @@
--- Copyright © 2016 g0ld <g0ld@tuta.io>
+-- Copyright Â© 2016 g0ld <g0ld@tuta.io>
 -- This work is free. You can redistribute it and/or modify it under the
 -- terms of the Do What The Fuck You Want To Public License, Version 2,
 -- as published by Sam Hocevar. See the COPYING file for more details.
@@ -93,8 +93,20 @@ function FogBadgeQuest:Route35()
 		moveToMap("Route 35 Stop House")
 	elseif isNpcOnCell(11,8) then 
 		talkToNpcOnCell(11,8)
-	else moveToMap("Route 36")
+	else moveToMap("National Park Stop House 1")
 	end
+end
+
+function FogBadgeQuest:NationalParkStopHouse1()
+	moveToMap("National Park")
+end
+
+function FogBadgeQuest:NationalParkStop()
+	moveToMap("Route 36")
+end
+
+function FogBadgeQuest:NationalPark()
+	moveToMap("National Park Stop")
 end
 
 function FogBadgeQuest:Route36()
