@@ -299,6 +299,21 @@ function Quest:wildBattle()
 	end
 end
 
+function useReviveThing() --Return false if team don't need heal
+	if not hasItem("Revive") or not hasItem("Hyper Potion") then
+		return false
+	end
+	for pokemonId=1, getTeamSize(), 1 do
+		if getPokemonHealth(pokemonId) == 0 then
+			return useItemOnPokemon("Revive", pokemonId)
+		end
+		if getPokemonHealthPercent(pokemonId) < 70 then
+			return useItemOnPokemon("Hyper Potion", pokemonId)
+		end		
+	end
+	return false
+end
+
 function Quest:trainerBattle()
 	-- bug: if last pokemons have only damaging but type ineffective
 	-- attacks, then we cannot use the non damaging ones to continue.
