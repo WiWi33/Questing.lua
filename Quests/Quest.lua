@@ -305,7 +305,7 @@ function Quest:trainerBattle()
 	if not self.canRun then -- trying to switch while a pokemon is squeezed end up in an infinity loop
 		return attack() or game.useAnyMove()
 	end
-	return attack() or sendUsablePokemon() or sendAnyPokemon() -- or game.useAnyMove()
+	return attack() or useReviveThing() or sendUsablePokemon() or sendAnyPokemon() --or game.useAnyMove() todo: use revive only on error
 end
 
 function Quest:battle()
