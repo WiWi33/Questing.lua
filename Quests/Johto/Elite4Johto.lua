@@ -470,7 +470,7 @@ function Elite4Johto:EliteFourBrunoRoomJohto()
 end
 
 
-function Elite4Johto:EliteFourKarenRoomJohto()
+function Elite4Johto:EliteFourKarenRoom()
 	if self:useReviveItems() ~= false then
 		return
 	elseif not dialogs.karen.state then

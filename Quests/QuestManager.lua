@@ -45,7 +45,6 @@ local SproutTowerQuest    = require('Quests/Johto/SproutTowerQuest')
 local HiveBadgeQuest      = require('Quests/Johto/HiveBadgeQuest')
 local IlexForestQuest     = require('Quests/Johto/IlexForestQuest')
 local GoldenrodCityQuest  = require('Quests/Johto/GoldenrodCityQuest')
---local PlainBadgeQuest     = require('Quests/Johto/PlainBadgeQuest')
 local FogBadgeQuest		  = require('Quests/Johto/FogBadgeQuest')
 local StormBadgeQuest     = require('Quests/Johto/StormBadgeQuest')
 local MineralBadgeQuest	  = require('Quests/Johto/MineralBadgeQuest')
@@ -110,7 +109,7 @@ local quests = {
 	HiveBadgeQuest:new(),
 	IlexForestQuest:new(),
 	GoldenrodCityQuest:new(),
-	--PlainBadgeQuest:new(),
+	PlainBadgeQuest:new(),
 	FogBadgeQuest:new(),
 	StormBadgeQuest:new(),
 	MineralBadgeQuest:new(),

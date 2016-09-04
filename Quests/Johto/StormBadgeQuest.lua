@@ -60,7 +60,7 @@ function StormBadgeQuest:PokecenterEcruteak()
 	self:pokecenter("Ecruteak City")
 end
 
-function StormBadgeQuest:PokecenterOlivine()
+function StormBadgeQuest:OlivinePokecenter()
 	self:pokecenter("Olivine City")
 end
 
