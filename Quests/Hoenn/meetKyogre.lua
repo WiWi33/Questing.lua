@@ -1,4 +1,4 @@
--- Copyright © 2016 g0ld <g0ld@tuta.io>
+-- Copyright Â© 2016 g0ld <g0ld@tuta.io>
 -- This work is free. You can redistribute it and/or modify it under the
 -- terms of the Do What The Fuck You Want To Public License, Version 2,
 -- as published by Sam Hocevar. See the COPYING file for more details.
@@ -53,7 +53,7 @@ function meetKyogre:MossdeepCity()
 	elseif not hasItem("HM06 - Dive") then 
 		moveToMap("Mossdeep City Space Center 1F")
 	elseif not game.hasPokemonWithMove("Dive") then
-			if self.pokemonId < getTeamSize() then
+			if self.pokemonId <= getTeamSize() then
 				useItemOnPokemon("HM06 - Dive", self.pokemonId)
 				log("Pokemon: " .. self.pokemonId .. " Dive")
 				self.pokemonId = self.pokemonId + 1
