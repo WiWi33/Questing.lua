@@ -1,4 +1,4 @@
--- Copyright © 2016 g0ld <g0ld@tuta.io>
+-- Copyright Â© 2016 g0ld <g0ld@tuta.io>
 -- This work is free. You can redistribute it and/or modify it under the
 -- terms of the Do What The Fuck You Want To Public License, Version 2,
 -- as published by Sam Hocevar. See the COPYING file for more details.
@@ -62,7 +62,7 @@ function RainbowBadgeQuest:CeladonCity()
 	elseif isNpcOnCell(50,55) then --Item: 5x Ultra Balls
 		return talkToNpcOnCell(50,55)
 	elseif not game.hasPokemonWithMove("Cut") then
-		if pokemonId < getTeamSize() then					
+		if self.pokemonId <= getTeamSize() then					
 			useItemOnPokemon("HM01 - Cut", self.pokemonId)
 			log("Pokemon: " .. self.pokemonId .. " Try Learning: HM01 - Cut")
 			self.pokemonId = self.pokemonId + 1
