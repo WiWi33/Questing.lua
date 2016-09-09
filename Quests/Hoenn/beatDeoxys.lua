@@ -1,4 +1,4 @@
--- Copyright © 2016 g0ld <g0ld@tuta.io>
+-- Copyright Â© 2016 g0ld <g0ld@tuta.io>
 -- This work is free. You can redistribute it and/or modify it under the
 -- terms of the Do What The Fuck You Want To Public License, Version 2,
 -- as published by Sam Hocevar. See the COPYING file for more details.
@@ -273,7 +273,11 @@ function beatDeoxys:SkyPillar2F()
 end
 
 function beatDeoxys:SkyPillar3F()
-	moveToCell(4,12)
+	moveToCell(3,6)
+end
+
+function beatDeoxys:SkyPillar4F()
+	moveToCell(8,12)
 end
 
 function beatDeoxys:SkyPillar5F()

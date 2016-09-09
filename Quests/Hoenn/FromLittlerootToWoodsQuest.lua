@@ -151,7 +151,7 @@ function FromLittlerootToWoodsQuest:OldaleTown()
 end
 
 function FromLittlerootToWoodsQuest:Route103()
-	if not game.inRactangle(29,11,29,11) and not dialogs.mayCheck.state then 
+	if not game.inRectangle(29,11,29,11) and not dialogs.mayCheck.state then 
 		moveToCell(29,11)
 	elseif isNpcOnCell (30,11) then
 		talkToNpcOnCell(30,11)
