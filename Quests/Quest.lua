@@ -133,7 +133,7 @@ end
 
 function Quest:useBike()
 	if hasItem("Bicycle") then
-		if isOutside() and not isMounted() and not isSurfing() and getMapName() != "Cianwood City" and getMapName() != "Route 41" then
+		if isOutside() and not isMounted() and not isSurfing() and getMapName() ~= "Cianwood City" and getMapName() ~= "Route 41" then
 			useItem("Bicycle")
 			log("Using: Bicycle")
 			return true --Mounting the Bike
