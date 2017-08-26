@@ -48,6 +48,7 @@ function DynamoBadge:MauvilleCity()
 				useItemOnPokemon("TM114", self.pokemonId)
 				log("Pokemon: " .. self.pokemonId .. " Try Learning:TM114 - Rock Smash")
 				self.pokemonId = self.pokemonId + 1
+				return
 			else
 				fatal("No pokemon in this team can learn Rock Smash")
 			end
