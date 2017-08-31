@@ -278,7 +278,8 @@ local blackListTargets = { --it will kill this targets instead catch
 }
 
 function Quest:wildBattle()
-	if isOpponentShiny() then
+	local isEventPkm = getOpponentForm() ~= 0
+	if isOpponentShiny() or isEventPkm then
 		if useItem("Ultra Ball") or useItem("Great Ball") or useItem("Pokeball") then
 			return true
 		end
