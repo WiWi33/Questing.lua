@@ -102,7 +102,8 @@ function ExpForElite4Kanto:Route22()
 	if isNpcOnCell(10,8) then
 		return talkToNpcOnCell(10,8)
 	else
-		return moveToMap("Pokemon League Reception Gate")
+		--Bad named map: "Pokemon League Reception Gate"
+		return moveToMap("Link")
 	end
 end
 
