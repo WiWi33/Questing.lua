@@ -76,7 +76,8 @@ function BoulderBadgeQuest:PewterCity()
 	elseif self:needPokemart() then
 		return moveToMap("Pewter Pokemart")
 	elseif hasItem("Boulder Badge") then
-		return moveToMap("Route 3")
+		--another bad map name update -.-
+		return moveToMap("Link")
 	elseif self.registeredPokecenter ~= "Pokecenter Pewter"
 		or not game.isTeamFullyHealed()
 	then
