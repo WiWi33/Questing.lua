@@ -357,16 +357,25 @@ function Quest:battleMessage(message)
 			return true
 		end
 	elseif sys.stringContains(message, "black out") and self.level < 100 and self:isTrainingOver() then
-		self.level = self.level + 1
+		self.level = math.max(self:getTeamLevel(), self.level) + 1
 		self:startTraining()
 		log("Increasing " .. self.name .. " quest level to " .. self.level .. ". Training time!")
 		return true
 		elseif sys.stringContains(message, "You can not switch this Pokemon!") then
 		fatal("Cant switch pokemon, restarting bot, be sure auto reconnect is on") -- not the ideal fix
 		return true
-
 	end
 	return false
+end
+
+function Quest:getTeamLevel()
+	local minLvl = nil
+	for i = 1, getTeamSize() do
+		local pkmLvl =  getPokemonLevel(i)
+		minLvl = minLvl or pkmLvl			--set first pkm as lvl reference
+		minLvl = math.min(minLvl, pkmLvl)	--get minimum between following team members
+	end
+	return minLvl
 end
 
 function Quest:systemMessage(message)	

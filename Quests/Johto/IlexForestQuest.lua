@@ -1,4 +1,4 @@
--- Copyright © 2016 g0ld <g0ld@tuta.io>
+-- Copyright Â© 2016 g0ld <g0ld@tuta.io>
 -- This work is free. You can redistribute it and/or modify it under the
 -- terms of the Do What The Fuck You Want To Public License, Version 2,
 -- as published by Sam Hocevar. See the COPYING file for more details.
@@ -65,7 +65,7 @@ function IlexForestQuest:IlexForest()
 			end
 		end
 	elseif not self.forceCaught then
-		moveToRectangle(19,46,43,63)
+		return moveToRectangle(19,46,43,63)
 	else
 		if game.tryTeachMove("Cut","HM01 - Cut") == true then
 			return moveToMap("Route 34 Stop House")
