@@ -292,20 +292,25 @@ function Quest:wildBattle()
 
 	-- team needs no healing
 	if getTeamSize() == 1 or getUsablePokemonCount() > 1 then
+		--level low leveled pkm
 		local opponentLevel = getOpponentLevel()
 		local myPokemonLvl  = getPokemonLevel(getActivePokemonNumber())
-		if opponentLevel >= myPokemonLvl then
+		if self.canSwitch and opponentLevel >= myPokemonLvl then
 			local requestedId, requestedLevel = game.getMaxLevelUsablePokemon()
 			if requestedId ~= nil and requestedLevel > myPokemonLvl then
 				return sendPokemon(requestedId)
 			end
 		end
 
-		--TODO:
-		sys.todo("rested canRun & canSwitch after successful round progression - see survivor class")
+
+
+		sys.debug("battle values:")
+		sys.debug("canSwitch: "..tostring(self.canSwitch))
+		sys.debug("canRun: "..tostring(self.canRun))
+
 		if attack() 								--atk
 			or self.canSwitch and sendUsablePokemon() 	--switch in battle ready pkm if able
-			or self.canRun and run() 					--run if able
+			or self.canRun and run()			--run if able
 			or self.canSwitch and sendAnyPokemon()		--switch in any alive pkm if able
 			or game.useAnyMove()						--use none damaging moves, to progress battle round
 		then return
@@ -319,7 +324,6 @@ function Quest:wildBattle()
 		or self.canSwitch and sendAnyPokemon()		--switch in any alive pkm if able
 		or game.useAnyMove()						--use none damaging moves, to progress battle round
 	then return
-
 	else sys.error("quest.wildBattle", "no battle progression found for a pocecenter headed team") end
 
 end
@@ -360,17 +364,23 @@ function Quest:dialog(message)
 end
 
 function Quest:battleMessage(message)
-	sys.debug("battleMessage: "..message)
 	if sys.stringContains(message, "Attacks") then
 		--reset after successful round progression
 		self.canRun = true
 		self.canSwitch = true
+		sys.debug("self.canRun set to true")
+		sys.debug("self.canSwitch set to true")
+		return true
 
 	elseif sys.stringContains(message, "$CantRun") then
+		sys.debug("self.canRun set to false")
 		self.canRun = false
+		return true
 
 	elseif sys.stringContains(message, "$NoSwitch") then
+		sys.debug("self.canSwitch set to false")
 		self.canSwitch = false
+		return true
 
 	elseif self.pokemon ~= nil and self.forceCaught ~= nil then
 		if sys.stringContains(message, "caught") and sys.stringContains(message, self.pokemon) then --Force caught the specified pokemon on quest 1time

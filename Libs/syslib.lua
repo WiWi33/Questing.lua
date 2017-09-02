@@ -2,12 +2,14 @@ local sys = {}
 
 function sys.debug(message)
 	if debug then
+		message = message or ""
 		log("DEBUG | " .. message)
 	end
 end
 
 function sys.todo(message)
 	if todo then
+		message = message or ""
 		log("TODO |  " .. message)
 	end
 end
