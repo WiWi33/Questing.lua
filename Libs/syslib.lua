@@ -2,24 +2,23 @@ local sys = {}
 
 function sys.debug(message)
 	if debug then
-		log(message)
+		log("DEBUG | " .. message)
 	end
 end
 
 function sys.todo(message)
 	if todo then
-		log("TODO: " .. message)
+		log("TODO |  " .. message)
 	end
 end
 
 function sys.error(functionName, message)
-	fatal("error: " .. functionName .. ": " .. message)
-	return false
+	return fatal("ERROR | " .. functionName .. ": " .. message)
 end
 
 function sys.assert(test, functionName, message)
 	if not test then
-		fatal("error: " .. functionName .. ": " .. message)
+		sys.error(functionName, message)
 		return false
 	end
 	return true

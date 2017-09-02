@@ -1,4 +1,4 @@
--- Copyright © 2016 g0ld <g0ld@tuta.io>
+-- Copyright Â© 2016 g0ld <g0ld@tuta.io>
 -- This work is free. You can redistribute it and/or modify it under the
 -- terms of the Do What The Fuck You Want To Public License, Version 2,
 -- as published by Sam Hocevar. See the COPYING file for more details.
@@ -13,6 +13,7 @@ local Dialog = require "Quests/Dialog"
 local name		  = 'Violet City'
 local description = ' Badge Quest'
 local level = 12
+local minTeamSize = 4
 
 local ZephyrBadgeQuest = Quest:new()
 
@@ -54,8 +55,8 @@ function ZephyrBadgeQuest:VioletCity()
 	if self:needPokecenter() or not game.isTeamFullyHealed() or not self.registeredPokecenter == "Pokecenter Violet City" then
 		return moveToMap("Pokecenter Violet City")
 	elseif self:needPokemart() then
-		return moveToMap("Violet City Pokemart")	
-	elseif not self:isTrainingOver() or getTeamSize() <= 4 then
+		return moveToMap("Violet City Pokemart")
+	elseif not self:isTrainingOver() or getTeamSize() <= minTeamSize then
 		return moveToMap("Route 32")
 	elseif isNpcOnCell(27,44) then	
 		return moveToMap("Sprout Tower F1")
@@ -69,7 +70,7 @@ end
 function ZephyrBadgeQuest:Route32()
 	if self:needPokecenter() or self:needPokemart() or not self.registeredPokecenter == "Pokecenter Violet City" then
 		return moveToMap("Violet City")
-	elseif not self:isTrainingOver() or getTeamSize() <= 4 then
+	elseif not self:isTrainingOver() or getTeamSize() < minTeamSize then
 		return moveToGrass()
 	elseif hasItem("Zephyr Badge") then
 		if isNpcOnCell(26,23) then
@@ -120,8 +121,12 @@ function ZephyrBadgeQuest:Route33()
 	return moveToMap("Azalea Town")
 end
 
-function ZephyrBadgeQuest:MapName()
-	
+ZephyrBadgeQuest._wildBattle = ZephyrBadgeQuest.wildBattle
+function ZephyrBadgeQuest:wildBattle()
+	if getTeamSize() < minTeamSize then
+		if useItem("Pokeball") or useItem("Great Ball") or useItem("Ultra Ball") then return true end
+	end
+	return self:_wildBattle()
 end
 
 return ZephyrBadgeQuest

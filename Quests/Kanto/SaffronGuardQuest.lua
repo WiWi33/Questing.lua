@@ -18,7 +18,7 @@ local SaffronGuardQuest = Quest:new()
 
 function SaffronGuardQuest:new()
 	local o = Quest.new(SaffronGuardQuest, name, description, level)
-	o.BUY_BIKE = true
+	o.BUY_BIKE = BUY_BIKE
 	return o
 end
 

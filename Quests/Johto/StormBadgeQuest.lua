@@ -162,7 +162,7 @@ function StormBadgeQuest:Route41()
 end
 
 function StormBadgeQuest:CianwoodCity()
-	if self:needPokecenter() or self.registeredPokecenter != "Pokecenter Cianwood" then
+	if self:needPokecenter() or self.registeredPokecenter ~= "Pokecenter Cianwood" then
 		moveToMap("Pokecenter Cianwood")
 	elseif not self:isTrainingOver() then 
 		moveToWater()
