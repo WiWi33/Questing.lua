@@ -28,6 +28,10 @@ local RainbowBadgeQuest = Quest:new()
 function RainbowBadgeQuest:new()
 	local o = Quest.new(RainbowBadgeQuest, name, description, level, dialogs)
 	o.pokemonId = 1
+
+	--stay on map until ditto catched, if a bike is wanted from user
+	o.pokemon = "Ditto"
+	o.forceCaught = not BUY_BIKE
 	return o
 end
 
