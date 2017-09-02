@@ -1,4 +1,4 @@
--- Copyright © 2016 g0ld <g0ld@tuta.io>
+-- Copyright Â© 2016 g0ld <g0ld@tuta.io>
 -- This work is free. You can redistribute it and/or modify it under the
 -- terms of the Do What The Fuck You Want To Public License, Version 2,
 -- as published by Sam Hocevar. See the COPYING file for more details.
@@ -124,7 +124,10 @@ function SoulBadgeQuest:Route18()
 end
 
 function SoulBadgeQuest:FuchsiaCity()
-	if game.minTeamLevel() >= 60 then
+	if BUY_RODS and not hasItem("Good Rod") and getMoney() >= 15000 then
+		--go to fising guru's map, if you have enough money and want to buy the super rod
+		return moveToMap("Fuchsia House 1")
+	elseif game.minTeamLevel() >= 60 then
 		return moveToMap("Route 15 Stop House")
 	elseif self:needPokecenter() or not game.isTeamFullyHealed() or not self.registeredPokecenter == "Pokecenter Fuchsia" then
 		return moveToMap("Pokecenter Fuchsia")
@@ -149,6 +152,13 @@ function SoulBadgeQuest:FuchsiaCity()
 	else
 		return moveToMap("Fuchsia City Stop House")
 	end
+end
+
+function SoulBadgeQuest:FuchsiaHouse1()
+	--talk to fishing guru
+	if not hasItem("Good Rod") then return talkToNpcOnCell(3,6)
+	--leave when rod obtained
+	else return moveToMap("Fuchsia City") end
 end
 
 function SoulBadgeQuest:SafariStop()

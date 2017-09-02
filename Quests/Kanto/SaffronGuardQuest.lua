@@ -1,4 +1,4 @@
--- Copyright © 2016 g0ld <g0ld@tuta.io>
+-- Copyright Â© 2016 g0ld <g0ld@tuta.io>
 -- This work is free. You can redistribute it and/or modify it under the
 -- terms of the Do What The Fuck You Want To Public License, Version 2,
 -- as published by Sam Hocevar. See the COPYING file for more details.
@@ -87,28 +87,18 @@ function SaffronGuardQuest:VermilionPokemart()
 end
 
 function SaffronGuardQuest:VermilionCity()
-	if self.BUY_BIKE and getMoney() > 75000 and not hasItem("Bike Voucher") and not hasItem("Bicycle") then
+	if BUY_BIKE and getMoney() > 75000 and not hasItem("Bike Voucher") and not hasItem("Bicycle") then
 		return moveToCell(32,21)
 	elseif self:needPokemart() and getMoney() > 200 then
 		return moveToMap("Vermilion Pokemart")
-	elseif not hasItem("Old Rod") then
-		return moveToMap("Fisherman House - Vermilion")
 	else
 		return moveToMap("Route 6")
 	end
 end
 
 function SaffronGuardQuest:VermilionHouse2Bottom()
-	if self.BUY_BIKE and getMoney() > 75000 and not hasItem("Bike Voucher") and not hasItem("Bicycle")then
+	if BUY_BIKE and getMoney() > 75000 and not hasItem("Bike Voucher") and not hasItem("Bicycle")then
 		return talkToNpcOnCell(8,6)
-	else
-		return moveToMap("Vermilion City")
-	end
-end
-
-function SaffronGuardQuest:FishermanHouseVermilion()
-	if not hasItem("Old Rod") then
-		return talkToNpcOnCell(0,6)
 	else
 		return moveToMap("Vermilion City")
 	end

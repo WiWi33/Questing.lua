@@ -7,10 +7,12 @@ function sys.debug(message)
 	end
 end
 
-function sys.todo(message)
+function sys.todo(message, title)
 	if todo then
 		message = message or ""
-		log("TODO |  " .. message)
+		local indent = "\t"
+		if title then indent = "" end
+		log("TODO |  " ..indent.. message)
 	end
 end
 

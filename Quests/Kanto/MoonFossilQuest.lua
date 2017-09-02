@@ -21,6 +21,8 @@ local dialogs = {
 
 local MoonFossilQuest = Quest:new()
 function MoonFossilQuest:new()
+	--setting moon fossil, if no none defined
+	if not KANTO_FOSSIL_ID then KANTO_FOSSIL_ID = math.random(1,2) end
 	return Quest.new(MoonFossilQuest, name, description, level, dialogs)
 end
 

@@ -1,4 +1,4 @@
--- Copyright © 2016 g0ld <g0ld@tuta.io>
+-- Copyright Â© 2016 g0ld <g0ld@tuta.io>
 -- This work is free. You can redistribute it and/or modify it under the
 -- terms of the Do What The Fuck You Want To Public License, Version 2,
 -- as published by Sam Hocevar. See the COPYING file for more details.
@@ -18,7 +18,6 @@ local StartJohtoQuest = Quest:new()
 
 function StartJohtoQuest:new()
 	local o = Quest.new(StartJohtoQuest, name, description, level)
-	o.BUY_BIKE = true
 	return o
 end
 
@@ -113,7 +112,7 @@ function StartJohtoQuest:Route30()
 		return talkToNpcOnCell(15,67)
 	elseif isNpcOnCell(20,3) then --Item: Pecha Berry
 		return talkToNpcOnCell(20,3)
-	elseif self.BUY_BIKE and getMoney() > 75000 and not hasItem("Bicycle") and not hasItem("Bike Voucher") then
+	elseif BUY_BIKE and getMoney() > 75000 and not hasItem("Bicycle") and not hasItem("Bike Voucher") then
 		return moveToMap("Route 30 House 2")
 	elseif game.tryTeachMove("Cut","HM01 - Cut") == true then
 		return moveToMap("Route 31")
@@ -121,7 +120,7 @@ function StartJohtoQuest:Route30()
 end
 
 function StartJohtoQuest:Route30House2()
-	if self.BUY_BIKE and getMoney() > 75000 and not hasItem("Bicycle") and not hasItem("Bike Voucher") then
+	if BUY_BIKE and getMoney() > 75000 and not hasItem("Bicycle") and not hasItem("Bike Voucher") then
 		return talkToNpcOnCell(2,6)
 	else
 		return moveToMap("Route 30")

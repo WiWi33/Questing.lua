@@ -118,7 +118,10 @@ function ThunderBadgeQuest:VermilionCity()
 		self.dialogs.surgeVision.state = true
 	end
 
-	if self:needPokecenter() or not game.isTeamFullyHealed() or not self.registeredPokecenter == "Pokecenter Vermilion" then
+	if not hasItem("Old Rod") then
+		--retrieve free rod
+		return moveToMap("Fisherman House - Vermilion")
+	elseif self:needPokecenter() or not game.isTeamFullyHealed() or not self.registeredPokecenter == "Pokecenter Vermilion" then
 		return moveToMap("Pokecenter Vermilion")
 	elseif not dialogs.psychicWadePart2.state then
 		return moveToMap("Route 6")
@@ -135,6 +138,13 @@ function ThunderBadgeQuest:VermilionCity()
 	else
 		return moveToMap("Route 11")
 	end
+end
+
+function ThunderBadgeQuest:FishermanHouseVermilion()
+	--talk to the old fisherman
+	if not hasItem("Old Rod") then return talkToNpcOnCell(0,6)
+	--leave when rod obtained
+	else return moveToMap("Vermilion City") end
 end
 
 function ThunderBadgeQuest:puzzleBinPosition(binId)

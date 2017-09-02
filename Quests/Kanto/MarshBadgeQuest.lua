@@ -1,4 +1,4 @@
--- Copyright © 2016 g0ld <g0ld@tuta.io>
+-- Copyright Â© 2016 g0ld <g0ld@tuta.io>
 -- This work is free. You can redistribute it and/or modify it under the
 -- terms of the Do What The Fuck You Want To Public License, Version 2,
 -- as published by Sam Hocevar. See the COPYING file for more details.
@@ -23,6 +23,8 @@ local dialogs = {
 local MarshBadgeQuest = Quest:new()
 
 function MarshBadgeQuest:new()
+  --setting starter, if no none defined
+  if not KANTO_DOJO_POKEMON_ID then KANTO_DOJO_POKEMON_ID = math.random(1,2) end
   local o = Quest.new(MarshBadgeQuest, name, description, level, dialogs)
   o.dojoState = false
   return o
@@ -95,7 +97,7 @@ function MarshBadgeQuest:SaffronDojo()
   if isNpcOnCell(7,5) then
     if dialogs.dojoSaffronDone.state then
       if isNpcOnCell(3,4) and isNpcOnCell(10,4) then
-        if DOJO_POKEMON_ID == 1 then -- Hitmonchan
+        if KANTO_DOJO_POKEMON_ID == 1 then -- Hitmonchan
           return talkToNpcOnCell(3, 4)
         else -- Hitmonlee
           return talkToNpcOnCell(10,4)
