@@ -11,7 +11,7 @@ local Quest  = require "Quests/Quest"
 local Dialog = require "Quests/Dialog"
 
 local name		  = 'Rock Tunnel'
-local description = '(Route 9 to Lavander Town)'
+local description = '(Route 9 to Lavender Town)'
 local level = 33
 
 local RockTunnelQuest = Quest:new()
@@ -101,7 +101,7 @@ function RockTunnelQuest:Route8()
 		return talkToNpcOnCell(17,3)
 	elseif isNpcOnCell(18,3) then  -- Item: Lum Berry
 		return talkToNpcOnCell(18,3)
-	elseif isNpcOnCell(18,3) then  -- Item: Perism Berry
+	elseif isNpcOnCell(18,3) then  -- Item: Persim Berry
 		return talkToNpcOnCell(18,3)
 	else
 		return moveToMap("Underground House 4")
