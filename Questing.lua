@@ -4,10 +4,11 @@
 -- as published by Sam Hocevar. See the COPYING file for more details.
 
 name = "Questing"
-author = "g0ld"
-description = [[Everything.]]
+author = "g0ld, wiwi33, m1l4"
+description = [[Mainquesting up to sinnoh region.]]
 
 dofile "config.lua"
+debug = false
 
 local QuestManager
 local questManager = nil

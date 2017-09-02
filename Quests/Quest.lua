@@ -262,10 +262,12 @@ end
 
 function Quest:battleBegin()
 	self.canRun = true
+	self.canSwitch = true
 end
 
 function Quest:battleEnd()
 	self.canRun = true
+	self.canSwitch = true
 end
 
 -- I'll need a TeamManager class very soon
@@ -278,23 +280,17 @@ local blackListTargets = { --it will kill this targets instead catch
 }
 
 function Quest:wildBattle()
+	-- catching
 	local isEventPkm = getOpponentForm() ~= 0
-	if isOpponentShiny() or isEventPkm then
-		if useItem("Ultra Ball") or useItem("Great Ball") or useItem("Pokeball") then
-			return true
-		end
-	elseif self.pokemon ~= nil and self.forceCaught ~= nil then
-		if getOpponentName() == self.pokemon and self.forceCaught == false then --try caught only if never caught in this quest
-			if useItem("Ultra Ball") or useItem("Great Ball") or useItem("Pokeball") then
-				return true
-			end
-		end
-	elseif not isAlreadyCaught() and not sys.tableHasValue(blackListTargets, getOpponentName()) then
-		if useItem("Ultra Ball") or useItem("Great Ball") or useItem("Pokeball") then
-			return true
-		end
-	end	
-	-- if we do not try to catch it
+	if isOpponentShiny() or isEventPkm 																--catch special pkm
+		or (not isAlreadyCaught() and not sys.tableHasValue(blackListTargets, getOpponentName())) 	--catch not seen pkm
+		or (self.pokemon and getOpponentName() == self.pokemon		--catch quest related pkm
+		and self.forceCaught ~= nil and self.forceCaught == false)	--try caught only if never caught in this quest
+	then
+		if useItem("Pokeball") or useItem("Great Ball") or useItem("Ultra Ball") then return true end
+	end
+
+	-- team needs no healing
 	if getTeamSize() == 1 or getUsablePokemonCount() > 1 then
 		local opponentLevel = getOpponentLevel()
 		local myPokemonLvl  = getPokemonLevel(getActivePokemonNumber())
@@ -304,15 +300,31 @@ function Quest:wildBattle()
 				return sendPokemon(requestedId)
 			end
 		end
-		return attack() or sendUsablePokemon() or run() or sendAnyPokemon()
-	else
-		if not self.canRun then
-			return attack() or game.useAnyMove()
-		end
-		return run() or attack() or sendUsablePokemon() or sendAnyPokemon()
+
+		--TODO:
+		sys.todo("rested canRun & canSwitch after successful round progression - see survivor class")
+		if attack() 								--atk
+			or self.canSwitch and sendUsablePokemon() 	--switch in battle ready pkm if able
+			or self.canRun and run() 					--run if able
+			or self.canSwitch and sendAnyPokemon()		--switch in any alive pkm if able
+			or game.useAnyMove()						--use none damaging moves, to progress battle round
+		then return
+		else sys.error("quest.wildBattle", "no battle progression found for a battle headed team") end
 	end
+
+	-- team needs healing
+	if self.canRun and run() 						--run if able
+		or self.canSwitch and sendUsablePokemon() 	--switch in battle ready pkm if able
+		or attack() 								--atk
+		or self.canSwitch and sendAnyPokemon()		--switch in any alive pkm if able
+		or game.useAnyMove()						--use none damaging moves, to progress battle round
+	then return
+
+	else sys.error("quest.wildBattle", "no battle progression found for a pocecenter headed team") end
+
 end
 
+--could probably be left out | throwing pokeballs at trainer pkms might be an issue. run just returns false
 function Quest:trainerBattle()
 	-- bug: if last pokemons have only damaging but type ineffective
 	-- attacks, then we cannot use the non damaging ones to continue.
@@ -348,22 +360,31 @@ function Quest:dialog(message)
 end
 
 function Quest:battleMessage(message)
-	if sys.stringContains(message, "You can not run away!") then
-		sys.canRun = false
+	sys.debug("battleMessage: "..message)
+	if sys.stringContains(message, "Attacks") then
+		--reset after successful round progression
+		self.canRun = true
+		self.canSwitch = true
+
+	elseif sys.stringContains(message, "$CantRun") then
+		self.canRun = false
+
+	elseif sys.stringContains(message, "$NoSwitch") then
+		self.canSwitch = false
+
 	elseif self.pokemon ~= nil and self.forceCaught ~= nil then
 		if sys.stringContains(message, "caught") and sys.stringContains(message, self.pokemon) then --Force caught the specified pokemon on quest 1time
 			log("Selected Pokemon: " .. self.pokemon .. " is Caught")
 			self.forceCaught = true
 			return true
 		end
+
 	elseif sys.stringContains(message, "black out") and self.level < 100 and self:isTrainingOver() then
 		self.level = math.max(self:getTeamLevel(), self.level) + 1
 		self:startTraining()
 		log("Increasing " .. self.name .. " quest level to " .. self.level .. ". Training time!")
 		return true
-		elseif sys.stringContains(message, "You can not switch this Pokemon!") then
-		fatal("Cant switch pokemon, restarting bot, be sure auto reconnect is on") -- not the ideal fix
-		return true
+
 	end
 	return false
 end
@@ -378,7 +399,8 @@ function Quest:getTeamLevel()
 	return minLvl
 end
 
-function Quest:systemMessage(message)	
+function Quest:systemMessage(message)
+	sys.debug("systemMessage: "..message)
 	return false
 end
 
