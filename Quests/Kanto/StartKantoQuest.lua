@@ -22,8 +22,10 @@ function StartQuest:isDoable()
 end
 
 function StartQuest:Start()
-	if isNpcOnCell(21,38) then
+	if isNpcOnCell(21,38) then -- oak
 		return talkToNpcOnCell(21,38)
+	elseif isNpcOnCell(25,73) then -- mew
+		return moveToCell(26,70)
 	end
 	return moveToCell(26,87)
 end
