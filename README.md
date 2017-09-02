@@ -4,7 +4,7 @@ A Lua script for PROShine that plays Pokemon Revolution Online for you from the 
 
 Installation of updates:
 
-Step 1: Download https://github.com/DubsCheckum/Questing.lua/archive/master.zip
+Step 1: Download https://github.com/WiWi33/Questing.lua/archive/master.zip
 
 Step 2: Run PROSHINE, load questing.lua from the folder that you downloaded.
 
