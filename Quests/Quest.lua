@@ -5,6 +5,7 @@
 
 local sys  = require "Libs/syslib"
 local game = require "Libs/gamelib"
+local team = require "Libs/teamlib"
 
 local blacklist = require "blacklist"
 
@@ -163,24 +164,19 @@ function Quest:needPokemart()
 end
 
 function Quest:needPokecenter()
-	if getTeamSize() == 1 then
-		if getPokemonHealthPercent(1) <= 50 then
-			return true
-		end
+	if getTeamSize() == 1 and  getPokemonHealthPercent(1) <= 50 then
+		return true
+
 	-- else we would spend more time evolving the higher level ones
 	elseif not self:isTrainingOver() then
-		if getUsablePokemonCount() == 1 or game.getUsablePokemonCountUnderLevel(self.level) == 0 then
-			return true
-		end
+		if getUsablePokemonCount() == 1 or not team.getAlivePkmToLvl(self.level) then return true end
+
+	elseif not game.isTeamFullyHealed() and  self.healPokemonOnceTrainingIsOver then
+		return true
+
 	else
-		if not game.isTeamFullyHealed() then
-			if self.healPokemonOnceTrainingIsOver then
-				return true
-			end
-		else
-			-- the team is healed and we do not need training
-			self.healPokemonOnceTrainingIsOver = false
-		end
+		-- the team is fully healed and training over
+		self.healPokemonOnceTrainingIsOver = false
 	end
 	return false
 end
@@ -199,25 +195,6 @@ local moonStoneTargets = {
 	"Skitty"
 }
 
-function Quest:advanceSorting()
-	local pokemonsUsable = game.getTotalUsablePokemonCount()
-	for pokemonId=1, pokemonsUsable, 1 do
-		if not isPokemonUsable(pokemonId) then --Move it at bottom of the Team
-			for pokemonId_ = pokemonsUsable + 1, getTeamSize(), 1 do
-				if isPokemonUsable(pokemonId_) then
-					swapPokemon(pokemonId, pokemonId_)
-					return true
-				end
-			end
-			
-		end
-	end
-	if not isTeamRangeSortedByLevelAscending(1, pokemonsUsable) then --Sort the team without not usable pokemons
-		return sortTeamRangeByLevelAscending(1, pokemonsUsable)
-	end
-	return false
-end
-
 function Quest:evolvePokemon()
 	local hasMoonStone = hasItem("Moon Stone")
 	for pokemonId=1, getTeamSize(), 1 do
@@ -231,26 +208,41 @@ function Quest:evolvePokemon()
 	return false
 end
 
+--prevents the sort algorithm being visualized - e.g. when gm inspects team
+function Quest:sortInMemory()
+	--setting lowest level pkm as starter
+	local starter = team.getStarter()
+	local lowestAlivePkmToLvl = team.getLowestAlivePkmToLvl(self.level)
+	sys.debug("Sort Values:")
+	sys.debug("\tstarter: "..starter)
+	sys.debug("\tlowestAlivePkmToLvl: "..tostring(lowestAlivePkmToLvl))
+	if lowestAlivePkmToLvl and 			--if one exists, skips if nothing found
+		starter ~= lowestAlivePkmToLvl	--skips if found target the starter already
+	then
+		sys.debug("\tgetting swapped: "..tostring(lowestAlivePkmToLvl))
+		return swapPokemon(lowestAlivePkmToLvl, starter)
+	end
+
+	--setting highest level pkm, as last defense wall
+	local highestAlivePkm = team.getHighestPkmAlive()
+	local lastPkm = team.getLastPkmAlive()
+	sys.debug("\tlastPkm: "..lastPkm)
+	sys.debug("\thighestAlivePkm: "..tostring(highestAlivePkm))
+	if highestAlivePkm ~= lastPkm then
+		return swapPokemon(highestAlivePkm, lastPkm)
+	end
+end
+
+
 function Quest:path()
 	if self.inBattle then
 		self.inBattle = false
 		self:battleEnd()
 	end
-	if self:evolvePokemon() then
-		return true
-	end
-	--if not isTeamSortedByLevelAscending() then
-		--return sortTeamByLevelAscending()
-	--end
-	if self:advanceSorting() then
-		return true
-	end
-	if self:leftovers() then
-		return true
-	end
-	if self:useBike() then
-		return true
-	end
+	if self:evolvePokemon() then return true end
+	if self:sortInMemory() then return true end
+	if self:leftovers() then return true end
+	if self:useBike() then return true end
 	local mapFunction = self:mapToFunction()
 	assert(self[mapFunction] ~= nil, self.name .. " quest has no method for map: " .. getMapName())
 	self[mapFunction](self)
@@ -280,6 +272,9 @@ local blackListTargets = { --it will kill this targets instead catch
 }
 
 function Quest:wildBattle()
+	sys.debug("Battle Values:")
+
+	sys.debug("\tactive pkm: "..getActivePokemonNumber())
 	-- catching
 	local isEventPkm = getOpponentForm() ~= 0
 	if isOpponentShiny() or isEventPkm 																--catch special pkm
@@ -290,32 +285,34 @@ function Quest:wildBattle()
 		if useItem("Pokeball") or useItem("Great Ball") or useItem("Ultra Ball") then return true end
 	end
 
+	sys.debug("\tcanSwitch: "..tostring(self.canSwitch))
+	sys.debug("\tcanRun: "..tostring(self.canRun))
+
 	-- team needs no healing
 	if getTeamSize() == 1 or getUsablePokemonCount() > 1 then
+		sys.debug("\tTeam needs no healing.")
+
 		--level low leveled pkm
 		local opponentLevel = getOpponentLevel()
 		local myPokemonLvl  = getPokemonLevel(getActivePokemonNumber())
 		if self.canSwitch and opponentLevel >= myPokemonLvl then
 			local requestedId, requestedLevel = game.getMaxLevelUsablePokemon()
 			if requestedId ~= nil and requestedLevel > myPokemonLvl then
+				sys.debug("\tbattle swap due to level")
 				return sendPokemon(requestedId)
 			end
 		end
 
-
-
-		sys.debug("battle values:")
-		sys.debug("canSwitch: "..tostring(self.canSwitch))
-		sys.debug("canRun: "..tostring(self.canRun))
-
-		if attack() 								--atk
-			or self.canSwitch and sendUsablePokemon() 	--switch in battle ready pkm if able
-			or self.canRun and run()			--run if able
+		if attack() 									--atk
+			or self.canSwitch and sendUsablePokemon()	--switch in battle ready pkm if able
+			or self.canRun and run()					--run if able
 			or self.canSwitch and sendAnyPokemon()		--switch in any alive pkm if able
 			or game.useAnyMove()						--use none damaging moves, to progress battle round
-		then return
-		else sys.error("quest.wildBattle", "no battle progression found for a battle headed team") end
+		then return sys.debug("\tan was action performed for battle headed teams")
+		else return sys.error("\tquest.wildBattle", "no battle progression found for a battle headed team") end
 	end
+
+	sys.debug("\tTeam needs healing.")
 
 	-- team needs healing
 	if self.canRun and run() 						--run if able
@@ -323,9 +320,8 @@ function Quest:wildBattle()
 		or attack() 								--atk
 		or self.canSwitch and sendAnyPokemon()		--switch in any alive pkm if able
 		or game.useAnyMove()						--use none damaging moves, to progress battle round
-	then return
-	else sys.error("quest.wildBattle", "no battle progression found for a pocecenter headed team") end
-
+	then return end sys.debug("\tan was action performed for pokecenter headed teams")
+	sys.error("\tquest.wildBattle", "no battle progression found for a pocecenter headed team")
 end
 
 --could probably be left out | throwing pokeballs at trainer pkms might be an issue. run just returns false
@@ -368,17 +364,20 @@ function Quest:battleMessage(message)
 		--reset after successful round progression
 		self.canRun = true
 		self.canSwitch = true
-		sys.debug("self.canRun set to true")
-		sys.debug("self.canSwitch set to true")
+		sys.debug("BattleMessage")
+		sys.debug("\tcanRun = true")
+		sys.debug("\tcanSwitch = true")
 		return true
 
 	elseif sys.stringContains(message, "$CantRun") then
-		sys.debug("self.canRun set to false")
+		sys.debug("BattleMessage")
+		sys.debug("\tcanRun = false")
 		self.canRun = false
 		return true
 
 	elseif sys.stringContains(message, "$NoSwitch") then
-		sys.debug("self.canSwitch set to false")
+		sys.debug("BattleMessage")
+		sys.debug("\tcanSwitch = false")
 		self.canSwitch = false
 		return true
 
@@ -390,23 +389,13 @@ function Quest:battleMessage(message)
 		end
 
 	elseif sys.stringContains(message, "black out") and self.level < 100 and self:isTrainingOver() then
-		self.level = math.max(self:getTeamLevel(), self.level) + 1
+		self.level = math.max(team:getTeamLevel(), self.level) + 1
 		self:startTraining()
 		log("Increasing " .. self.name .. " quest level to " .. self.level .. ". Training time!")
 		return true
 
 	end
 	return false
-end
-
-function Quest:getTeamLevel()
-	local minLvl = nil
-	for i = 1, getTeamSize() do
-		local pkmLvl =  getPokemonLevel(i)
-		minLvl = minLvl or pkmLvl			--set first pkm as lvl reference
-		minLvl = math.min(minLvl, pkmLvl)	--get minimum between following team members
-	end
-	return minLvl
 end
 
 function Quest:systemMessage(message)

@@ -5,10 +5,9 @@
 
 name = "Questing"
 author = "g0ld, wiwi33, m1l4"
-description = [[Mainquesting up to sinnoh region.]]
+description = [[MainQuesting up to sinnoh region.]]
 
 dofile "config.lua"
-debug = false
 
 local QuestManager
 local questManager = nil
