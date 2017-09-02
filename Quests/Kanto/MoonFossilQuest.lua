@@ -14,8 +14,7 @@ local level       = 18
 
 local dialogs = {
 	fossileGuyBeaten = Dialog:new({
-		"Did you get the one you like?"--,
-		--""
+		"Did you get the one you like?"
 	})
 }
 
@@ -25,8 +24,7 @@ function MoonFossilQuest:new()
 end
 
 function MoonFossilQuest:isDoable()
-	if not hasItem("Cascade Badge") and self:hasMap()
-	then
+	if not hasItem("Cascade Badge") and self:hasMap() then
 		return true
 	end
 	return false

@@ -51,7 +51,13 @@ function Quest:pokecenter(exitMapName) -- idealy make it work without exitMapNam
 	self.registeredPokecenter = getMapName()
 	sys.todo("add a moveDown() or moveToNearestLink() or getLinks() to PROShine")
 	if not game.isTeamFullyHealed() then
-		return usePokecenter()
+		if usePokecenter() then
+			return
+		else
+			if isNpcOnCell(9,16) then
+				return talkToNpcOnCell(9,16)
+			end
+		end
 	end
 	return moveToMap(exitMapName)
 end

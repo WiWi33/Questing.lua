@@ -28,7 +28,10 @@ function BuyBikeQuest:isDoable()
 end
 
 function BuyBikeQuest:isDone()
-	if getMapName() == "Route 5 Stop House" or getMapName() == "Pokecenter Saffron" then --Fix Blackout
+	if getMapName() == "Route 5 Stop House" 
+		or getMapName() == "Pokecenter Saffron" --Fix Blackout
+		or not BUY_BIKE
+	then
 		return true
 	end
 	return false
