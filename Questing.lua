@@ -16,6 +16,15 @@ function onStart()
 	math.randomseed(os.time())
 	QuestManager = require "Quests/QuestManager"
 	questManager = QuestManager:new()
+
+	--for longer botting runs
+	if DISABLE_PM and isPrivateMessageEnabled() then
+		log("Private messages disabled.")
+		return disablePrivateMessage()
+	end
+
+	--disable AutoEvolve for reduced exp needed to lvl up
+	disableAutoEvolve()
 end
 
 function onPause()
