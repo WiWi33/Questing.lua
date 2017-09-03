@@ -8,13 +8,25 @@ local game = {}
 local sys = require("Libs/syslib")
 
 function game.isTeamFullyHealed()
-	for pokemonId=1, getTeamSize(), 1 do
-		if getPokemonHealthPercent(pokemonId) < 100
-			or not isPokemonUsable(pokemonId) then
-			return false
-		end
-	end
-	return true
+  	for pokemonId=1, getTeamSize(), 1 do
+  		if getPokemonHealthPercent(pokemonId) < 100
+ 			or not game.isFullPP(pokemonId) 
+ 		then
+  			return false
+  		end
+  	end
+ 	return true
+end
+  
+function game.isFullPP(pokemonId)
+ 	for moveId = 1, 4 do
+ 		local move = getPokemonMoveName(pokemonId, moveId)
+ 		sys.debug("move: "..tostring(move))
+ 		if move and 																				--has a move on index and
+ 			getRemainingPowerPoints(pokemonId, move) ~= getPokemonMaxPowerPoints(pokemonId, moveId) --move is not full recovered
+ 		then return false end
+ 	end
+ 	return true
 end
 
 function game.isPokemonFullPP(pokemonId)

@@ -60,8 +60,8 @@ function CascadeBadgeQuest:CeruleanCity()
 		if not hasItem("Cascade Badge") then
 			return moveToMap("Cerulean Gym")
 		else  -- Gym complete --> Get Ticket Bill
-			if isNpcOnCell(43,23) then
-				return talkToNpcOnCell(43,23) -- Officer Jenny
+			if isNpcOnCell(43,23) then -- Officer Jenny
+				return talkToNpcOnCell(43,23)
 			elseif isNpcOnCell(47,27) then -- RocketGuy --> 2ND
 				return talkToNpcOnCell(47,27)
 			else -- all done Ticket + Badge (Go to Route 5)
