@@ -86,6 +86,62 @@ function pc.withdraw(boxIndex, boxPokemonIndex)
 	return false
 end
 
+
+function pc.retrieveFirstWithMove(pkmName, move)
+	local region, lvl, comparer = nil, nil, nil --added for readability
+	return pc._retrieveFirst(pkmName, move, region, lvl, comparer)
+end
+
+function pc.retrieveFirstWithMoveFrom(pkmName, move, region)
+	local lvl, comparer = nil, nil --added for readability
+	return pc._retrieveFirst(pkmName, move, region, lvl, comparer)
+end
+
+function pc.retrieveFirstBelowLvl(pkmName, lvl)
+	local move, region = nil, nil --added for readability
+	return pc._retrieveFirst(pkmName, move, region, lvl, pc._smaller)
+end
+
+function pc.retrieveFirst(pkmName)
+	local move, lvl, region, comparer = nil, nil, nil, nil --added for readability
+	return pc._retrieveFirst(pkmName, move, region, lvl, comparer)
+end
+
+--compare functions
+function pc._smaller(a,b) return a < b end
+
+
+--return action, nil while doing actions
+--return int, int an object when finished
+function pc._retrieveFirst(pkmName, move, region, lvl, comparer)
+	sys.todo("Remove obsolete other methods, since _retrieveFirst should cover all", "pclib._retrieveFirst")
+	--start pc
+	if not isPCOpen() or not isCurrentPCBoxRefreshed() then return usePC() end
+
+	--verify active pcbox has elements
+	local no_match = "No match found"
+	if getCurrentPCBoxSize() == 0 then  return no_match end
+
+	--check each box item
+	local boxId = getCurrentPCBoxId()
+	for pkmId = 1, getCurrentPCBoxSize() do
+
+		local boxPkmName = getPokemonNameFromPC(boxId, pkmId)
+		local pkmRegion = getPokemonRegionFromPC(boxId, pkmId)
+
+		--iterating moves, only one iteration if not no move preference given
+		for moveId = 1, 4 do
+			local pkmMove = getPokemonMoveNameFromPC(boxId, pkmId, moveId)
+
+			if boxPkmName == pkmName					--correct name
+				and (not region or pkmRegion == region) --correct region if provided
+				and (not move or pkmMove == move)
+			then return pkmId, boxId	end
+		end
+	end
+	return openPCBox(boxId + 1)
+end
+
 function pc.gatherDatas(sortingFunction)
 	
 end

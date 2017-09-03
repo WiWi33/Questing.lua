@@ -1,4 +1,4 @@
--- Copyright © 2016 g0ld <g0ld@tuta.io>
+-- Copyright Â© 2016 g0ld <g0ld@tuta.io>
 -- This work is free. You can redistribute it and/or modify it under the
 -- terms of the Do What The Fuck You Want To Public License, Version 2,
 -- as published by Sam Hocevar. See the COPYING file for more details.
@@ -82,26 +82,31 @@ function ExpForSaffronQuest:SeafoamB3F()
 end
 
 function ExpForSaffronQuest:SeafoamB4F()
-	if isNpcOnCell(57,20) then --Item: Nugget (15000 Money)
+	--Item: Nugget (15000 Money)
+	if isNpcOnCell(57,20) then
 		return talkToNpcOnCell(57,20)
 	end
-	if not self:isTrainingOver() then
+
+	--farm until training level is reached and
+	--money for buying bike is reached, if selected
+	if not self:isTrainingOver() and (not BUY_BIKE or getMoney() > 65000) then
 		if self:needPokecenter() then
-			if self:canUseNurse() then -- if have 1500 money
+			-- if have 1500 money
+			if self:canUseNurse() then
+				--talk to nurse
 				return talkToNpcOnCell(59,13)
-			else
-				if not game.getTotalUsablePokemonCount() > 1 then
-				    fatal("don't have enough Pokemons for farm 1500 money and heal the team")
-				else 
-				    return moveToRectangle(50,10,62,32)
-				end
+			elseif not game.getTotalUsablePokemonCount() > 1 then
+				--using Escape Rope?
+				log("don't have enough Pokemons for farm 1500 money and heal the team")
 			end
-		else
-			return moveToRectangle(50,10,62,32)
 		end
-	else
-		return moveToCell(53,28)
+
+		--move to farming zone
+		return moveToRectangle(50,10,62,32)
 	end
+
+	--training over and money farmed if need to, go to ladder
+	return moveToCell(53,28)
 end
 
 return ExpForSaffronQuest

@@ -6,6 +6,7 @@
 
 
 local sys    = require "Libs/syslib"
+local pc     = require "Libs/pclib"
 local game   = require "Libs/gamelib"
 local Quest  = require "Quests/Quest"
 local Dialog = require "Quests/Dialog"
@@ -17,9 +18,7 @@ local level = 55
 local SaffronGuardQuest = Quest:new()
 
 function SaffronGuardQuest:new()
-	local o = Quest.new(SaffronGuardQuest, name, description, level)
-	o.BUY_BIKE = BUY_BIKE
-	return o
+	return Quest.new(SaffronGuardQuest, name, description, level)
 end
 
 function SaffronGuardQuest:isDoable()
@@ -87,21 +86,77 @@ function SaffronGuardQuest:VermilionPokemart()
 end
 
 function SaffronGuardQuest:VermilionCity()
-	if BUY_BIKE and getMoney() > 75000 and not hasItem("Bike Voucher") and not hasItem("Bicycle") then
-		return moveToCell(32,21)
-	elseif self:needPokemart() and getMoney() > 200 then
+
+	if self:needPokemart() and getMoney() > 200 then
 		return moveToMap("Vermilion Pokemart")
-	else
-		return moveToMap("Route 6")
+
+	elseif BUY_BIKE then
+		--abourt buying a bike, when already gotten one or not enough money
+		if hasItem("Bicycle") or BUY_BIKE and getMoney() < 60000 then
+			BUY_BIKE = false
+			if not hasItem("Bicycle") then
+				log("Not enough money, you skipped a quest. You missed out on a fancy new bike :(")
+			end
+
+		--enough money, but no Ditto and Voucher or your way back to retrieve swaped pkm
+		elseif not hasPokemonInTeam("Ditto") and not hasItem("Bike Voucher")	--need to fetch ditto
+			or pkmIdDitto 														--want to retrieve swaped pkm
+		then
+			return moveToMap("Pokecenter Vermilion")
+
+		--has ditto, get Bike Voucher
+		elseif hasPokemonInTeam("Ditto") and not hasItem("Bike Voucher") then
+			return moveToCell(32,21)
+		end
 	end
+
+	--all done - move to next quest location
+	return moveToMap("Route 6")
+end
+
+function SaffronGuardQuest:PokecenterVermilion()
+	--already swapped and we want't to get our pkm back
+	if pkmIdDittoSwap then
+		return withdrawPokemonFromPC(boxIdDittoSwap, pkmIdDittoSwap)
+
+	-- in need of a ditto
+	elseif BUY_BIKE and not hasPokemonInTeam("Ditto") and not hasItem("Bike Voucher") then
+		--setting swap target
+		local swapId = team.getLowestLvlPkm()
+
+		--take item especially leftovers from it, when it is holding one
+		if getPokemonHeldItem(swapId) then return end
+
+		--check for ditto
+		pkmIdDittoSwap, boxIdDittoSwap = pc.retrieveFirst("Ditto")
+
+		-- no solution
+		if not pkmIdDittoSwap then
+			-- quick fix until pathfinder is added, then moving to route 8 wouldn't
+			-- such a hassle to implement
+			log("No ditto caught, you skipped a quest. You missed out on a fancy new bike :(")
+			BUY_BIKE = false
+
+		--still searching
+		elseif not boxIdDittoSwap then return sys.debug("Starting PC or Switching Boxes")
+
+		--solution found, swapping with teammember
+		else
+			log("LOG: Ditto Found on BOX: " .. boxIdDittoSwap .."  Slot: ".. pkmIdDittoSwap .. "  Swapping with pokemon in team N: " .. swapId)
+			return swapPokemonFromPC(boxIdDittoSwap, pkmIdDittoSwap, swapId)
+		end
+	end
+
+	--not buying a bike or Ditto retrieved
+	return moveToMap("Vermilion City")
 end
 
 function SaffronGuardQuest:VermilionHouse2Bottom()
-	if BUY_BIKE and getMoney() > 75000 and not hasItem("Bike Voucher") and not hasItem("Bicycle")then
-		return talkToNpcOnCell(8,6)
-	else
-		return moveToMap("Vermilion City")
+	if BUY_BIKE and getMoney() >= 60000 and not hasItem("Bike Voucher") and not hasItem("Bicycle")then
+		return talkToNpcOnCell(6,6)
 	end
+	--leave house, when done
+	return moveToMap("Vermilion City")
 end
 
 function SaffronGuardQuest:Route6()

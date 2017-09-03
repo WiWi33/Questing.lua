@@ -1,3 +1,4 @@
+-- ------Quest related options------
 --generall
 BUY_BIKE = true
 BUY_RODS = true                 -- true: buy rods, false: buy not
@@ -13,3 +14,9 @@ JOTHO_STARTER_ID = nil          -- not implemented yet
 
 --regional - hoenn
 HOENN_STARTER_ID = nil          -- not implemented yet
+
+
+
+
+-- ------Bot related options------
+DISABLE_PM = true               -- true: private messaging will be disabled, false: no changes will be done
