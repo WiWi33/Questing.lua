@@ -1,18 +1,20 @@
 local sys = {}
 
-function sys.debug(message)
+function sys.debug(message, title)
 	if debug then
+		--indent
+		local indent = "\t"
+		if title then indent = "" end
+		--init msg
 		message = message or ""
-		log("DEBUG | " .. message)
+		log("DEBUG | " ..indent.. message)
 	end
 end
 
-function sys.todo(message, title)
+function sys.todo(message)
 	if todo then
 		message = message or ""
-		local indent = "\t"
-		if title then indent = "" end
-		log("TODO |  " ..indent.. message)
+		log("TODO |  " .. message)
 	end
 end
 
