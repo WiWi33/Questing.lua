@@ -5,7 +5,7 @@
 
 name = "Questing"
 author = "g0ld, wiwi33, m1l4"
-description = [[MainQuesting up to sinnoh region.]]
+description = [[MainQuesting until end of Hoenn region.]]
 
 dofile "config.lua"
 
