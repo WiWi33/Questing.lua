@@ -198,7 +198,7 @@ end
 
 function SoulBadgeQuest:FuchsiaHouse1()
 	--talk to fishing guru
-	if not hasItem("Good Rod") and hasItem("Old Rod") then return talkToNpcOnCell(3,6)
+	if hasItem("Old Rod") and not hasItem("Good Rod") then return talkToNpcOnCell(3,6)
 	--leave when rod obtained
 	else return moveToMap("Fuchsia City") end
 end
