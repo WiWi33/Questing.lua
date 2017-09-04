@@ -19,7 +19,7 @@ function sys.todo(message)
 end
 
 function sys.error(functionName, message)
-	return fatal("ERROR | " .. functionName .. ": " .. message)
+	return fatal("ERROR | " .. tostring(functionName) .. ": " .. tostring(message))
 end
 
 function sys.assert(test, functionName, message)
