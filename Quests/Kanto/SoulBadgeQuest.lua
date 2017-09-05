@@ -124,7 +124,7 @@ function SoulBadgeQuest:Route18()
 end
 
 function SoulBadgeQuest:FuchsiaCity()
-	if BUY_RODS and not hasItem("Good Rod") and getMoney() >= 15000 then
+	if BUY_RODS and hasItem("Old Rod") and not hasItem("Good Rod") and getMoney() >= 15000 then
 		--go to fising guru's map, if you have enough money and want to buy the super rod
 		return moveToMap("Fuchsia House 1")
 	elseif game.minTeamLevel() >= 60 then
@@ -156,7 +156,7 @@ end
 
 function SoulBadgeQuest:FuchsiaHouse1()
 	--talk to fishing guru
-	if not hasItem("Good Rod") then return talkToNpcOnCell(3,6)
+	if not hasItem("Good Rod") and hasItem("Old Rod") then return talkToNpcOnCell(3,6)
 	--leave when rod obtained
 	else return moveToMap("Fuchsia City") end
 end
