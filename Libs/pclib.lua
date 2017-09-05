@@ -109,7 +109,6 @@ function pc.retrieveFirstFromNames(pkmNames, swapId)
 end
 
 function pc.retrieveFirstFromIds(ids, swapId)
-    log("-------ids: "..#ids)
     return pc._retrieveFirst{swapId = swapId, id = ids}
 end
 
@@ -277,12 +276,12 @@ function pc._getMatches(args)
 
 
     --pokemon class vars
-    local posArgs = Set:new({
+    local posArgs = Set:new {
         "ev", "iv", "moves", "name", "nature", "ability",
         "happiness", "region", "trainer", "gender", "totalXp",
         "remainingXP", "uniqueId", "id", "isShiny", "item",
         "level", "totalHP", "percentHP", "currentHP"
-    })
+    }
 
     --iterating all pokemon
     local matches = {}
