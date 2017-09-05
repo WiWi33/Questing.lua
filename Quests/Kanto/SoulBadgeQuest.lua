@@ -15,9 +15,9 @@ local Dialog        = require "Quests/Dialog"
 local Set 			= require("Classes/Set")
 
 
-local name		  = 'Soul Badge'
-local description = 'Fuchsia City'
-local level 	  = 40
+local name		    = 'Soul Badge'
+local description   = 'Fuchsia City'
+local level         = 40
 
 local dialogs = {
 	questSurfAccept = Dialog:new({ 
@@ -172,26 +172,37 @@ function SoulBadgeQuest:FuchsiaCity()
     if game.minTeamLevel() >= 60 then
 		return moveToMap("Route 15 Stop House")
 	elseif self:needPokecenter() or not game.isTeamFullyHealed() or not self.registeredPokecenter == "Pokecenter Fuchsia" then
+        sys.debug("heading to Pokecenter")
 		return moveToMap("Pokecenter Fuchsia")
 	elseif isNpcOnCell(13,7) then --Item: PP UP
+        sys.debug("getting Item: PP UP")
 		return talkToNpcOnCell(13,7)
 	elseif isNpcOnCell(12,10) then --Item: Ultra Ball
+        sys.debug("getting Item: Ultra Ball")
 		return talkToNpcOnCell(12,10)
 	elseif self:needPokemart_() and not hasItem("HM03 - Surf") then --It buy balls if not have badge, at blackoutleveling no
+        --It buy balls if not have badge, at blackoutleveling no
+        sys.debug("buying balls")
 		return moveToMap("Safari Stop")
 	elseif not self:isTrainingOver() then
+        sys.debug("on its way to training")
 		return moveToMap("Route 15 Stop House")
 	elseif not hasItem("Soul Badge") then
+        sys.debug("heading to gym")
 		return moveToMap("Fuchsia Gym")
 	elseif not self:canEnterSafari() then
+        sys.debug("farming, since safari cannot be entered")
 		return moveToMap("Route 18")	
 	elseif not hasItem("HM03 - Surf") then
 		if not dialogs.questSurfAccept.state then
+            sys.debug("on its way to fight Viktor | to access safari zone")
 			return moveToMap("Fuchsia City Stop House")
 		else
+            sys.debug("heading to safari zone | to retrieve surf")
 			return moveToMap("Safari Stop")
 		end
 	else
+        sys.debug("Quest done, heading to shore")
 		return moveToMap("Fuchsia City Stop House")
 	end
 end
