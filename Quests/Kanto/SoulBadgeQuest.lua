@@ -210,6 +210,16 @@ function SoulBadgeQuest:FuchsiaCity()
 	end
 end
 
+<<<<<<< 749fa0217eccd7db27083335e60540bb364e3760
+=======
+function SoulBadgeQuest:FuchsiaHouse1()
+	--talk to fishing guru
+	if not hasItem("Good Rod") and hasItem("Old Rod") then return talkToNpcOnCell(3,6)
+	--leave when rod obtained
+	else return moveToMap("Fuchsia City") end
+end
+
+>>>>>>> 51b7eb8a679ecc15a1ed80fdea60f12bacd4a69f
 function SoulBadgeQuest:SafariStop()
 	if self:needPokemart_() then
 		self:pokemart_()
