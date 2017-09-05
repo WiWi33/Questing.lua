@@ -213,21 +213,21 @@ function Quest:sortInMemory()
 	--setting lowest level pkm as starter
 	local starter = team.getStarter()
 	local lowestAlivePkmToLvl = team.getLowestAlivePkmToLvl(self.level)
-	sys.debug("Sort Values:")
-	sys.debug("\tstarter: "..starter)
-	sys.debug("\tlowestAlivePkmToLvl: "..tostring(lowestAlivePkmToLvl))
+	sys.debug("Sort Values", "quest.sortInMemory()", true)
+	sys.debug("starter", starter)
+	sys.debug("lowestAlivePkmToLvl", lowestAlivePkmToLvl)
 	if lowestAlivePkmToLvl and 			--if one exists, skips if nothing found
 		starter ~= lowestAlivePkmToLvl	--skips if found target the starter already
 	then
-		sys.debug("\tgetting swapped: "..tostring(lowestAlivePkmToLvl))
+		sys.debug("getting swapped", lowestAlivePkmToLvl)
 		return swapPokemon(lowestAlivePkmToLvl, starter)
 	end
 
 	--setting highest level pkm, as last defense wall
 	local highestAlivePkm = team.getHighestPkmAlive()
 	local lastPkm = team.getLastPkmAlive()
-	sys.debug("\tlastPkm: "..lastPkm)
-	sys.debug("\thighestAlivePkm: "..tostring(highestAlivePkm))
+	sys.debug("lastPkm", lastPkm)
+	sys.debug("highestAlivePkm", highestAlivePkm)
 	if highestAlivePkm ~= lastPkm then
 		return swapPokemon(highestAlivePkm, lastPkm)
 	end
@@ -272,9 +272,9 @@ local blackListTargets = { --it will kill this targets instead catch
 }
 
 function Quest:wildBattle()
-	sys.debug("Battle Values:")
+	sys.debug("Battle Values", "quest.wildBattle()", true)
+	sys.debug("active pkm", getActivePokemonNumber())
 
-	sys.debug("\tactive pkm: "..getActivePokemonNumber())
 	-- catching
 	local isEventPkm = getOpponentForm() ~= 0
 	if isOpponentShiny() or isEventPkm 																--catch special pkm
@@ -285,12 +285,12 @@ function Quest:wildBattle()
 		if useItem("Pokeball") or useItem("Great Ball") or useItem("Ultra Ball") then return true end
 	end
 
-	sys.debug("\tcanSwitch: "..tostring(self.canSwitch))
-	sys.debug("\tcanRun: "..tostring(self.canRun))
-
+	sys.debug("canSwitch: ", self.canSwitch)
+	sys.debug("canRun: ", self.canRun)
+	sys.debug("TeamHeal needed", getTeamSize() == 1 or getUsablePokemonCount() > 1)
 	-- team needs no healing
 	if getTeamSize() == 1 or getUsablePokemonCount() > 1 then
-		sys.debug("\tTeam needs no healing.")
+
 
 		--level low leveled pkm
 		local opponentLevel = getOpponentLevel()
@@ -298,7 +298,7 @@ function Quest:wildBattle()
 		if self.canSwitch and opponentLevel >= myPokemonLvl then
 			local requestedId, requestedLevel = game.getMaxLevelUsablePokemon()
 			if requestedId ~= nil and requestedLevel > myPokemonLvl then
-				sys.debug("\tbattle swap due to level")
+				sys.debug("battle swap due to level", requestedId)
 				return sendPokemon(requestedId)
 			end
 		end
@@ -308,11 +308,9 @@ function Quest:wildBattle()
 			or self.canRun and run()					--run if able
 			or self.canSwitch and sendAnyPokemon()		--switch in any alive pkm if able
 			or game.useAnyMove()						--use none damaging moves, to progress battle round
-		then return sys.debug("\tan was action performed for battle headed teams")
-		else return sys.error("\tquest.wildBattle", "no battle progression found for a battle headed team") end
+		then return sys.debug("an was action performed for battle headed teams", "")
+		else return sys.error("quest.wildBattle", "no battle progression found for a battle headed team") end
 	end
-
-	sys.debug("\tTeam needs healing.")
 
 	-- team needs healing
 	if self.canRun and run() 						--run if able
@@ -320,7 +318,7 @@ function Quest:wildBattle()
 		or attack() 								--atk
 		or self.canSwitch and sendAnyPokemon()		--switch in any alive pkm if able
 		or game.useAnyMove()						--use none damaging moves, to progress battle round
-	then return end sys.debug("\tan was action performed for pokecenter headed teams")
+	then return end sys.debug("an was action performed for pokecenter headed teams", "")
 	sys.error("\tquest.wildBattle", "no battle progression found for a pocecenter headed team")
 end
 

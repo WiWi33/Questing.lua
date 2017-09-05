@@ -13,3 +13,8 @@ JOTHO_STARTER_ID = nil          -- not implemented yet
 
 --regional - hoenn
 HOENN_STARTER_ID = nil          -- not implemented yet
+
+
+--game unrelated
+DEBUG = true                    -- printing debug comments
+TODO = false                    -- printing todo comments
