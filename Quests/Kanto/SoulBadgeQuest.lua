@@ -15,9 +15,9 @@ local Dialog        = require "Quests/Dialog"
 local Set 			= require("Classes/Set")
 
 
-local name		    = 'Sould Badge'
-local description   = 'Fuchsia City'
-local level         = 40
+local name		  = 'Soul Badge'
+local description = 'Fuchsia City'
+local level 	  = 40
 
 local dialogs = {
 	questSurfAccept = Dialog:new({ 
@@ -259,7 +259,7 @@ function SoulBadgeQuest:Route19()
 		return moveToMap("Fuchsia City Stop House")
 	elseif hasItem("HM03 - Surf") then
 		if not game.hasPokemonWithMove("Surf") then
-			if self.pokemonId < getTeamSize() then					
+			if self.pokemonId <= getTeamSize() then
 				useItemOnPokemon("HM03 - Surf", self.pokemonId)
 				log("Pokemon: " .. self.pokemonId .. " Try Learning: HM03 - Surf")
 				self.pokemonId = self.pokemonId + 1
