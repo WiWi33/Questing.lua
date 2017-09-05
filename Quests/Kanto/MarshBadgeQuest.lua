@@ -38,7 +38,9 @@ function MarshBadgeQuest:isDoable()
 end
 
 function MarshBadgeQuest:isDone()
-  if (hasItem("Marsh Badge") and getMapName() == "Route 8") or getMapName() == "Silph Co 1F" or getMapName() == "Route 5" then
+  if hasItem("Marsh Badge") and getMapName() == "Lavender Town"
+      or getMapName() == "Silph Co 1F"
+      or getMapName() == "Route 5" then
     return true
   else
     return false
@@ -47,11 +49,14 @@ end
 
 
 function MarshBadgeQuest:Route8()
-  if not self:needPokecenter() and not self:isTrainingOver() then
-    return moveToGrass()
-  else
-    return moveToMap("Route 8 Stop House")
-  end
+  if self:needPokecenter() or self:isTrainingOver() then
+    --if we won gym fight, self:isTrainingOver() should be true. So another test against badge has
+    --to be made, to fix looping between Rout8StopHouse and Route8 itself
+    if hasItem("Marsh Badge")then return moveToMap("Lavender Town")
+      
+    else return moveToMap("Route 8 Stop House") end
+
+  else return moveToGrass() end
 end
 
 
