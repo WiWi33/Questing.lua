@@ -89,6 +89,7 @@ function Quest:isTrainingOver()
 end
 
 function Quest:leftovers()
+	if leftovers_disabled then return end
 	ItemName = "Leftovers"
 	local PokemonNeedLeftovers = game.getFirstUsablePokemon()
 	local PokemonWithLeftovers = game.getPokemonIdWithItem(ItemName)
