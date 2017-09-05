@@ -55,17 +55,23 @@ function CascadeBadgeQuest:CeruleanCity()
 	elseif not self:isTrainingOver()
 		or not dialogs.billTicketDone.state
 	then
-		return moveToCell(39,0)-- Route 24 Bridge
-	else
-		if not hasItem("Cascade Badge") then
+		-- Route 24 Bridge
+		return moveToCell(39,0)
+
+	elseif not hasItem("Cascade Badge") then
 			return moveToMap("Cerulean Gym")
-		else  -- Gym complete --> Get Ticket Bill
-			if isNpcOnCell(47, 27) then -- RocketGuy --> 2ND
-				return talkToNpcOnCell(47, 27)
-			else -- all done Ticket + Badge (Go to Route 5)
-				return moveToCell(23,50) -- Route 5
-			end
-		end
+
+	elseif isNpcOnCell(42,23) then
+		--talk to the police officer
+		return talkToNpcOnCell(47, 27)
+
+	elseif isNpcOnCell(47, 27) then
+		-- RocketGuy --> 2ND
+		return talkToNpcOnCell(47, 27)
+
+	else
+		-- all done Ticket + Badge (Go to Route 5)
+		return moveToCell(23,50) -- Route 5
 	end
 end
 
