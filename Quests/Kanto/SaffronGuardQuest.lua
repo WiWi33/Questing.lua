@@ -125,10 +125,10 @@ function SaffronGuardQuest:PokecenterVermilion()
 		local swapId = team.getLowestLvlPkm()
 
 		--take item especially leftovers from it, when it is holding one
-		if getPokemonHeldItem(swapId) then return end
+		if getPokemonHeldItem(swapId) then return takeItemFromPokemon(swapId) end
 
-		--check for ditto
-		pkmIdDittoSwap, boxIdDittoSwap = pc.retrieveFirst("Ditto")
+		--check for ditto | has to be in global context - don't add local
+		pkmIdDittoSwap, boxIdDittoSwap = pc.retrieveFirstFromNames("Ditto")
 
 		-- no solution
 		if not pkmIdDittoSwap then

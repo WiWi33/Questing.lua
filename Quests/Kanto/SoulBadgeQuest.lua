@@ -5,14 +5,18 @@
 -- Quest: @Rympex
 
 
-local sys    = require "Libs/syslib"
-local game   = require "Libs/gamelib"
-local Quest  = require "Quests/Quest"
-local Dialog = require "Quests/Dialog"
+local sys           = require "Libs/syslib"
+local game          = require "Libs/gamelib"
+local pc            = require "Libs/pclib"
+local team          = require "Libs/teamlib"
+local SurfTarget    = require "Data/surfTargets"
+local PkmName       = require "Data/pokemonNames"
+local Quest         = require "Quests/Quest"
+local Dialog        = require "Quests/Dialog"
 
-local name		  = 'Sould Badge'
-local description = 'Fuchsia City'
-local level = 40
+local name		    = 'Sould Badge'
+local description   = 'Fuchsia City'
+local level         = 40
 
 local dialogs = {
 	questSurfAccept = Dialog:new({ 
@@ -112,7 +116,115 @@ function SoulBadgeQuest:randomZoneExp()
 end
 
 function SoulBadgeQuest:PokecenterFuchsia()
+    debug = true
+    sys.debug("SurfTests+Switch | SoulBadgeQuest.PokecenterFuchsia values:", true)
+    sys.debug("team: " .. tostring(team))
+
+    --trying to add relaxo:
+    -- -1- strong pkm - high hp, high atk
+    -- -2- hopefully caught during progress: the road blocking one
+    -- -3- could be used as surfer
+    -- -4- apparently very good to beat hannah, to get access to sinnoh
+    local preferredSurferId = 38 --Snorlax:38, Persian: 53, Psyduck: 54
+    --possible snorlax test states
+    local checkStarted, teamTested, pcTestedOrInTeam = 1, 2, 3
+    snorlaxCheckState = snorlaxCheckState or checkStarted
+
+    --if team has no surfer or did not try
+    surfTarget = team.getFirstPkmWithMove("surf")
+
+    sys.debug(">>> team has no surfer or not tested for relaxo: ")
+    sys.debug("surfTarget: " .. tostring(surfTarget))
+    sys.debug("snorlaxCheckState: " .. tostring(snorlaxCheckState))
+    sys.debug("pcTestedOrInTeam: " .. tostring(pcTestedOrInTeam))
+    local noSurferOrNotSnorlaxTested = not surfTarget or snorlaxCheckState ~= pcTestedOrInTeam
+    sys.debug(">>> " .. tostring(noSurferOrNotSnorlaxTested))
+    if noSurferOrNotSnorlaxTested then
+
+        --check if a preferred surfer exists | abused to switch in snorlax as well
+        if snorlaxCheckState == checkStarted then
+            local prefSurferTeamId = team.getFirstPkmWithId(preferredSurferId)
+            if prefSurferTeamId then
+                --if preferred surfer was found, set testing to found
+                surfTarget = prefSurferTeamId
+                snorlaxCheckState = pcTestedOrInTeam
+
+            else
+                --if not, then let pc code, check for one
+                snorlaxCheckState = teamTested
+                pkmIdSurfIter = preferredSurferId
+            end
+
+        --no pkm in team with surf and snorlax was checked already
+        -- --then check if any other could learn surf
+        elseif snorlaxCheckState == teamTested then
+            sys.todo("Take evolutions into account, when testing for surf ability.")
+
+            --retrieves last pkm in team with surf ability
+            -- --implemented that way, because it was done fast :)
+            local ids = team.getPkmIds()
+            sys.debug("ids:" .. tostring(ids~=nil))
+
+            for _, id in pairs(ids) do
+                if SurfTarget[id] then
+                    surfTarget = PkmName[id]
+                    sys.debug("Found pkm(" .. id .. ") that can learn surf in your team.")
+                end
+            end
+        end
+
+        --no pkm in team that has the ability to learn surf | check for surf pkm on pc
+        if not surfTarget then
+            --init iterator | has to be in global context - don't add local
+            pkmIdSurfIter = pkmIdSurfIter or SurfTarget.first()
+            --testing for surftargets on pc
+            local pkmBoxId, boxId, swapTeamId =
+                pc.retrieveFirstFromIds(pkmIdSurfIter, swapTeamId)
+
+            sys.debug("PC | surfIdIterator: " .. tostring(pkmIdSurfIter))
+            sys.debug("PC | pkmBoxId: " .. tostring(pkmBoxId or ""))
+            sys.debug("PC | boxId: " .. tostring(boxId or ""))
+            sys.debug("PC | swapTeamId: " .. tostring(swapTeamId or ""))
+
+            -- boxItem is no solution
+            if not pkmBoxId then
+                local printTmp = pkmIdSurfIter
+
+                --reseting surf iteration from the beginning, if prefferred surfer was checked
+                -- -- do this only the first time
+                if snorlaxCheckState == teamTested and pkmIdSurfIter == preferredSurferId then
+                    pkmIdSurfIter = SurfTarget.first()
+                    snorlaxCheckState = pcTestedOrInTeam
+                    sys.debug("Snorlax State update 2 to 3")
+
+                --check next surf candidates | increases iterater by one for next iteration step
+                else
+                    pkmIdSurfIter = SurfTarget.next(pkmIdSurfIter)
+                end
+
+                -- no solution in pc box | when list end of suitable condidates is reached then
+                if not pkmIdSurfIter then
+                    -- quick fix until pathfinder is added, then catching one wouldn't be much of a hassle
+                    return sys.error("No pokemon in your team or on your computer has the ability to surf. Can't progress Quest")
+                end
+
+                --not the end yet
+                return sys.debug("Switching Surf Target from "..printTmp.." to "..pkmIdSurfIter)
+
+            --search action on current boxItem not finished | don't do other actions | return statement needed
+            elseif not boxId then return sys.debug("Starting PC or Switching Boxes")end
+
+            --solution found and added
+            local msg = "LOG: Found Surfer on BOX: " .. boxId .. "  Slot: " .. pkmBoxId
+            if swapTeamId then  msg = msg .. " | Swapping with pokemon in team N: " .. swapTeamId
+            else                msg = msg .. " | Added to team." end
+            log(msg)
+        end
+    end
+
+    --do basic pokecenter related stuff...
 	self:pokecenter("Fuchsia City")
+    debug = false
 end
 
 function SoulBadgeQuest:Route18()
@@ -124,32 +236,46 @@ function SoulBadgeQuest:Route18()
 end
 
 function SoulBadgeQuest:FuchsiaCity()
+    sys.debug("SoulBadgeQuest.fuchsiaCity() states:", true)
 	if BUY_RODS and hasItem("Old Rod") and not hasItem("Good Rod") and getMoney() >= 15000 then
 		--go to fising guru's map, if you have enough money and want to buy the super rod
+        sys.debug("getting rod")
 		return moveToMap("Fuchsia House 1")
 	elseif game.minTeamLevel() >= 60 then
+        sys.debug("minTeamLevel >= 60, goingt to Route15 Stop House, its need is unknown atm")
 		return moveToMap("Route 15 Stop House")
 	elseif self:needPokecenter() or not game.isTeamFullyHealed() or not self.registeredPokecenter == "Pokecenter Fuchsia" then
+        sys.debug("heading to Pokecenter")
 		return moveToMap("Pokecenter Fuchsia")
 	elseif isNpcOnCell(13,7) then --Item: PP UP
+        sys.debug("getting Item: PP UP")
 		return talkToNpcOnCell(13,7)
 	elseif isNpcOnCell(12,10) then --Item: Ultra Ball
+        sys.debug("getting Item: Ultra Ball")
 		return talkToNpcOnCell(12,10)
 	elseif self:needPokemart_() and not hasItem("HM03 - Surf") then --It buy balls if not have badge, at blackoutleveling no
+        --It buy balls if not have badge, at blackoutleveling no
+        sys.debug("buying balls")
 		return moveToMap("Safari Stop")
 	elseif not self:isTrainingOver() then
+        sys.debug("on its way to training")
 		return moveToMap("Route 15 Stop House")
 	elseif not hasItem("Soul Badge") then
+        sys.debug("heading to gym")
 		return moveToMap("Fuchsia Gym")
 	elseif not self:canEnterSafari() then
+        sys.debug("farming, since safari cannot be entered")
 		return moveToMap("Route 18")	
 	elseif not hasItem("HM03 - Surf") then
 		if not dialogs.questSurfAccept.state then
+            sys.debug("on its way to fight Viktor | to access safari zone")
 			return moveToMap("Fuchsia City Stop House")
 		else
+            sys.debug("heading to safari zone | to retrieve surf")
 			return moveToMap("Safari Stop")
 		end
 	else
+        sys.debug("Quest done, heading to shore")
 		return moveToMap("Fuchsia City Stop House")
 	end
 end
