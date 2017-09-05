@@ -169,49 +169,33 @@ function SoulBadgeQuest:Route18()
 end
 
 function SoulBadgeQuest:FuchsiaCity()
-    sys.debug("SoulBadgeQuest.fuchsiaCity() states:", true)
-	if game.minTeamLevel() >= 60 then
-        sys.debug("minTeamLevel >= 60, goingt to Route15 Stop House, its need is unknown atm")
+    if game.minTeamLevel() >= 60 then
 		return moveToMap("Route 15 Stop House")
 	elseif self:needPokecenter() or not game.isTeamFullyHealed() or not self.registeredPokecenter == "Pokecenter Fuchsia" then
-        sys.debug("heading to Pokecenter")
 		return moveToMap("Pokecenter Fuchsia")
 	elseif isNpcOnCell(13,7) then --Item: PP UP
-        sys.debug("getting Item: PP UP")
 		return talkToNpcOnCell(13,7)
 	elseif isNpcOnCell(12,10) then --Item: Ultra Ball
-        sys.debug("getting Item: Ultra Ball")
 		return talkToNpcOnCell(12,10)
 	elseif self:needPokemart_() and not hasItem("HM03 - Surf") then --It buy balls if not have badge, at blackoutleveling no
-        --It buy balls if not have badge, at blackoutleveling no
-        sys.debug("buying balls")
-        sys.debug("buying balls")
 		return moveToMap("Safari Stop")
 	elseif not self:isTrainingOver() then
-        sys.debug("on its way to training")
 		return moveToMap("Route 15 Stop House")
 	elseif not hasItem("Soul Badge") then
-        sys.debug("heading to gym")
 		return moveToMap("Fuchsia Gym")
 	elseif not self:canEnterSafari() then
-        sys.debug("farming, since safari cannot be entered")
 		return moveToMap("Route 18")	
 	elseif not hasItem("HM03 - Surf") then
 		if not dialogs.questSurfAccept.state then
-            sys.debug("on its way to fight Viktor | to access safari zone")
 			return moveToMap("Fuchsia City Stop House")
 		else
-            sys.debug("heading to safari zone | to retrieve surf")
 			return moveToMap("Safari Stop")
 		end
 	else
-        sys.debug("Quest done, heading to shore")
 		return moveToMap("Fuchsia City Stop House")
 	end
 end
 
-<<<<<<< 749fa0217eccd7db27083335e60540bb364e3760
-=======
 function SoulBadgeQuest:FuchsiaHouse1()
 	--talk to fishing guru
 	if not hasItem("Good Rod") and hasItem("Old Rod") then return talkToNpcOnCell(3,6)
@@ -219,7 +203,6 @@ function SoulBadgeQuest:FuchsiaHouse1()
 	else return moveToMap("Fuchsia City") end
 end
 
->>>>>>> 51b7eb8a679ecc15a1ed80fdea60f12bacd4a69f
 function SoulBadgeQuest:SafariStop()
 	if self:needPokemart_() then
 		self:pokemart_()
