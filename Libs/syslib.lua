@@ -1,18 +1,25 @@
 local sys = {}
 
-function sys.debug(message, title)
-	if debug then
+
+
+function sys.debug(valDescription, value, isTitle)
+	if DEBUG then
+		value = value or "nil"
+		value = tostring(value)
+		local message = valDescription ..": "..value
 		--indent
-		local indent = "\t"
-		if title then indent = "" end
-		--init msg
-		message = message or ""
-		log("DEBUG | " ..indent.. message)
+		sys._printIndent("DEBUG | ", message, isTitle)
 	end
 end
 
+function sys._printIndent(prefix, message, isTitle)
+	local indent = "\t"
+	if isTitle then indent = "" end
+	log("DEBUG | " ..indent.. message)
+end
+
 function sys.todo(message)
-	if todo then
+	if TODO then
 		message = message or ""
 		log("TODO |  " .. message)
 	end
@@ -47,12 +54,12 @@ function sys.removeCharacter(str, character)
 end
 
 function sys.tableHasValue(tab, val)
-    for index, value in ipairs(tab) do
-        if value == val then
-            return true
-        end
-    end
-    return false
+	for index, value in ipairs(tab) do
+		if value == val then
+			return true
+		end
+	end
+	return false
 end
 
 return sys
