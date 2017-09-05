@@ -12,8 +12,8 @@
 local function maxLvl(a, b) return getPokemonLevel(b) >= getPokemonLevel(a) end     --greater **equal** is necesarry to avoid swaping same lvled pkm
 local function minLvl(a, b) return getPokemonLevel(b) < getPokemonLevel(a) end      --lesser is necesarry to avoid swaping same lvled pkm
 --filter
-local function first(t) if #t > 0 then return t[1] end end
-local function last(t) if #t > 0 then return t[#t] end end
+local function first(t) if t and #t > 0 then return t[1] end end
+local function last(t) if t and #t > 0 then return t[#t] end end
 
 
 
