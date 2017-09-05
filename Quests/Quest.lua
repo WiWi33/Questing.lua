@@ -164,8 +164,8 @@ function Quest:needPokemart()
 end
 
 function Quest:needPokecenter()
-	if getTeamSize() == 1 and  getPokemonHealthPercent(1) <= 50 then
-		return true
+	if getTeamSize() == 1 then
+		if getPokemonHealthPercent(1) <= 50 then return true end
 
 	-- else we would spend more time evolving the higher level ones
 	elseif not self:isTrainingOver() then
@@ -219,7 +219,7 @@ function Quest:sortInMemory()
 	if lowestAlivePkmToLvl and 			--if one exists, skips if nothing found
 		starter ~= lowestAlivePkmToLvl	--skips if found target the starter already
 	then
-		sys.debug("getting swapped", lowestAlivePkmToLvl)
+		sys.debug("lowest getting swapped", lowestAlivePkmToLvl)
 		return swapPokemon(lowestAlivePkmToLvl, starter)
 	end
 
@@ -229,6 +229,7 @@ function Quest:sortInMemory()
 	sys.debug("lastPkm", lastPkm)
 	sys.debug("highestAlivePkm", highestAlivePkm)
 	if highestAlivePkm ~= lastPkm then
+		sys.debug("highest getting swapped", lowestAlivePkmToLvl)
 		return swapPokemon(highestAlivePkm, lastPkm)
 	end
 end
