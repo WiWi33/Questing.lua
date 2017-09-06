@@ -61,7 +61,7 @@ function CascadeBadgeQuest:CeruleanCity()
 	elseif not hasItem("Cascade Badge") then
 			return moveToMap("Cerulean Gym")
 
-	elseif isNpcOnCell(42,23) then
+	elseif isNpcOnCell(47, 27) then
 		--talk to the police officer
 		return talkToNpcOnCell(47, 27)
 
