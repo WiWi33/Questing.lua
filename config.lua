@@ -1,3 +1,4 @@
+-- ------Quest related options------
 --generall
 BUY_BIKE = true
 BUY_RODS = true                 -- true: buy rods, false: buy not
@@ -15,6 +16,9 @@ JOTHO_STARTER_ID = nil          -- not implemented yet
 HOENN_STARTER_ID = nil          -- not implemented yet
 
 
---game unrelated
+
+-- ------Bot related options------
+DISABLE_PM = true               -- true: private messaging will be disabled, false: no changes will be done
+
 DEBUG = true                    -- printing debug comments
 TODO = false                    -- printing todo comments
