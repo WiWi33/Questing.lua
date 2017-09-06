@@ -3,15 +3,16 @@
 -- terms of the Do What The Fuck You Want To Public License, Version 2,
 -- as published by Sam Hocevar. See the COPYING file for more details.
 
-local pc = {}
-
+local gen = require("Libs/genlib")
 local sys = require("Libs/syslib")
 local team = require("Libs/teamlib")
 local Pokemon = require("Classes/Pokemon")
 local Set = require("Classes/Set")
 
+local pc = {}
+
 function pc.isValidIndex(boxIndex, pokemonIndex)
-    if getCurrentBoxId() == boxIndex and pokemonIndex <= getCurrentBoxSize() then
+    if getCurrentPCBoxId() == boxIndex and pokemonIndex <= getCurrentBoxSize() then
         return true
     end
     return false
@@ -182,72 +183,102 @@ end
 --- @return :
 --- @type : list {dict} integer, integer, integer
 function pc._retrieveFirst(args)
-    --preparing swap target
-    assert(args.swapId, "pc._retrieveFirst needs a swapId parameter")
-    swapId = args.swapId or team.getLowestLvlPkm()
-    args.swapId = nil
+    -- start search if we didn't do it before | this occurs when switching pcBox as you have to terminate,
+    -- since you couldn't perform a swap in the same cycle
+    if not pc.firstMatch then
+        sys.debug("pc", "_retrieveFirst(arg)", true)
+        --preparing swap target
+        --assert(args.swapId, "pc._retrieveFirst needs a swapId parameter")
+        local swapId = args.swapId or team.getLowestLvlPkm()
+        args.swapId = nil
 
-    --leftovers had to be disabled, so they wouldn't interfere with taking them away
-    leftovers_disabled = true
+        --leftovers had to be disabled, so they wouldn't interfere with taking them away
+        leftovers_disabled = true
 
 
-    -- taking held item, if it has one
-    local heldItem = getPokemonHeldItem(swapId)
-    if heldItem then
-        takeItemFromPokemon(swapId)
-        return pc.result.STILL_WORKING
+        -- taking held item, if it has one
+        local heldItem = getPokemonHeldItem(swapId)
+        if heldItem then
+            takeItemFromPokemon(swapId)
+            return pc.result.STILL_WORKING
+        end
+
+
+        local result = pc._collect()
+        sys.debug("result: " .. tostring(result or "nil"))
     end
 
-
-    local result = pc._collect()
-    sys.debug("result: " .. tostring(result))
-
     --has solution
-    if not result then
-        return pc.result.NO_RESULT
+    if pc.firstMatch or type(result) == "table" then
+        sys.debug("state 1")
 
-    --no solution
-    elseif result then
-        return pc.result.WORKING
+        --appended to pc context, to prevent naming duplicates in user scripts
+        pc.firstMatch = pc.firstMatch or pc._getFirstMatch { result = result, unpack(args) }
+        local pkm, boxId, slotId = pc._split(firstMatch)
 
-    elseif type(result) == table then
-        --read out all move names
-        local boxId, slotId = pc._getFirstMatch { result = result, unpack(args) }
-
-
-
+        local isSwap = getTeamSize() >= 6 --shorter if statement = better readabiliy
+        sys.debug("pkm: "..tostring(pkm))
+        sys.debug("boxId: "..tostring(boxId))
+        sys.debug("slotId: "..tostring(slotId))
+        sys.debug("swapId: "..tostring(swapId))
+        sys.debug("isSwap: "..tostring(isSwap))
 
         -- retrieve the pkm
-        local isSwap = getTeamSize() >= 6 --shorter if statemen: better readabiliy
-        if isSwap then swapPokemonFromPC(boxId, slotId, swapId)
-        else withdrawPokemonFromPC(boxId, slotId)
-        end
+
+        if isSwap then
+            if boxId ~= getCurrentPCBoxId() then
+                openPCBox(boxId)
+                return pc.result.WORKING
+
+            --clear match result, for next query
+            else pc.firstMatch = nil end
+
+            local res = swapPokemonFromPC(boxId, slotId, swapId)
+            log("swapping now: "..tostring(res))
+
+        else
+            log("withdrawing now")
+            withdrawPokemonFromPC(boxId, slotId) end
 
         --active leftovers again
         leftovers_disabled = false
 
-        return boxId, slotId, swapId
+        return pkm, boxId, slotId, swapId
+
+    --no solution
+    elseif not result then
+        sys.debug("state 2")
+        return pc.result.NO_RESULT
+
+    --result is a function: state working
+    elseif result == true then
+        sys.debug("state 3")
+        return pc.result.WORKING
+
     else
         sys.debug("pc._retrieveFirst: unsupported state. pc._collect has neither true, false or table as return value.")
     end
 end
 
-
+function pc._split(item)
+    local pkm, boxId, slotId = item[1], item[2], item[3]
+    return pkm, boxId, slotId
+end
 
 --- @param : itemList
 -- usage example: rename{old="temp.lua", new="temp1.lua"}
 function pc._getFirstMatch(args)
-    return first
+    return gen.first(pc._getMatches(args))
 end
 
 function pc._getMatches(args)
     --retrieve itemList and remove, for the iteration of arg
-    assert(args.result, "pc._retrieveFirstMatch needs a result from pc._collect()")
+    assert(args.result, "pc._getMatches needs a result from pc._collect()")
     local result = args.result
     args.result = nil
 
     --make sure that if level given, lvlComparer exists
-    assert(not args.level or args.level and args.lvlComparer, "pc._retrieveFirstMatch" ..
+    assert(not args.level or args.level and args.lvlComparer, "pc._getMatches" ..
         "don't accepts argument level unless lvlComparer is given as well")
     local lvlComparer = args.lvlComparer
     args.lvlComparer = nil
@@ -266,10 +297,8 @@ function pc._getMatches(args)
 
     local matches = {}
     --iterating all pokemon
-    for _, item in pairs(itemList) do
-        --TODO: Will this work?! :D
-        local pkm, boxId, slotId = item
-
+    for _, item in pairs(result) do
+        local pkm = item[1]
 
         --iterate arguments
         local match = true
@@ -290,7 +319,7 @@ function pc._getMatches(args)
 
             --level | exception handling
             elseif testParam == "level" and lvlComparer then
-                assert(value == integer, "pc._retrieveFirstMatch expects an integer as level value if comparing.")
+                assert(value == integer, "pc._getMatches expects an integer as level value if comparing.")
                 checkResult = lvlComparer(value, pkmValue)
 
             --basic items | table value, meaning: value is in that table
@@ -335,12 +364,6 @@ function pc._getMatches(args)
     --        else  end
     --    end
 end
-
-
---TODO: make a separate lib project and remove the redundances in pathfinder and own workspace
---since many things are copied from there
---filter
-local function first(t) t = t or {} if #t > 0 then return t[1] end end
 
 --transform
 function pc._transform(t, fn, ...)

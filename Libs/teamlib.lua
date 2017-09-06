@@ -6,15 +6,7 @@
 ---when reading comments :)
 -- -------------------------
 
---comparers - normally it makes no difference if >= is used or not,
--- but when using it in methods it becomes mandator to prevent
---
-local function maxLvl(a, b) return getPokemonLevel(b) >= getPokemonLevel(a) end     --greater **equal** is necesarry to avoid swaping same lvled pkm
-local function minLvl(a, b) return getPokemonLevel(b) < getPokemonLevel(a) end      --lesser is necesarry to avoid swaping same lvled pkm
---filter
-local function first(t) t = t or {} if #t > 0 then return t[1] end end
-local function last(t) t = t or {} if #t > 0 then return t[#t] end end
-
+local gen = require("Libs/genlib")
 
 
 team = {}
@@ -28,10 +20,7 @@ function team.hasPkmItem(i, item) return getPokemonHeldItem(i) == item end
 function team.hasPkmAbility(i, abilty) return getPokemonAbility(i) == abilty end
 function team.hasPkmNature(i, nature) return getPokemonNature(i) == nature end
 function team.hasPkmMove(i, move) return hasMove(i, move) end
---generic - at least all pkm properties or even more could be reduced
-function team._equal(i, fn, value) return fn(i)==value end
-local function first(t) t = t or {} if #t > 0 then return t[1] end end
-local function last(t) t = t or {} if #t > 0 then return t[#t] end end
+
 
 
 --- @summary : fetches all pkm under given level cap
@@ -49,7 +38,7 @@ end
 --- @return : team index, of lowest leveled pkm under level_cap | nil, if none exists
 --- @type : integer | nil
 function team.getLowestPkmToLvl(level_cap)
-    return team._compare(team.getPkmToLvl(level_cap), minLvl)
+    return team._compare(team.getPkmToLvl(level_cap), gen.minLvl)
 end
 
 function team.getAlivePkmToLvl(level_cap)
@@ -57,7 +46,7 @@ function team.getAlivePkmToLvl(level_cap)
 end
 
 function team.getLowestAlivePkmToLvl(level_cap)
-    return team._compare(team.getAlivePkmToLvl(level_cap), minLvl)
+    return team._compare(team.getAlivePkmToLvl(level_cap), gen.minLvl)
 end
 
 --- @summary : Searches the lowest leveled pkm under given level_cap
@@ -66,7 +55,7 @@ end
 --- @return : team index, of lowest leveled pkm under level_cap | nil, if none exists
 --- @type : integer | nil
 function team.getLowestUsablePkmToLvl(level_cap)
-    return team._compare(team.getUsablePkmToLvl(), minLvl)
+    return team._compare(team.getUsablePkmToLvl(), gen.minLvl)
 end
 
 --- @summary : fetches all pkm under given level cap, that are able to battle
@@ -99,7 +88,7 @@ function team.getAlivePkm()
 end
 
 function team.getFirstPkmAlive()
-    return first(team.getAlivePkm())
+    return gen.first(team.getAlivePkm())
 end
 
 ---duplicate, but easy to understand
@@ -108,19 +97,19 @@ function team.getStarter()
 end
 
 function team.getLastPkmAlive()
-    return last(team.getAlivePkm())
+    return gen.last(team.getAlivePkm())
 end
 
 function team.getHighestPkmAlive()
-    return team._compare(team.getAlivePkm(), maxLvl)
+    return team._compare(team.getAlivePkm(), gen.maxLvl)
 end
 
 function team.getLowestLvlPkm()
-    return team._compare(team.getPkm(), minLvl)
+    return team._compare(team.getPkm(), gen.minLvl)
 end
 
 function team.getLowestPkmAlive()
-    return team._compare(team.getAlivePkm(), minLvl)
+    return team._compare(team.getAlivePkm(), gen.minLvl)
 end
 
 function team.getPkm()
@@ -149,7 +138,7 @@ end
 --- @return :
 --- @type : integer | nil
 function team.getFirstPkmWithMove(moveName)
-    return first(team.getPkmWithMove(moveName))
+    return gen.first(team.getPkmWithMove(moveName))
 end
 
 function team.getUsablePkmWithMove(moveName)
@@ -157,7 +146,7 @@ function team.getUsablePkmWithMove(moveName)
 end
 
 function team.getFirstUsablePkmWithMove(moveName)
-    return first(team.getUsablePkmWithMove(moveName))
+    return gen.first(team.getUsablePkmWithMove(moveName))
 end
 
 --- @summary :
@@ -169,11 +158,11 @@ end
 
 
 function team.getFirstPkmWithItem(itemName)
-    return first(team.getPkmWithItem(itemName))
+    return gen.first(team.getPkmWithItem(itemName))
 end
 
 function team.getLastPkmWithItem(itemName)
-    return last(team.getPkmWithItem(itemName))
+    return gen.last(team.getPkmWithItem(itemName))
 end
 
 --- @summary : provides couverage for proShine's unused attacks
@@ -182,7 +171,7 @@ function team.getUsablePkm()
 end
 
 function team.getFirstUsablePkm()
-    return first(team.getUsablePkm())
+    return gen.first(team.getUsablePkm())
 end
 
 
@@ -246,11 +235,16 @@ function team._filter(t, fn, ...)
 end
 
 function team.getPkmWithId(pkmId)
-    return team._filter(team.getPkm(), team._equal, getPokemonId, pkmId)
+    return team._filter(team.getPkm(), gen.equal, getPokemonId, pkmId)
 end
 
 function team.getFirstPkmWithId(pkmId)
-    return first(team.getPkmWithId(pkmId))
+    log("-------------------------")
+    log("gen: " .. tostring(gen))
+    log("gen.first: " .. tostring(gen.first))
+    local res = gen.first(team.getPkmWithId(pkmId))
+    log("-------------------------")
+    return res
 end
 
 --function team.getPkmWithName(pkmName)
@@ -258,7 +252,7 @@ end
 --end
 --
 --function team.getFirstPkmWithName(pkmName)
---    return first(team.getPkmWithName(pkmName))
+--    return gen.first(team.getPkmWithName(pkmName))
 --end
 
 ---@summary

@@ -10,7 +10,6 @@ local game          = require "Libs/gamelib"
 local pc            = require "Libs/pclib"
 local team          = require "Libs/teamlib"
 local SurfTarget    = require "Data/surfTargets"
-local PkmName       = require "Data/pokemonNames"
 local Quest         = require "Quests/Quest"
 local Dialog        = require "Quests/Dialog"
 
@@ -133,13 +132,14 @@ function SoulBadgeQuest:PokecenterFuchsia()
     --if team has no surfer or did not try
     surfTarget = team.getFirstPkmWithMove("surf")
 
-    sys.debug(">>> team has no surfer or not tested for relaxo: ")
-    sys.debug("surfTarget: " .. tostring(surfTarget))
-    sys.debug("snorlaxCheckState: " .. tostring(snorlaxCheckState))
-    sys.debug("pcTestedOrInTeam: " .. tostring(pcTestedOrInTeam))
     local noSurferOrNotSnorlaxTested = not surfTarget or snorlaxCheckState ~= pcTestedOrInTeam
-    sys.debug(">>> " .. tostring(noSurferOrNotSnorlaxTested))
     if noSurferOrNotSnorlaxTested then
+		sys.debug(">>> team has no surfer or not tested for relaxo: ")
+		sys.debug("surfTarget: " .. tostring(surfTarget))
+		sys.debug("snorlaxCheckState: " .. tostring(snorlaxCheckState))
+		sys.debug("pcTestedOrInTeam: " .. tostring(pcTestedOrInTeam))
+		sys.debug(">>> " .. tostring(noSurferOrNotSnorlaxTested))
+
 
         --check if a preferred surfer exists | abused to switch in snorlax as well
         if snorlaxCheckState == checkStarted then
@@ -165,9 +165,9 @@ function SoulBadgeQuest:PokecenterFuchsia()
             local ids = team.getPkmIds()
             sys.debug("ids:" .. tostring(ids~=nil))
 
-            for _, id in pairs(ids) do
-                if SurfTarget[id] then
-                    surfTarget = PkmName[id]
+            for teamIndex, id in pairs(ids) do
+				if SurfTarget[id] then
+                    surfTarget = teamIndex
                     sys.debug("Found pkm(" .. id .. ") that can learn surf in your team.")
                 end
             end
@@ -178,7 +178,7 @@ function SoulBadgeQuest:PokecenterFuchsia()
             --init iterator | has to be in global context - don't add local
             pkmIdSurfIter = pkmIdSurfIter or SurfTarget.first()
             --testing for surftargets on pc
-            local pkmBoxId, boxId, swapTeamId =
+            local pkm, pkmBoxId, boxId, swapTeamId =
                 pc.retrieveFirstFromIds(pkmIdSurfIter, swapTeamId)
 
             sys.debug("PC | surfIdIterator: " .. tostring(pkmIdSurfIter))
@@ -215,7 +215,7 @@ function SoulBadgeQuest:PokecenterFuchsia()
             elseif not boxId then return sys.debug("Starting PC or Switching Boxes")end
 
             --solution found and added
-            local msg = "LOG: Found Surfer on BOX: " .. boxId .. "  Slot: " .. pkmBoxId
+            local msg = "LOG: Found Surfer "..pkm.name.." on BOX: " .. boxId .. "  Slot: " .. pkmBoxId
             if swapTeamId then  msg = msg .. " | Swapping with pokemon in team N: " .. swapTeamId
             else                msg = msg .. " | Added to team." end
             log(msg)

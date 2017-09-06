@@ -208,6 +208,7 @@ function SurfTarget.first()
     return SurfTarget.next(0)
 end
 
+--TODO: add to genlib
 function SurfTarget.next(pkmId)
     if not pkmId then return fatal("SurfTarget.next(pkmId) expects an integer as input.") end
     for i = pkmId  + 1, #SurfTarget do
