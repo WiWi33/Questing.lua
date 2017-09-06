@@ -17,7 +17,6 @@ HOENN_STARTER_ID = nil          -- not implemented yet | script will choose star
 
 
 
-
 -- ------Bot related options------
 DISABLE_PM = true               -- true: private messaging will be disabled, false: no changes will be done
 
