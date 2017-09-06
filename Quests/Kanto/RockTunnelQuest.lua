@@ -1,4 +1,4 @@
--- Copyright © 2016 g0ld <g0ld@tuta.io>
+-- Copyright Â© 2016 g0ld <g0ld@tuta.io>
 -- This work is free. You can redistribute it and/or modify it under the
 -- terms of the Do What The Fuck You Want To Public License, Version 2,
 -- as published by Sam Hocevar. See the COPYING file for more details.
@@ -44,7 +44,7 @@ function RockTunnelQuest:Route10()
 		if self:needPokecenter() or not game.isTeamFullyHealed() or not self.registeredPokecenter == "Pokecenter Route 10" then
 			return moveToMap("Pokecenter Route 10")
 		else
-			return moveToMap("Rock Tunnel 1")
+			return moveToMap("Link")
 		end
 	else
 		return moveToMap("Lavender Town")
