@@ -219,6 +219,14 @@ function SurfTarget.next(pkmId)
     end
 end
 
+function SurfTarget.getIds()
+    local values = {}
+    for pkmId, isSurfer in pairs(SurfTarget) do
+        if isSurfer then table.insert(values, pkmId) end
+    end
+    return values
+end
+
 --set dict size as highest value
 local function size(table) return 788 end
 setmetatable(SurfTarget, {__len = size})

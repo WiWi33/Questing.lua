@@ -115,115 +115,140 @@ function SoulBadgeQuest:randomZoneExp()
 end
 
 function SoulBadgeQuest:PokecenterFuchsia()
-    debug = true
-    sys.debug("SurfTests+Switch | SoulBadgeQuest.PokecenterFuchsia values:", true)
-    sys.debug("team: " .. tostring(team))
+--    sys.debug("SurfTests+Switch | SoulBadgeQuest.PokecenterFuchsia values:", true)
+--    sys.debug("team: " .. tostring(team))
+--
+--    --trying to add relaxo:
+--    -- -1- strong pkm - high hp, high atk
+--    -- -2- hopefully caught during progress: the road blocking one
+--    -- -3- could be used as surfer
+--    -- -4- apparently very good to beat hannah, to get access to sinnoh
+--    local preferredSurferId = 38 --Snorlax:38, Persian: 53, Psyduck: 54
+--    --possible snorlax test states
+--    local checkStarted, teamTested, pcTestedOrInTeam = 1, 2, 3
+--    snorlaxCheckState = snorlaxCheckState or checkStarted
+--
+--    --if team has no surfer or did not try
+--    surfTarget = team.getFirstPkmWithMove("surf")
+--
+--    local noSurferOrNotSnorlaxTested = not surfTarget or snorlaxCheckState ~= pcTestedOrInTeam
+--    if noSurferOrNotSnorlaxTested then
+--		sys.debug(">>> team has no surfer or not tested for relaxo: ")
+--		sys.debug("surfTarget: " .. tostring(surfTarget))
+--		sys.debug("snorlaxCheckState: " .. tostring(snorlaxCheckState))
+--		sys.debug("pcTestedOrInTeam: " .. tostring(pcTestedOrInTeam))
+--		sys.debug(">>> " .. tostring(noSurferOrNotSnorlaxTested))
+--
+--
+--        --check if a preferred surfer exists | abused to switch in snorlax as well
+--        if snorlaxCheckState == checkStarted then
+--            local prefSurferTeamId = team.getFirstPkmWithId(preferredSurferId)
+--            if prefSurferTeamId then
+--                --if preferred surfer was found, set testing to found
+--                surfTarget = prefSurferTeamId
+--                snorlaxCheckState = pcTestedOrInTeam
+--
+--            else
+--                --if not, then let pc code, check for one
+--                snorlaxCheckState = teamTested
+--                pkmIdSurfIter = preferredSurferId
+--            end
+--
+--        --no pkm in team with surf and snorlax was checked already
+--        -- --then check if any other could learn surf
+--        elseif snorlaxCheckState == teamTested then
+--            sys.todo("Take evolutions into account, when testing for surf ability.")
+--
+--            --retrieves last pkm in team with surf ability
+--            -- --implemented that way, because it was done fast :)
+--            local ids = team.getPkmIds()
+--            sys.debug("ids:" .. tostring(ids~=nil))
+--
+--            for teamIndex, id in pairs(ids) do
+--				if SurfTarget[id] then
+--                    surfTarget = teamIndex
+--                    sys.debug("Found pkm(" .. id .. ") that can learn surf in your team.")
+--                end
+--            end
+--        end
+--
+--        --no pkm in team that has the ability to learn surf | check for surf pkm on pc
+--        if not surfTarget then
+--            --init iterator | has to be in global context - don't add local
+--            pkmIdSurfIter = pkmIdSurfIter or SurfTarget.first()
+--            --testing for surftargets on pc
+--            local pkm, pkmBoxId, boxId, swapTeamId =
+--                pc.retrieveFirstFromIds(pkmIdSurfIter, swapTeamId)
+--
+--            sys.debug("PC | surfIdIterator: " .. tostring(pkmIdSurfIter))
+--            sys.debug("PC | pkmBoxId: " .. tostring(pkmBoxId or ""))
+--            sys.debug("PC | boxId: " .. tostring(boxId or ""))
+--            sys.debug("PC | swapTeamId: " .. tostring(swapTeamId or ""))
+--
+--            -- boxItem is no solution
+--            if not pkmBoxId then
+--                local printTmp = pkmIdSurfIter
+--
+--                --reseting surf iteration from the beginning, if prefferred surfer was checked
+--                -- -- do this only the first time
+--                if snorlaxCheckState == teamTested and pkmIdSurfIter == preferredSurferId then
+--                    pkmIdSurfIter = SurfTarget.first()
+--                    snorlaxCheckState = pcTestedOrInTeam
+--                    sys.debug("Snorlax State update 2 to 3")
+--
+--                --check next surf candidates | increases iterater by one for next iteration step
+--                else
+--                    pkmIdSurfIter = SurfTarget.next(pkmIdSurfIter)
+--                end
+--
+--                -- no solution in pc box | when list end of suitable condidates is reached then
+--                if not pkmIdSurfIter then
+--                    -- quick fix until pathfinder is added, then catching one wouldn't be much of a hassle
+--                    return sys.error("No pokemon in your team or on your computer has the ability to surf. Can't progress Quest")
+--                end
+--
+--                --not the end yet
+--                return sys.debug("Switching Surf Target from "..printTmp.." to "..pkmIdSurfIter)
+--
+--            --search action on current boxItem not finished | don't do other actions | return statement needed
+--            elseif not boxId then return sys.debug("Starting PC or Switching Boxes")end
 
-    --trying to add relaxo:
-    -- -1- strong pkm - high hp, high atk
-    -- -2- hopefully caught during progress: the road blocking one
-    -- -3- could be used as surfer
-    -- -4- apparently very good to beat hannah, to get access to sinnoh
-    local preferredSurferId = 38 --Snorlax:38, Persian: 53, Psyduck: 54
-    --possible snorlax test states
-    local checkStarted, teamTested, pcTestedOrInTeam = 1, 2, 3
-    snorlaxCheckState = snorlaxCheckState or checkStarted
 
-    --if team has no surfer or did not try
-    surfTarget = team.getFirstPkmWithMove("surf")
+	debug = true
+	if not team.getFirstPkmWithMove("surf") then
+		--    --trying to add relaxo:
+		--    -- -1- strong pkm - high hp, high atk
+		--    -- -2- hopefully caught during progress: the road blocking one
+		--    -- -3- could be used as surfer
+		--    -- -4- apparently very good to beat hannah, to get access to sinnoh
+		local surferIds = SurfTarget.getIds()
+		local result, pkmBoxId, boxId, swapTeamId =
+			pc.retrieveFirstFromIds(surferIds)
 
-    local noSurferOrNotSnorlaxTested = not surfTarget or snorlaxCheckState ~= pcTestedOrInTeam
-    if noSurferOrNotSnorlaxTested then
-		sys.debug(">>> team has no surfer or not tested for relaxo: ")
-		sys.debug("surfTarget: " .. tostring(surfTarget))
-		sys.debug("snorlaxCheckState: " .. tostring(snorlaxCheckState))
-		sys.debug("pcTestedOrInTeam: " .. tostring(pcTestedOrInTeam))
-		sys.debug(">>> " .. tostring(noSurferOrNotSnorlaxTested))
+		sys.debug("result: "..tostring(result))
 
 
-        --check if a preferred surfer exists | abused to switch in snorlax as well
-        if snorlaxCheckState == checkStarted then
-            local prefSurferTeamId = team.getFirstPkmWithId(preferredSurferId)
-            if prefSurferTeamId then
-                --if preferred surfer was found, set testing to found
-                surfTarget = prefSurferTeamId
-                snorlaxCheckState = pcTestedOrInTeam
+		--working 	| then return because of open proShine functions to be resolved
+		--			| if not returned, a "can only execute one function per frame" might occur
+		if result == pc.result.WORKING then return sys.info("Searching PC")
 
-            else
-                --if not, then let pc code, check for one
-                snorlaxCheckState = teamTested
-                pkmIdSurfIter = preferredSurferId
-            end
+		--no solution, terminate bot
+		elseif result == pc.result.NO_RESULT then
+			return sys.error("No pokemon in your team or on your computer has the ability to surf. Can't progress Quest")
+		end
 
-        --no pkm in team with surf and snorlax was checked already
-        -- --then check if any other could learn surf
-        elseif snorlaxCheckState == teamTested then
-            sys.todo("Take evolutions into account, when testing for surf ability.")
 
-            --retrieves last pkm in team with surf ability
-            -- --implemented that way, because it was done fast :)
-            local ids = team.getPkmIds()
-            sys.debug("ids:" .. tostring(ids~=nil))
+		--solution found and added
+		local pkm = result
+		local msg = "Found Surfer "..pkm.name.." on BOX: " .. boxId .. "  Slot: " .. pkmBoxId
+		if swapTeamId then  msg = msg .. " | Swapping with pokemon in team N: " .. swapTeamId
+		else                msg = msg .. " | Added to team." end
+		sys.log(msg)
+    else
 
-            for teamIndex, id in pairs(ids) do
-				if SurfTarget[id] then
-                    surfTarget = teamIndex
-                    sys.debug("Found pkm(" .. id .. ") that can learn surf in your team.")
-                end
-            end
-        end
-
-        --no pkm in team that has the ability to learn surf | check for surf pkm on pc
-        if not surfTarget then
-            --init iterator | has to be in global context - don't add local
-            pkmIdSurfIter = pkmIdSurfIter or SurfTarget.first()
-            --testing for surftargets on pc
-            local pkm, pkmBoxId, boxId, swapTeamId =
-                pc.retrieveFirstFromIds(pkmIdSurfIter, swapTeamId)
-
-            sys.debug("PC | surfIdIterator: " .. tostring(pkmIdSurfIter))
-            sys.debug("PC | pkmBoxId: " .. tostring(pkmBoxId or ""))
-            sys.debug("PC | boxId: " .. tostring(boxId or ""))
-            sys.debug("PC | swapTeamId: " .. tostring(swapTeamId or ""))
-
-            -- boxItem is no solution
-            if not pkmBoxId then
-                local printTmp = pkmIdSurfIter
-
-                --reseting surf iteration from the beginning, if prefferred surfer was checked
-                -- -- do this only the first time
-                if snorlaxCheckState == teamTested and pkmIdSurfIter == preferredSurferId then
-                    pkmIdSurfIter = SurfTarget.first()
-                    snorlaxCheckState = pcTestedOrInTeam
-                    sys.debug("Snorlax State update 2 to 3")
-
-                --check next surf candidates | increases iterater by one for next iteration step
-                else
-                    pkmIdSurfIter = SurfTarget.next(pkmIdSurfIter)
-                end
-
-                -- no solution in pc box | when list end of suitable condidates is reached then
-                if not pkmIdSurfIter then
-                    -- quick fix until pathfinder is added, then catching one wouldn't be much of a hassle
-                    return sys.error("No pokemon in your team or on your computer has the ability to surf. Can't progress Quest")
-                end
-
-                --not the end yet
-                return sys.debug("Switching Surf Target from "..printTmp.." to "..pkmIdSurfIter)
-
-            --search action on current boxItem not finished | don't do other actions | return statement needed
-            elseif not boxId then return sys.debug("Starting PC or Switching Boxes")end
-
-            --solution found and added
-            local msg = "LOG: Found Surfer "..pkm.name.." on BOX: " .. boxId .. "  Slot: " .. pkmBoxId
-            if swapTeamId then  msg = msg .. " | Swapping with pokemon in team N: " .. swapTeamId
-            else                msg = msg .. " | Added to team." end
-            log(msg)
-        end
-    end
-
-    --do basic pokecenter related stuff...
-	self:pokecenter("Fuchsia City")
+		--do basic pokecenter related stuff...
+		self:pokecenter("Fuchsia City")
+	end
     debug = false
 end
 

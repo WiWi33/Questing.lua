@@ -119,44 +119,57 @@ function pc._higher(a, b) return a > b end
 --- @summary :  Retrieves all pkm from the PC. Starts with latest page to potentially add higher level pkm prior
 --- to lower leveled ones
 function pc._collect()
+    sys.debug("pc._collect", true)
+
     --start pc
-    if not isPCOpen() or not isCurrentPCBoxRefreshed() then return usePC() end
+    if not isPCOpen() then return usePC() end
     --wait for loaded pcBox
     --    if  then return log("LOG | Refresing PC Box.") end
 
+    sys.debug("state x156")
+
+    if not isCurrentPCBoxRefreshed() then return sys.debug("refreshed") end
+
+
     --start with last box | to get potentially highest level matching pkm
     --init values
-    boxId = boxId or getPCBoxCount() --needs global context | don't add local
-    pkmMatchList = pkmMatchList or {} --needs global context as well
+    pc.boxId = pc.boxId or getPCBoxCount()  --appended to pc, to avoid namespace interference
+    pc.pkmListCol = pc.pkmListCol or {} -- ... same ...
 
-    --if we passed the last page clean up
-    if boxId < 1 then
+    sys.debug("x156 boxId: "..tostring(pc.boxId))
+    sys.debug("x156 pkmListCol: "..tostring(#pc.pkmListCol))
+
+    --read table if desired is open
+    if pc.boxId == getCurrentPCBoxId() then
+        --check each box item
+        for slotId = 1, getCurrentPCBoxSize() do
+            --read data from slot and add it
+            local pkm = Pokemon:newFromPC(pc.boxId, slotId)
+            table.insert(pc.pkmListCol, { pkm, pc.boxId, slotId })
+        end
+
+        sys.debug("x156 all size: "..#pc.pkmListCol)
+        --indicate next page to be loaded
+        pc.boxId = pc.boxId - 1
+    end
+
+    --if we are on last page clean up
+    if pc.boxId < 1 then
         --temp variable
-        local returnList = pkmMatchList
+        local returnList = pc.pkmListCol
 
         --reset values
-        boxId = getPCBoxCount()
-        pkmMatchList = nil
+        pc.boxId = getPCBoxCount()
+        pc.pkmListCol = nil
 
+        sys.debug("x156 returning all pkm")
         --return collection
         return returnList
     end
 
-    --read table if desired is open
-    if boxId == getCurrentPCBoxId() then
-        --check each box item
-        for slotId = 1, getCurrentPCBoxSize() do
-            --read data from slot and add it
-            local pkm = Pokemon:newFromPC(boxId, slotId)
-            table.insert(pkmMatchList, { pkm, boxId, slotId })
-        end
-
-        --indicate next page to be loaded
-        boxId = boxId - 1
-
-        --open pcbox if current is not open
-    else return openPCBox(boxId)
-    end
+    --open pcbox if current is not open | or end of current is reached
+    sys.debug("openingBox: "..tostring(pc.boxId))
+    return openPCBox(pc.boxId)
 end
 
 
@@ -183,14 +196,19 @@ end
 --- @return :
 --- @type : list {dict} integer, integer, integer
 function pc._retrieveFirst(args)
+    --preparing swap target
+    --assert(args.swapId, "pc._retrieveFirst needs a swapId parameter")
+    local swapId = args.swapId or team.getLowestLvlPkm()
+    args.swapId = nil
+
+
+    sys.debug("pc", "_retrieveFirst(arg)", true)
+    local p = pc.firstMatch or "nil"
+    sys.debug("firstMatch: "..tostring(p))
     -- start search if we didn't do it before | this occurs when switching pcBox as you have to terminate,
     -- since you couldn't perform a swap in the same cycle
     if not pc.firstMatch then
-        sys.debug("pc", "_retrieveFirst(arg)", true)
-        --preparing swap target
-        --assert(args.swapId, "pc._retrieveFirst needs a swapId parameter")
-        local swapId = args.swapId or team.getLowestLvlPkm()
-        args.swapId = nil
+        sys.debug("state 0")
 
         --leftovers had to be disabled, so they wouldn't interfere with taking them away
         leftovers_disabled = true
@@ -200,21 +218,23 @@ function pc._retrieveFirst(args)
         local heldItem = getPokemonHeldItem(swapId)
         if heldItem then
             takeItemFromPokemon(swapId)
-            return pc.result.STILL_WORKING
+            return pc.result.WORKING
         end
 
 
-        local result = pc._collect()
-        sys.debug("result: " .. tostring(result or "nil"))
+        pc.pkmList = pc._collect()
+        local p = pc.pkmList or "nil"
+        sys.debug("pc.pkmList: " .. tostring(p))
     end
 
     --has solution
-    if pc.firstMatch or type(result) == "table" then
+    if pc.firstMatch or type(pc.pkmList) == "table" then
         sys.debug("state 1")
+        if pc.pkmList then sys.debug("#pc.pkmList: " .. tostring(#pc.pkmList)) end
 
         --appended to pc context, to prevent naming duplicates in user scripts
-        pc.firstMatch = pc.firstMatch or pc._getFirstMatch { result = result, unpack(args) }
-        local pkm, boxId, slotId = pc._split(firstMatch)
+        pc.firstMatch = pc.firstMatch or pc._getFirstMatch { pkmList = pc.pkmList, unpack(args) }
+        local pkm, boxId, slotId = pc._split(pc.firstMatch)
 
         local isSwap = getTeamSize() >= 6 --shorter if statement = better readabiliy
         sys.debug("pkm: "..tostring(pkm))
@@ -246,12 +266,12 @@ function pc._retrieveFirst(args)
         return pkm, boxId, slotId, swapId
 
     --no solution
-    elseif not result then
+    elseif not pc.pkmList then
         sys.debug("state 2")
         return pc.result.NO_RESULT
 
     --result is a function: state working
-    elseif result == true then
+    elseif pc.pkmList == true then
         sys.debug("state 3")
         return pc.result.WORKING
 
@@ -273,9 +293,9 @@ end
 
 function pc._getMatches(args)
     --retrieve itemList and remove, for the iteration of arg
-    assert(args.result, "pc._getMatches needs a result from pc._collect()")
-    local result = args.result
-    args.result = nil
+    assert(args.pkmList, "pc._getMatches needs a pkmList from pc._collect()")
+    local pkmList = args.pkmList
+    args.pkmList = nil
 
     --make sure that if level given, lvlComparer exists
     assert(not args.level or args.level and args.lvlComparer, "pc._getMatches" ..
@@ -297,7 +317,7 @@ function pc._getMatches(args)
 
     local matches = {}
     --iterating all pokemon
-    for _, item in pairs(result) do
+    for _, item in pairs(pkmList) do
         local pkm = item[1]
 
         --iterate arguments

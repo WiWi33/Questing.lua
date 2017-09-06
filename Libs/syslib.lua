@@ -18,6 +18,9 @@ function sys.todo(message)
 	end
 end
 
+function sys.info(message) return log("INFO | "..message) end
+function sys.log(message) return log("LOG | "..message) end
+
 function sys.error(functionName, message)
 	return fatal("ERROR | " .. tostring(functionName) .. ": " .. tostring(message))
 end
