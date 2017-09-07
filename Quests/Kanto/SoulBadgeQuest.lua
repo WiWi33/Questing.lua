@@ -183,6 +183,7 @@ function SoulBadgeQuest:FuchsiaCity()
 	elseif self:needPokemart_() and not hasItem("HM03 - Surf") then --It buy balls if not have badge, at blackoutleveling no
         --It buy balls if not have badge, at blackoutleveling no
         sys.debug("buying balls")
+        sys.debug("buying balls")
 		return moveToMap("Safari Stop")
 	elseif not self:isTrainingOver() then
         sys.debug("on its way to training")
