@@ -1,4 +1,4 @@
--- Copyright © 2016 g0ld <g0ld@tuta.io>
+-- Copyright Â© 2016 g0ld <g0ld@tuta.io>
 -- This work is free. You can redistribute it and/or modify it under the
 -- terms of the Do What The Fuck You Want To Public License, Version 2,
 -- as published by Sam Hocevar. See the COPYING file for more details.
@@ -90,7 +90,7 @@ function ExpForSaffronQuest:SeafoamB4F()
 			if self:canUseNurse() then -- if have 1500 money
 				return talkToNpcOnCell(59,13)
 			else
-				if not game.getTotalUsablePokemonCount() > 1 then
+				if not (game.getTotalUsablePokemonCount() > 1) then
 				    fatal("don't have enough Pokemons for farm 1500 money and heal the team")
 				else 
 				    return moveToRectangle(50,10,62,32)
