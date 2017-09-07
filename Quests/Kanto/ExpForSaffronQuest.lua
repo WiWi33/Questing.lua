@@ -95,9 +95,12 @@ function ExpForSaffronQuest:SeafoamB4F()
 			if self:canUseNurse() then
 				--talk to nurse
 				return talkToNpcOnCell(59,13)
-			elseif not game.getTotalUsablePokemonCount() > 1 then
-				--using Escape Rope?
-				log("don't have enough Pokemons for farm 1500 money and heal the team")
+			else
+				if not (game.getTotalUsablePokemonCount() > 1) then
+					--using Escape Rope?
+					sys.log("Not enough Pokemons to farm 1500$ and heal the team.")
+
+				else return moveToRectangle(50,10,62,32) end
 			end
 		end
 
