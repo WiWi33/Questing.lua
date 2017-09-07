@@ -1,3 +1,6 @@
+Last Update: 2017:09:07 11:42
+CommitID: 1
+
 Hi everyone,
 
 **[introduction]**
@@ -13,7 +16,7 @@ My current priority list:
 1. mandatory fixes
 2. some appointed features
 
-For the time being I don't intend add:
+For the time being I don't intend add:s
 
 3. new functionallity
 4. new content
