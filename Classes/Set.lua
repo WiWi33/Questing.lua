@@ -1,29 +1,27 @@
 --@author m1l4
 --inspired from: https://www.lua.org/pil/13.1.html
 
+local gen = require "libs.genlib"
+
 Set = {}
 
-local function setLength(set)
-    local count = 0
-    for k in pairs(set) do
-        count = count + 1
-    end
-    return count
-end
-
 --object methods
-function Set:new (t)
+function Set:new(t)
     local set = {}
     setmetatable(set, self)
 
     self.__index = self
-    self.__len = setLength
+    self.__len = gen.size
+    self.__class = "Set"
 
-    for _, e in ipairs(t) do set[e] = true end
+    log("debug: Set:new: "..tostring(t))
+    for _, e in pairs(t) do set[e] = true end
     return set
 end
 
 function Set:contains(a)
+    log(self:tostring())
+    log("contains: "..tostring(a).."  >>>  "..tostring(self[a]))
     return self[a]
 end
 
@@ -31,7 +29,7 @@ function Set:tostring()
     local s = "{"
     local sep = ""
     for e in pairs(self) do
-        s = s .. sep .. e
+        s = s .. sep .. tostring(e)
         sep = ", "
     end
     return s .. "}"
@@ -42,10 +40,11 @@ function Set:print()
 end
 
 --static methods
-function Set.contains(list, item)
-    local set = Set:new(list)
-    return set.contains(item)
-end
+--function Set.contains(list, item)
+--    log("this should not happen")
+--    local set = Set:new(list)
+--    return set:contains(item)
+--end
 
 function Set.union (a,b)
     local res = Set:new{}
@@ -55,10 +54,15 @@ function Set.union (a,b)
 end
 
 function Set.intersection (a,b)
+    if not a.__class or not a.__class == "Set" then a = Set:new(a) end
+    if not b.__class or not b.__class == "Set" then b = Set:new(b) end
+
     local res = Set:new{}
     for k in pairs(a) do
         res[k] = b[k]
     end
+
+    if #res == 0 then return nil end
     return res
 end
 

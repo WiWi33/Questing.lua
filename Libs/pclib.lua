@@ -97,11 +97,11 @@ function pc.retrieveFirstWithMovesFromRegions(moves, regions, swapId)
 end
 
 function pc.retrieveFirstFromNamesBelowLvl(pkmNames, level, swapId)
-    return pc._retrieveFirst{swapId = swapId, name = pkmNames, level = level, lvlComparer = pc._smaller}
+    return pc._retrieveFirst{swapId = swapId, name = pkmNames, level = level, lvlComparer = gen.smaller}
 end
 
 function pc.retrieveFirstFromNamesAboveLvl(pkmNames, level, swapId)
-    return pc._retrieveFirst{swapId = swapId, name = pkmNames, level = level, lvlComparer = pc._higher}
+    return pc._retrieveFirst{swapId = swapId, name = pkmNames, level = level, lvlComparer = gen.higher}
 end
 
 function pc.retrieveFirstFromNames(pkmNames, swapId)
@@ -109,12 +109,11 @@ function pc.retrieveFirstFromNames(pkmNames, swapId)
 end
 
 function pc.retrieveFirstFromIds(ids, swapId)
+    log("-------ids: "..#ids)
     return pc._retrieveFirst{swapId = swapId, id = ids}
 end
 
---compare functions
-function pc._smaller(a, b) return a < b end
-function pc._higher(a, b) return a > b end
+
 
 --- @summary :  Retrieves all pkm from the PC. Starts with latest page to potentially add higher level pkm prior
 --- to lower leveled ones
@@ -196,13 +195,17 @@ end
 --- @return :
 --- @type : list {dict} integer, integer, integer
 function pc._retrieveFirst(args)
+    sys.debug("pc", "_retrieveFirst(arg)", true)
+    sys.debug("myargs: "..tostring(args))
+    sys.debug("argsRetrieveFirst: "..gen.size(args))
+    sys.debug("ids: "..#args.id)
+
     --preparing swap target
     --assert(args.swapId, "pc._retrieveFirst needs a swapId parameter")
     local swapId = args.swapId or team.getLowestLvlPkm()
     args.swapId = nil
 
 
-    sys.debug("pc", "_retrieveFirst(arg)", true)
     local p = pc.firstMatch or "nil"
     sys.debug("firstMatch: "..tostring(p))
     -- start search if we didn't do it before | this occurs when switching pcBox as you have to terminate,
@@ -231,12 +234,18 @@ function pc._retrieveFirst(args)
     if pc.firstMatch or type(pc.pkmList) == "table" then
         sys.debug("state 1")
         if pc.pkmList then sys.debug("#pc.pkmList: " .. tostring(#pc.pkmList)) end
+        sys.debug("args1: "..gen.size(args))
+        args.pkmList = pc.pkmList --append pc search result
+        sys.debug("args2: "..gen.size(args))
 
-        --appended to pc context, to prevent naming duplicates in user scripts
-        pc.firstMatch = pc.firstMatch or pc._getFirstMatch { pkmList = pc.pkmList, unpack(args) }
+
+        pc.firstMatch = pc.firstMatch or pc._getFirstMatch(args) --appended to pc context, to prevent naming duplicates in user scripts
+        if not pc.firstMatch then return pc.result.NO_RESULT end
+
         local pkm, boxId, slotId = pc._split(pc.firstMatch)
 
         local isSwap = getTeamSize() >= 6 --shorter if statement = better readabiliy
+        sys.debug("pc", "_retrieveFirst(arg)", true)
         sys.debug("pkm: "..tostring(pkm))
         sys.debug("boxId: "..tostring(boxId))
         sys.debug("slotId: "..tostring(slotId))
@@ -288,10 +297,14 @@ end
 --- @param : itemList
 -- usage example: rename{old="temp.lua", new="temp1.lua"}
 function pc._getFirstMatch(args)
+    sys.debug("FirstMatchArgs: "..gen.size(args))
     return gen.first(pc._getMatches(args))
 end
 
 function pc._getMatches(args)
+    sys.debug("pc._getMatches(args): ", true)
+    sys.debug("MatchedArgs: "..gen.size(args))
+
     --retrieve itemList and remove, for the iteration of arg
     assert(args.pkmList, "pc._getMatches needs a pkmList from pc._collect()")
     local pkmList = args.pkmList
@@ -305,15 +318,17 @@ function pc._getMatches(args)
 
 
     --pokemon class vars
-    local posArgs = Set:new {
+    local posArgs = Set:new({
         "ev", "iv", "moves", "name", "nature", "ability",
         "happiness", "region", "trainer", "gender", "totalXp",
         "remainingXP", "uniqueId", "id", "isShiny", "item",
         "level", "totalHP", "percentHP", "currentHP"
-    }
-
-
-
+    })
+    sys.debug("posArgs: "..tostring(#posArgs))
+    sys.debug("vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv")
+    sys.debug("posArgsContainsId: "..tostring(posArgs:contains("id")))
+    sys.debug("pkmList: "..tostring(#pkmList))
+    sys.debug("args: "..gen.size(args))
 
     local matches = {}
     --iterating all pokemon
@@ -322,38 +337,64 @@ function pc._getMatches(args)
 
         --iterate arguments
         local match = true
-        for testParam, value in pairs(args) do
-            local valueSet = Set:new { value }
+        for testParam, testValue in pairs(args) do
+            sys.debug("testParam: "..tostring(testParam))
+            sys.debug("testValue: "..tostring(testValue))
+
+            local testValueSet = Set:new(testValue)
+            sys.debug("testValue is successfully initiated")
+
+            assert(posArgs:contains(testParam), "pc._getMatches: unsupported compare attribute: "..tostring(testParam))
+            sys.debug("testParam is successfully initiated")
+
 
             local pkmValue = pkm[testParam]
             local checkResult = false
 
+            sys.debug("<<<<<<<<<")
+            sys.debug("testParam: "..tostring(testParam))
+            sys.debug("pkmValue: "..tostring(pkmValue))
+
+            sys.debug("testValue"..tostring(testValue))
+            sys.debug("testValueSet"..tostring(testValueSet))
+
+            sys.debug("starting match testing")
             --moves | exception handling
             if testParam == "moves" then
+                sys.debug("state 1")
                 local moveList = pc._transform(pkm.moves, pc._getProperty, "name")
+
                 local moveSet = Set:new { moveList }
 
                 --meaining: size of intersection of moves and pkmMoves has to at least 1
                 -- -- = one item is contained in both lists
-                checkResult = #Set.intersection(valueSet, moveSet) > 0
+                checkResult = #Set.intersection(testValueSet, moveSet) > 0
 
             --level | exception handling
             elseif testParam == "level" and lvlComparer then
-                assert(value == integer, "pc._getMatches expects an integer as level value if comparing.")
-                checkResult = lvlComparer(value, pkmValue)
+                sys.debug("state 2")
+                assert(testValue ~= integer, "pc._getMatches expects an integer as level if no comparison function \"lvlComparer\" is given.")
+                checkResult = lvlComparer(testValue, pkmValue)
 
-            --basic items | table value, meaning: value is in that table
-            elseif type(value) == table then
-                checkResult = valueSet.contains(pkmValue)
+            --basic items | table testValue, meaning: testValue is in that table
+            elseif type(testValue) == "table" then
+                sys.debug("state 3")
+
+                checkResult = testValueSet:contains(pkmValue)
 
             --basic items | check same value
             else
-                checkResult = value == pkmValue
-            end
+                sys.debug("state 4")
+                checkResult = testValue == pkmValue end
+
+
+            sys.debug("checkResult: "..tostring(checkResult))
 
             match = match and checkResult
         end
 
+        sys.debug("match: "..tostring(match))
+        sys.debug("<<<<<<<<<")
         if match then table.insert(matches, item) end
     end
 

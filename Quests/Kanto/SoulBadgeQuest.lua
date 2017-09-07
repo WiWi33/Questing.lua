@@ -12,6 +12,8 @@ local team          = require "Libs/teamlib"
 local SurfTarget    = require "Data/surfTargets"
 local Quest         = require "Quests/Quest"
 local Dialog        = require "Quests/Dialog"
+local Set 			= require("Classes/Set")
+
 
 local name		    = 'Sould Badge'
 local description   = 'Fuchsia City'
@@ -213,30 +215,42 @@ function SoulBadgeQuest:PokecenterFuchsia()
 --            --search action on current boxItem not finished | don't do other actions | return statement needed
 --            elseif not boxId then return sys.debug("Starting PC or Switching Boxes")end
 
-
 	debug = true
-	if not team.getFirstPkmWithMove("surf") then
-		--    --trying to add relaxo:
+	local surferIds = SurfTarget.getIds()
+	local teamIds = team.getPkmIds()
+	local matches = Set.intersection(teamIds, surferIds)
+
+	log("<>match1: "..tostring(matches))
+--	log("<>match2: "..tostring(team.getFirstPkmWithMove("surf")))
+	log("<>match3: "..tostring(not snorlaxTested))
+
+	if (not team.getFirstPkmWithMove("surf") and not matches)
+		or not snorlaxTested
+	then
+		--    --trying to add snorlax - id(38):
 		--    -- -1- strong pkm - high hp, high atk
 		--    -- -2- hopefully caught during progress: the road blocking one
 		--    -- -3- could be used as surfer
 		--    -- -4- apparently very good to beat hannah, to get access to sinnoh
-		local surferIds = SurfTarget.getIds()
+		if not snorlaxTested then surferIds = {38} end
+
+        sys.debug("surferIds: "..#surferIds)
 		local result, pkmBoxId, boxId, swapTeamId =
 			pc.retrieveFirstFromIds(surferIds)
 
 		sys.debug("result: "..tostring(result))
-
 
 		--working 	| then return because of open proShine functions to be resolved
 		--			| if not returned, a "can only execute one function per frame" might occur
 		if result == pc.result.WORKING then return sys.info("Searching PC")
 
 		--no solution, terminate bot
-		elseif result == pc.result.NO_RESULT then
+		elseif  result == pc.result.NO_RESULT then
+
+			if not snorlaxTested then snorlaxTested = true return end
+
 			return sys.error("No pokemon in your team or on your computer has the ability to surf. Can't progress Quest")
 		end
-
 
 		--solution found and added
 		local pkm = result
@@ -244,12 +258,9 @@ function SoulBadgeQuest:PokecenterFuchsia()
 		if swapTeamId then  msg = msg .. " | Swapping with pokemon in team N: " .. swapTeamId
 		else                msg = msg .. " | Added to team." end
 		sys.log(msg)
-    else
 
-		--do basic pokecenter related stuff...
-		self:pokecenter("Fuchsia City")
-	end
-    debug = false
+	--do basic pokecenter related stuff...
+	else self:pokecenter("Fuchsia City") end
 end
 
 function SoulBadgeQuest:Route18()
