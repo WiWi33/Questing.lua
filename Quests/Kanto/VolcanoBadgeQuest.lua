@@ -139,7 +139,7 @@ function VolcanoBadgeQuest:SeafoamB4F()
 			if self:canUseNurse() then -- if have 1500 money
 				return talkToNpcOnCell(59,13)
 			else
-				if not game.getTotalUsablePokemonCount() > 1 then -- Try get 1500money
+				if not (game.getTotalUsablePokemonCount() > 1) then -- Try get 1500money
 				    fatal("don't have enough Pokemons for farm 1500 money and heal the team")
 				else 
 				    return moveToRectangle(50,10,62,32)
