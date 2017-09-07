@@ -14,14 +14,11 @@ function Set:new(t)
     self.__len = gen.size
     self.__class = "Set"
 
-    log("debug: Set:new: "..tostring(t))
     for _, e in pairs(t) do set[e] = true end
     return set
 end
 
 function Set:contains(a)
-    log(self:tostring())
-    log("contains: "..tostring(a).."  >>>  "..tostring(self[a]))
     return self[a]
 end
 

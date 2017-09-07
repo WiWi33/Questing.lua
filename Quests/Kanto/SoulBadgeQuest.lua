@@ -171,11 +171,7 @@ end
 
 function SoulBadgeQuest:FuchsiaCity()
     sys.debug("SoulBadgeQuest.fuchsiaCity() states:", true)
-	if BUY_RODS and hasItem("Old Rod") and not hasItem("Good Rod") and getMoney() >= 15000 then
-		--go to fising guru's map, if you have enough money and want to buy the super rod
-        sys.debug("getting rod")
-		return moveToMap("Fuchsia House 1")
-	elseif game.minTeamLevel() >= 60 then
+	if game.minTeamLevel() >= 60 then
         sys.debug("minTeamLevel >= 60, goingt to Route15 Stop House, its need is unknown atm")
 		return moveToMap("Route 15 Stop House")
 	elseif self:needPokecenter() or not game.isTeamFullyHealed() or not self.registeredPokecenter == "Pokecenter Fuchsia" then
@@ -213,13 +209,6 @@ function SoulBadgeQuest:FuchsiaCity()
         sys.debug("Quest done, heading to shore")
 		return moveToMap("Fuchsia City Stop House")
 	end
-end
-
-function SoulBadgeQuest:FuchsiaHouse1()
-	--talk to fishing guru
-	if hasItem("Old Rod") and not hasItem("Good Rod") then return talkToNpcOnCell(3,6)
-	--leave when rod obtained
-	else return moveToMap("Fuchsia City") end
 end
 
 function SoulBadgeQuest:SafariStop()
