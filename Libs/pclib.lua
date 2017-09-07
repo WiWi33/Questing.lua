@@ -118,36 +118,28 @@ end
 --- @summary :  Retrieves all pkm from the PC. Starts with latest page to potentially add higher level pkm prior
 --- to lower leveled ones
 function pc._collect()
-    sys.debug("pc._collect", true)
-
     --start pc
     if not isPCOpen() then return usePC() end
-    --wait for loaded pcBox
-    --    if  then return log("LOG | Refresing PC Box.") end
 
-    sys.debug("state x156")
-
+    --refresing
     if not isCurrentPCBoxRefreshed() then return sys.debug("refreshed") end
-
 
     --start with last box | to get potentially highest level matching pkm
     --init values
     pc.boxId = pc.boxId or getPCBoxCount()  --appended to pc, to avoid namespace interference
     pc.pkmListCol = pc.pkmListCol or {} -- ... same ...
 
-    sys.debug("x156 boxId: "..tostring(pc.boxId))
-    sys.debug("x156 pkmListCol: "..tostring(#pc.pkmListCol))
-
     --read table if desired is open
     if pc.boxId == getCurrentPCBoxId() then
+
         --check each box item
         for slotId = 1, getCurrentPCBoxSize() do
+
             --read data from slot and add it
             local pkm = Pokemon:newFromPC(pc.boxId, slotId)
             table.insert(pc.pkmListCol, { pkm, pc.boxId, slotId })
         end
 
-        sys.debug("x156 all size: "..#pc.pkmListCol)
         --indicate next page to be loaded
         pc.boxId = pc.boxId - 1
     end
@@ -161,13 +153,11 @@ function pc._collect()
         pc.boxId = getPCBoxCount()
         pc.pkmListCol = nil
 
-        sys.debug("x156 returning all pkm")
         --return collection
         return returnList
     end
 
     --open pcbox if current is not open | or end of current is reached
-    sys.debug("openingBox: "..tostring(pc.boxId))
     return openPCBox(pc.boxId)
 end
 
@@ -195,27 +185,18 @@ end
 --- @return :
 --- @type : list {dict} integer, integer, integer
 function pc._retrieveFirst(args)
-    sys.debug("pc", "_retrieveFirst(arg)", true)
-    sys.debug("myargs: "..tostring(args))
-    sys.debug("argsRetrieveFirst: "..gen.size(args))
-    sys.debug("ids: "..#args.id)
-
     --preparing swap target
     --assert(args.swapId, "pc._retrieveFirst needs a swapId parameter")
     local swapId = args.swapId or team.getLowestLvlPkm()
     args.swapId = nil
 
-
-    local p = pc.firstMatch or "nil"
-    sys.debug("firstMatch: "..tostring(p))
     -- start search if we didn't do it before | this occurs when switching pcBox as you have to terminate,
-    -- since you couldn't perform a swap in the same cycle
+    -- since you couldn't perform a swap in the same cycle or it would create a "two actions in one frame
+    -- exception"
     if not pc.firstMatch then
-        sys.debug("state 0")
 
         --leftovers had to be disabled, so they wouldn't interfere with taking them away
         leftovers_disabled = true
-
 
         -- taking held item, if it has one
         local heldItem = getPokemonHeldItem(swapId)
@@ -224,68 +205,49 @@ function pc._retrieveFirst(args)
             return pc.result.WORKING
         end
 
-
         pc.pkmList = pc._collect()
-        local p = pc.pkmList or "nil"
-        sys.debug("pc.pkmList: " .. tostring(p))
     end
 
     --has solution
     if pc.firstMatch or type(pc.pkmList) == "table" then
-        sys.debug("state 1")
-        if pc.pkmList then sys.debug("#pc.pkmList: " .. tostring(#pc.pkmList)) end
-        sys.debug("args1: "..gen.size(args))
-        args.pkmList = pc.pkmList --append pc search result
-        sys.debug("args2: "..gen.size(args))
-
-
+        --append pc search result
+        args.pkmList = pc.pkmList
         pc.firstMatch = pc.firstMatch or pc._getFirstMatch(args) --appended to pc context, to prevent naming duplicates in user scripts
+
+        --no result, if no pkm matches
         if not pc.firstMatch then return pc.result.NO_RESULT end
 
+        --else initate transfer process
         local pkm, boxId, slotId = pc._split(pc.firstMatch)
 
-        local isSwap = getTeamSize() >= 6 --shorter if statement = better readabiliy
-        sys.debug("pc", "_retrieveFirst(arg)", true)
-        sys.debug("pkm: "..tostring(pkm))
-        sys.debug("boxId: "..tostring(boxId))
-        sys.debug("slotId: "..tostring(slotId))
-        sys.debug("swapId: "..tostring(swapId))
-        sys.debug("isSwap: "..tostring(isSwap))
+        -- open correct box for transfer
+        if boxId ~= getCurrentPCBoxId() then
+            openPCBox(boxId)
+            return pc.result.WORKING
+        end
 
-        -- retrieve the pkm
 
-        if isSwap then
-            if boxId ~= getCurrentPCBoxId() then
-                openPCBox(boxId)
-                return pc.result.WORKING
+        --retrieve match
+        local isSwap = getTeamSize() >= 6
+        if isSwap then  swapPokemonFromPC(boxId, slotId, swapId)
+        else            withdrawPokemonFromPC(boxId, slotId) end
 
-            --clear match result, for next query
-            else pc.firstMatch = nil end
-
-            local res = swapPokemonFromPC(boxId, slotId, swapId)
-            log("swapping now: "..tostring(res))
-
-        else
-            log("withdrawing now")
-            withdrawPokemonFromPC(boxId, slotId) end
-
-        --active leftovers again
-        leftovers_disabled = false
+        --cleanup
+        leftovers_disabled = false  --active leftovers again
+        pc.firstMatch = nil         --clear match result, for next query
 
         return pkm, boxId, slotId, swapId
 
     --no solution
     elseif not pc.pkmList then
-        sys.debug("state 2")
         return pc.result.NO_RESULT
 
     --result is a function: state working
     elseif pc.pkmList == true then
-        sys.debug("state 3")
         return pc.result.WORKING
 
-    else
-        sys.debug("pc._retrieveFirst: unsupported state. pc._collect has neither true, false or table as return value.")
+    else sys.debug("pc._retrieveFirst: unsupported state. pc._collect "..
+        "has neither true, false or table as return value.")
     end
 end
 
@@ -302,9 +264,6 @@ function pc._getFirstMatch(args)
 end
 
 function pc._getMatches(args)
-    sys.debug("pc._getMatches(args): ", true)
-    sys.debug("MatchedArgs: "..gen.size(args))
-
     --retrieve itemList and remove, for the iteration of arg
     assert(args.pkmList, "pc._getMatches needs a pkmList from pc._collect()")
     local pkmList = args.pkmList
@@ -324,106 +283,50 @@ function pc._getMatches(args)
         "remainingXP", "uniqueId", "id", "isShiny", "item",
         "level", "totalHP", "percentHP", "currentHP"
     })
-    sys.debug("posArgs: "..tostring(#posArgs))
-    sys.debug("vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv")
-    sys.debug("posArgsContainsId: "..tostring(posArgs:contains("id")))
-    sys.debug("pkmList: "..tostring(#pkmList))
-    sys.debug("args: "..gen.size(args))
 
-    local matches = {}
     --iterating all pokemon
+    local matches = {}
     for _, item in pairs(pkmList) do
         local pkm = item[1]
 
         --iterate arguments
         local match = true
         for testParam, testValue in pairs(args) do
-            sys.debug("testParam: "..tostring(testParam))
-            sys.debug("testValue: "..tostring(testValue))
+            assert(posArgs:contains(testParam), "pc._getMatches: unsupported compare attribute: "..tostring(testParam))
 
             local testValueSet = Set:new(testValue)
-            sys.debug("testValue is successfully initiated")
-
-            assert(posArgs:contains(testParam), "pc._getMatches: unsupported compare attribute: "..tostring(testParam))
-            sys.debug("testParam is successfully initiated")
-
-
             local pkmValue = pkm[testParam]
             local checkResult = false
 
-            sys.debug("<<<<<<<<<")
-            sys.debug("testParam: "..tostring(testParam))
-            sys.debug("pkmValue: "..tostring(pkmValue))
-
-            sys.debug("testValue"..tostring(testValue))
-            sys.debug("testValueSet"..tostring(testValueSet))
-
-            sys.debug("starting match testing")
             --moves | exception handling
             if testParam == "moves" then
-                sys.debug("state 1")
                 local moveList = pc._transform(pkm.moves, pc._getProperty, "name")
-
-                local moveSet = Set:new { moveList }
 
                 --meaining: size of intersection of moves and pkmMoves has to at least 1
                 -- -- = one item is contained in both lists
-                checkResult = #Set.intersection(testValueSet, moveSet) > 0
+                checkResult = Set.intersection(testValueSet, moveList)
 
             --level | exception handling
             elseif testParam == "level" and lvlComparer then
-                sys.debug("state 2")
                 assert(testValue ~= integer, "pc._getMatches expects an integer as level if no comparison function \"lvlComparer\" is given.")
                 checkResult = lvlComparer(testValue, pkmValue)
 
             --basic items | table testValue, meaning: testValue is in that table
             elseif type(testValue) == "table" then
-                sys.debug("state 3")
-
                 checkResult = testValueSet:contains(pkmValue)
 
             --basic items | check same value
-            else
-                sys.debug("state 4")
-                checkResult = testValue == pkmValue end
+            else checkResult = testValue == pkmValue end
 
-
-            sys.debug("checkResult: "..tostring(checkResult))
-
+            --binary and, all arguments have to match
             match = match and checkResult
         end
 
-        sys.debug("match: "..tostring(match))
-        sys.debug("<<<<<<<<<")
+
         if match then table.insert(matches, item) end
     end
 
     return matches
-
-    --    local pkmMoves = {}
-    --    for _, move in pairs(boxPkm.moves) do table.insert(pkmMoves, move.name) end
-    --
-    --    --check for match found
-    --    --   either not tested  or  matching values
-    --    if      (not pkmNames   or Set.contains(pkmNames, boxPkm.name))                     --name
-    --        and (not ids        or Set.contains(ids, boxPkm.id))                            --id
-    --        and (not regions    or Set.contains(regions, boxPkm.region))                    --region
-    --        --meaining: size of intersection of moves and pkmMoves has to at least 1
-    --        -- -- = one item is contained in both lists
-    --        and (not moves      or #Set.intersection(Set:new(moves), Set:new(pkmMoves)>0))   --moveName
-    --        --has to be handled differently, since it'
-    --        and (not level        or lvlComparer(level, boxPkm.level))                                 --level higher, lower, same as
-    --
-    --    then
-    --        log("----------------------a match")
-    --        --reset for future pc calls
-    --        boxId = getPCBoxCount()
-    --
-    --        --return first match | to reduce pc load (not sure if those are db oriented)
-    --        if returnFirstMatch then return boxPkm, boxId, slotId
-    --            --collect all matches otherwise
-    --        else  end
-    --    end
 end
 
 --transform

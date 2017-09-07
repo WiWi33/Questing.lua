@@ -39,13 +39,6 @@ function Set:print()
     print(self:tostring())
 end
 
---static methods
---function Set.contains(list, item)
---    log("this should not happen")
---    local set = Set:new(list)
---    return set:contains(item)
---end
-
 function Set.union (a,b)
     local res = Set:new{}
     for k in pairs(a) do res[k] = true end
