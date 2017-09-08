@@ -1,6 +1,7 @@
-Last Update: 2017:09:08 4:34 CEST  (UTC +1)
-
-- CommitID: 1
+- Last Update: 
+    - 2017 09 08
+    - 15:51 CEST  (UTC +1)
+- CommitID: 2
 - Branch: BikeQuest
 - Features:
     - BikeQuest
