@@ -61,21 +61,12 @@ end
 
 
 function MarshBadgeQuest:Route8StopHouse()
---  sys.debug("MarshBadgeQuest", "Route8StopHouse()", true)
---  sys.debug("item marsh badge", hasItem("Marsh Badge"))
---  sys.debug("pokecenter", self:needPokecenter())
---  sys.debug("training", self:isTrainingOver())
-
   if not hasItem("Marsh Badge")
       and (self:needPokecenter() or self:isTrainingOver())
 
   --updated link name
-  then
---    sys.debug("state", 2)
-    return moveToMap("Link")
-  end
+  then return moveToMap("Link") end
 
---  sys.debug("state", 2)
   return moveToMap("Route 8")
 end
 

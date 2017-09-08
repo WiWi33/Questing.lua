@@ -1,5 +1,22 @@
-Last Update: 2017:09:08 2:49 CEST  (UTC +1)
-CommitID: 4
+Last Update: 2017:09:08 4:34 CEST  (UTC +1)
+
+- Branch: BikeQuest
+- CommitID: 1
+- Branch-Features:
+    - BikeQuest
+        - catching Ditto
+        - retrieving Ditto from PC
+        - retrieving Bike Voucher
+        - all steps after are as before | **need testing** since probably a few map link names and/or at least 
+        the cerulean bike shop map have been changed
+    - automated Surfer retrieve from PC
+        - SoulBadgeQuest
+        - ToCinnabatQuest
+    - Rods should have been working before, slight changes
+    - Merged Bugfixes from Master
+    - Added config entries
+    - Deactivated AutoEvolving for faster EXP | **need testing** wheater this should be removed again, gym levels need
+    adjustment or if further changes are unnecessary
 
 Hi everyone,
 
