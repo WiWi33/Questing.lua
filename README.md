@@ -1,22 +1,25 @@
 Last Update: 2017:09:08 4:34 CEST  (UTC +1)
 
-- Branch: BikeQuest
 - CommitID: 1
-- Branch-Features:
+- Branch: BikeQuest
+- Features:
     - BikeQuest
         - catching Ditto
         - retrieving Ditto from PC
         - retrieving Bike Voucher
-        - all steps after are as before | **need testing** since probably a few map link names and/or at least 
-        the cerulean bike shop map have been changed
+        - all steps after are as before | **need testing** if relevant:
+            - map link names got updated
+            - maps have been changed (npc's at different positions etc)
     - automated Surfer retrieve from PC
         - SoulBadgeQuest
-        - ToCinnabatQuest
+        - ToCinnabarQuest
     - Rods should have been working before, slight changes
     - Merged Bugfixes from Master
-    - Added config entries
-    - Deactivated AutoEvolving for faster EXP | **need testing** wheater this should be removed again, gym levels need
-    adjustment or if further changes are unnecessary
+    - New config values in *config.lua* file
+    - Deactivated AutoEvolving for faster EXP | **need testing** wheater:
+        - auto evolving should be enabled again (maybe not strong enough to beat gyms)
+        - gym levels need adjustment 
+        - further changes are unnecessary
 
 Hi everyone,
 
