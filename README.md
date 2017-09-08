@@ -1,8 +1,12 @@
 - Last Update: 
     - 2017 09 08
-    - 13:33 CEST  (UTC +1)
-- CommitID: 5
+    - 13:59 CEST  (UTC +1)
+- CommitID: 6
 - Branch: Master
+- Characteristics:
+    - most recent bugfixes
+    - most stable version
+    - no features of branches
 
 Hi everyone,
 
