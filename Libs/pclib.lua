@@ -258,7 +258,6 @@ end
 --- @param : itemList
 -- usage example: rename{old="temp.lua", new="temp1.lua"}
 function pc._getFirstMatch(args)
-    sys.debug("FirstMatchArgs: "..gen.size(args))
     return gen.first(pc._getMatches(args))
 end
 

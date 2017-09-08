@@ -118,13 +118,11 @@ function SaffronGuardQuest:isDittoSwapNeeded()
 end
 
 function SaffronGuardQuest:isReSwapNeeded()
-	return swapBoxId and swapSlotId
+	return swapBoxId and swapSlotId	-- parameters for swap are set
+		and hasItem("Bike Voucher") -- and preQuest "Voucher" is done
 end
 
 function SaffronGuardQuest:PokecenterVermilion()
-	sys.debug("dittoSwapNeeded", self:isDittoSwapNeeded())
-	sys.debug("reSwapNeeded", self:isReSwapNeeded())
-
 	if self:isDittoSwapNeeded() then
 		sys.debug("entered regardless", "yes")
 
@@ -137,7 +135,7 @@ function SaffronGuardQuest:PokecenterVermilion()
 		--			| if not returned, a "can only execute one function per frame" might occur
 		if result == pc.result.WORKING then return sys.info("Searching PC")
 
-			--no solution, terminate bot
+		--no solution, terminate bot
 		elseif  result == pc.result.NO_RESULT then
 			-- quick fix until pathfinder is added, then moving to route 8 wouldn't
 			-- such a hassle to implement
@@ -157,7 +155,7 @@ function SaffronGuardQuest:PokecenterVermilion()
 		local msg = "Found "..pkm.name.." on BOX: " .. pkmBoxId .. "  Slot: " .. slotId
 		if swapTeamId then  msg = msg .. " | Swapping with pokemon in team N: " .. swapTeamId
 		else                msg = msg .. " | Added to team." end
-		sys.log(msg)
+		return sys.log(msg)
 
 	--getting the pokemon, we needed to put down because of ditto
 	elseif self:isReSwapNeeded() then
