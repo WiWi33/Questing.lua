@@ -162,11 +162,10 @@ function SoulBadgeQuest:PokecenterFuchsia()
 end
 
 function SoulBadgeQuest:Route18()
-	if not self:canEnterSafari() then
+	if self:canEnterSafari() or self:needPokecenter() then
 		return moveToMap("Fuchsia City")
-	else
-		return moveToGrass()
-	end
+
+	else return moveToGrass() end
 end
 
 function SoulBadgeQuest:FuchsiaCity()
