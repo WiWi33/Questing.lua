@@ -137,7 +137,7 @@ function Quest:useBike()
 	if hasItem("Bicycle") then
 		if isOutside() and not isMounted() and not isSurfing() and getMapName() ~= "Cianwood City" and getMapName() ~= "Route 41" then
 			useItem("Bicycle")
-			log("Using: Bicycle")
+			sys.log("Using: Bicycle")
 			return true --Mounting the Bike
 		else
 			return false
@@ -214,25 +214,14 @@ function Quest:sortInMemory()
 	--setting lowest level pkm as starter
 	local starter = team.getStarter()
 	local lowestAlivePkmToLvl = team.getLowestAlivePkmToLvl(self.level)
-	sys.debug("Sort Values", "quest.sortInMemory()", true)
-	sys.debug("starter", starter)
-	sys.debug("lowestAlivePkmToLvl", lowestAlivePkmToLvl)
 	if lowestAlivePkmToLvl and 			--if one exists, skips if nothing found
 		starter ~= lowestAlivePkmToLvl	--skips if found target the starter already
-	then
-		sys.debug("lowest getting swapped", lowestAlivePkmToLvl)
-		return swapPokemon(lowestAlivePkmToLvl, starter)
-	end
+	then return swapPokemon(lowestAlivePkmToLvl, starter) end
 
 	--setting highest level pkm, as last defense wall
-	local highestAlivePkm = team.getHighestPkmAlive()
+	local highestAlivePkm = team.getHighestPkmAlive() --has to be found or you would have feinted
 	local lastPkm = team.getLastPkmAlive()
-	sys.debug("lastPkm", lastPkm)
-	sys.debug("highestAlivePkm", highestAlivePkm)
-	if highestAlivePkm ~= lastPkm then
-		sys.debug("highest getting swapped", lowestAlivePkmToLvl)
-		return swapPokemon(highestAlivePkm, lastPkm)
-	end
+	if highestAlivePkm ~= lastPkm then return swapPokemon(highestAlivePkm, lastPkm) end
 end
 
 
@@ -383,7 +372,7 @@ function Quest:battleMessage(message)
 
 	elseif self.pokemon ~= nil and self.forceCaught ~= nil then
 		if sys.stringContains(message, "caught") and sys.stringContains(message, self.pokemon) then --Force caught the specified pokemon on quest 1time
-			log("Selected Pokemon: " .. self.pokemon .. " is Caught")
+			sys.log("Selected Pokemon: " .. self.pokemon .. " is Caught")
 			self.forceCaught = true
 			return true
 		end
@@ -391,7 +380,7 @@ function Quest:battleMessage(message)
 	elseif sys.stringContains(message, "black out") and self.level < 100 and self:isTrainingOver() then
 		self.level = math.max(team:getTeamLevel(), self.level) + 1
 		self:startTraining()
-		log("Increasing " .. self.name .. " quest level to " .. self.level .. ". Training time!")
+		sys.log("Increasing " .. self.name .. " quest level to " .. self.level .. ". Training time!")
 		return true
 
 	end
@@ -423,7 +412,7 @@ function Quest:chooseForgetMove(moveName, pokemonIndex) -- Calc the WrostAbility
 			end
 		end
 	end
-	log("[Learning Move: " .. moveName .. "  -->  Forget Move: " .. ForgetMoveName .. "]")
+	sys.log("[Learning Move: " .. moveName .. "  -->  Forget Move: " .. ForgetMoveName .. "]")
 	return ForgetMoveName
 end
 

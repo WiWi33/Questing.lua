@@ -71,20 +71,23 @@ function MarshBadgeQuest:Route8StopHouse()
 end
 
 function MarshBadgeQuest:isBuyingBike()
+  sys.debug("BUY_BIKE: ", BUY_BIKE)
+  sys.debug("Voucer: ", hasItem("Bike Voucher"))
+  sys.debug("money: ", getMoney() >=60000)
   return BUY_BIKE and hasItem("Bike Voucher") and getMoney() >=60000
 end
 
 function MarshBadgeQuest:Route5StopHouse()
   --when bying a bike move towards Cerulean City
-  if self.isBuyingBike() then return moveToMap("Route 5") end
+  if self:isBuyingBike() then return moveToMap("Route 5") end
   --coming back
-  return moveToMap("Saffron City")
+  return moveToMap("Link")
 end
 
 function MarshBadgeQuest:SaffronCity()
   if self:needPokecenter() or not game.isTeamFullyHealed() or not self.registeredPokecenter == "Pokecenter Saffron" then
     return moveToMap("Pokecenter Saffron")
-  elseif self.isBuyingBike() then
+  elseif self:isBuyingBike() then
     return moveToMap("Route 5 Stop House")
   elseif not self:isTrainingOver() then
     return moveToMap("Route 8 Stop House")

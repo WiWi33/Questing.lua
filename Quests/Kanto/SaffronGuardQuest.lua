@@ -90,7 +90,7 @@ function SaffronGuardQuest:VermilionCity()
 	if self:needPokemart() and getMoney() > 200 then
 		return moveToMap("Vermilion Pokemart")
 
-	elseif self:isDittoSwapNeeded() then
+	elseif self:isDittoSwapNeeded() or self:isReSwapNeeded() then
 		return moveToMap("Pokecenter Vermilion")
 
 	--has ditto, get Bike Voucher
@@ -122,7 +122,12 @@ function SaffronGuardQuest:isReSwapNeeded()
 end
 
 function SaffronGuardQuest:PokecenterVermilion()
-	if not self:isDittoSwapNeeded() then
+	sys.debug("dittoSwapNeeded", self:isDittoSwapNeeded())
+	sys.debug("reSwapNeeded", self:isReSwapNeeded())
+
+	if self:isDittoSwapNeeded() then
+		sys.debug("entered regardless", "yes")
+
 		local isDittoSwaped = getTeamSize() >= 6
 
 		local dittoId = {132 }
@@ -169,7 +174,7 @@ function SaffronGuardQuest:PokecenterVermilion()
 		return
 
 	--do basic pokecenter related stuff...
-	else self:pokecenter("Fuchsia City") end
+	else self:pokecenter("Vermilion City") end
 end
 
 function SaffronGuardQuest:VermilionHouse2Bottom()
