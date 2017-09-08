@@ -121,7 +121,7 @@ function ToCinnabarQuest:PokecenterFuchsia()
 
 	--1. check for surfer
 	if not self:hasSurfer() then
-		local result, pkmBoxId, boxId, swapTeamId =
+		local result, pkmBoxId, slotId, swapTeamId =
 		pc.retrieveFirstFromIds(surferIds)
 
 		--working 	| then return because of open proShine functions to be resolved
@@ -135,7 +135,7 @@ function ToCinnabarQuest:PokecenterFuchsia()
 
 		--solution found and added
 		local pkm = result
-		local msg = "Found Surfer "..pkm.name.." on BOX: " .. boxId .. "  Slot: " .. pkmBoxId
+		local msg = "Found Surfer "..pkm.name.." on BOX: " .. pkmBoxId .. "  Slot: " .. slotId
 		if swapTeamId then  msg = msg .. " | Swapping with pokemon in team N: " .. swapTeamId
 		else                msg = msg .. " | Added to team." end
 		sys.log(msg)

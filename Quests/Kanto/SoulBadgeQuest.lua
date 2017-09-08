@@ -134,7 +134,7 @@ function SoulBadgeQuest:PokecenterFuchsia()
 		--    -- -4- apparently very good to beat hannah, to get access to sinnoh
 		if not snorlaxTested then surferIds = {38} end
 
-		local result, pkmBoxId, boxId, swapTeamId =
+		local result, pkmBoxId, slotId, swapTeamId =
 			pc.retrieveFirstFromIds(surferIds)
 
 		--working 	| then return because of open proShine functions to be resolved
@@ -152,7 +152,7 @@ function SoulBadgeQuest:PokecenterFuchsia()
 
 		--solution found and added
 		local pkm = result
-		local msg = "Found Surfer "..pkm.name.." on BOX: " .. boxId .. "  Slot: " .. pkmBoxId
+		local msg = "Found Surfer "..pkm.name.." on BOX: " .. pkmBoxId .. "  Slot: " .. slotId
 		if swapTeamId then  msg = msg .. " | Swapping with pokemon in team N: " .. swapTeamId
 		else                msg = msg .. " | Added to team." end
 		sys.log(msg)
