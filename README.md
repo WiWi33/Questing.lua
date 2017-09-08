@@ -1,5 +1,8 @@
-Last Update: 2017:09:08 2:49 CEST  (UTC +1)
-CommitID: 4
+- Last Update: 
+    - 2017 09 08
+    - 13:33 CEST  (UTC +1)
+- CommitID: 5
+- Branch: Master
 
 Hi everyone,
 
