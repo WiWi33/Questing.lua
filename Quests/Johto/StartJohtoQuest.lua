@@ -112,18 +112,8 @@ function StartJohtoQuest:Route30()
 		return talkToNpcOnCell(15,67)
 	elseif isNpcOnCell(20,3) then --Item: Pecha Berry
 		return talkToNpcOnCell(20,3)
-	elseif BUY_BIKE and getMoney() > 75000 and not hasItem("Bicycle") and not hasItem("Bike Voucher") then
-		return moveToMap("Route 30 House 2")
 	elseif game.tryTeachMove("Cut","HM01 - Cut") == true then
 		return moveToMap("Route 31")
-	end
-end
-
-function StartJohtoQuest:Route30House2()
-	if BUY_BIKE and getMoney() > 75000 and not hasItem("Bicycle") and not hasItem("Bike Voucher") then
-		return talkToNpcOnCell(2,6)
-	else
-		return moveToMap("Route 30")
 	end
 end
 

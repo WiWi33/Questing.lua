@@ -1,7 +1,7 @@
 - Last Update: 
-    - 2017 09 08
-    - 13:59 CEST  (UTC +1)
-- CommitID: 6
+    - 2017 09 09
+    - 19:16 CEST  (UTC +1)
+- CommitID: 7
 - Branch: Master
 - Characteristics:
     - most recent bugfixes
