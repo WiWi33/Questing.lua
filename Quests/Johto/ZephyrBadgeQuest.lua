@@ -52,11 +52,14 @@ function ZephyrBadgeQuest:VioletCityPokemart()
 end
 
 function ZephyrBadgeQuest:VioletCity()
-	if self:needPokecenter() or not game.isTeamFullyHealed() or not self.registeredPokecenter == "Pokecenter Violet City" then
+	if self:needPokecenter()
+		or not game.isTeamFullyHealed()
+		or self.registeredPokecenter ~= "Pokecenter Violet City"
+	then
 		return moveToMap("Pokecenter Violet City")
 	elseif self:needPokemart() then
 		return moveToMap("Violet City Pokemart")
-	elseif not self:isTrainingOver() or getTeamSize() <= minTeamSize then
+	elseif not self:isTrainingOver() or getTeamSize() < minTeamSize then
 		return moveToMap("Route 32")
 	elseif isNpcOnCell(27,44) then	
 		return moveToMap("Sprout Tower F1")
@@ -68,10 +71,15 @@ function ZephyrBadgeQuest:VioletCity()
 end
 
 function ZephyrBadgeQuest:Route32()
-	if self:needPokecenter() or self:needPokemart() or not self.registeredPokecenter == "Pokecenter Violet City" then
+	if self:needPokecenter()
+		or self:needPokemart()
+		or self.registeredPokecenter ~= "Pokecenter Violet City"
+		or self:isTrainingOver()
+		and getTeamSize() >= minTeamSize
+
+	then
 		return moveToMap("Violet City")
-	elseif not self:isTrainingOver() or getTeamSize() < minTeamSize then
-		return moveToGrass()
+
 	elseif hasItem("Zephyr Badge") then
 		if isNpcOnCell(26,23) then
 			return talkToNpcOnCell(26,23)
@@ -92,9 +100,9 @@ function ZephyrBadgeQuest:Route32()
 				return moveToMap("Union Cave 1F")
 			end
 		end
-	else
-		return moveToMap("Violet City")
 	end
+
+	return moveToGrass()
 end
 
 function ZephyrBadgeQuest:VioletCityGymEntrance()
