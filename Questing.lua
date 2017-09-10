@@ -15,6 +15,7 @@ local questManager = nil
 function onStart()
 	math.randomseed(os.time())
 	QuestManager = require "Quests/QuestManager"
+	log("all fine")
 	questManager = QuestManager:new()
 
 	--for longer botting runs

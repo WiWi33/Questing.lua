@@ -8,7 +8,7 @@
 
 local gen = require("Libs/genlib")
 
-
+--|x, y| x + y is shorthand for function(x,y) return x+y end.
 team = {}
 --pkm conditions
 function team.isPkmAlive(i) return getPokemonHealth(i) > 0 end
@@ -199,7 +199,7 @@ function team.giveLeftoversTo(leftoversTarget)
     if pkmWithLeftovers then return takeItemFromPokemon(pkmWithLeftovers) end
 end
 
-function team.getTeamLevel()
+function team.getLowestLvl()
     local minLvl = nil
     for i = 1, getTeamSize() do
         local pkmLvl =  getPokemonLevel(i)

@@ -79,7 +79,7 @@ function Quest:pokemart(exitMapName)
 end
 
 function Quest:isTrainingOver()
-	if game.minTeamLevel() >= self.level then
+	if team.getLowestLvl() >= self.level then
 		if self.training then -- end the training
 			self:stopTraining()
 		end
@@ -385,7 +385,7 @@ function Quest:battleMessage(message)
 		end
 
 	elseif sys.stringContains(message, "black out") and self.level < 100 and self:isTrainingOver() then
-		self.level = math.max(team:getTeamLevel(), self.level) + 1
+		self.level = math.max(team.getLowestLvl(), self.level) + 1
 		self:startTraining()
 		sys.log("Increasing " .. self.name .. " quest level to " .. self.level .. ". Training time!")
 		return true

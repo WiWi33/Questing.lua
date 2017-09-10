@@ -35,9 +35,12 @@ function SoulBadgeQuest:new()
 	return o
 end
 
-function SoulBadgeQuest:isDoable()	
-	if self:hasMap() and not hasItem("Marsh Badge") then
-		if getMapName() == "Route 15" then 
+function SoulBadgeQuest:isDoable()
+	if not hasItem("Marsh Badge")
+		and self:hasMap() then
+
+
+		if getMapName() == "Route 15" then
 			if hasItem("Soul Badge") and hasItem("HM03 - Surf") then
 				return false
 			else
@@ -170,32 +173,44 @@ end
 
 function SoulBadgeQuest:FuchsiaCity()
     sys.debug("SoulBadgeQuest.fuchsiaCity() states:", true)
-	if game.minTeamLevel() >= 60 then
+	if team.getLowestLvl() >= 60 then
         sys.debug("minTeamLevel >= 60, goingt to Route15 Stop House, its need is unknown atm")
 		return moveToMap("Route 15 Stop House")
-	elseif self:needPokecenter() or not game.isTeamFullyHealed() or self.registeredPokecenter ~= "Pokecenter Fuchsia" then
+
+	elseif self:needPokecenter() or
+		not game.isTeamFullyHealed() or
+		self.registeredPokecenter ~= "Pokecenter Fuchsia"
+	then
         sys.debug("heading to Pokecenter")
 		return moveToMap("Pokecenter Fuchsia")
+
 	elseif isNpcOnCell(13,7) then --Item: PP UP
         sys.debug("getting Item: PP UP")
 		return talkToNpcOnCell(13,7)
+
 	elseif isNpcOnCell(12,10) then --Item: Ultra Ball
         sys.debug("getting Item: Ultra Ball")
 		return talkToNpcOnCell(12,10)
-	elseif self:needPokemart_() and not hasItem("HM03 - Surf") then --It buy balls if not have badge, at blackoutleveling no
+
+	elseif self:needPokemart_() and not hasItem("HM03 - Surf") then
         --It buy balls if not have badge, at blackoutleveling no
         sys.debug("buying balls")
-        sys.debug("buying balls")
 		return moveToMap("Safari Stop")
-	elseif not self:isTrainingOver() then
+
+	elseif not self:isTrainingOver()
+		and not hasItem("HM03 - Surf")
+	then
         sys.debug("on its way to training")
 		return moveToMap("Route 15 Stop House")
+
 	elseif not hasItem("Soul Badge") then
         sys.debug("heading to gym")
 		return moveToMap("Fuchsia Gym")
+
 	elseif not self:canEnterSafari() then
         sys.debug("farming, since safari cannot be entered")
 		return moveToMap("Route 18")	
+
 	elseif not hasItem("HM03 - Surf") then
 		if not dialogs.questSurfAccept.state then
             sys.debug("on its way to fight Viktor | to access safari zone")
@@ -225,7 +240,7 @@ function SoulBadgeQuest:SafariStop()
 end
 
 function SoulBadgeQuest:Route15StopHouse()
-	if game.minTeamLevel() >= 60 then
+	if team.getLowestLvl() >= 60 then
 		return moveToMap("Route 15")
 	elseif self:needPokecenter() or self.registeredPokecenter ~= "Pokecenter Fuchsia" or self:isTrainingOver() then
 		return moveToMap("Fuchsia City")
@@ -240,7 +255,7 @@ function SoulBadgeQuest:Route15StopHouse()
 end
 
 function SoulBadgeQuest:FuchsiaCityStopHouse()
-	if game.minTeamLevel() >= 60 then
+	if team.getLowestLvl() >= 60 then
 		return moveToMap("Fuchsia City")
 	elseif not hasItem("HM03 - Surf") then
 		if dialogs.questSurfAccept.state then
@@ -254,7 +269,7 @@ function SoulBadgeQuest:FuchsiaCityStopHouse()
 end
 
 function SoulBadgeQuest:Route19()
-	if game.minTeamLevel() >= 60 then
+	if team.getLowestLvl() >= 60 then
 		return moveToMap("Fuchsia City Stop House")
 	elseif hasItem("HM03 - Surf") then
 		if not game.hasPokemonWithMove("Surf") then

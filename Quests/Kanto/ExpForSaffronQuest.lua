@@ -12,7 +12,7 @@ local Dialog = require "Quests/Dialog"
 
 local name		  = 'Training for Saffron'
 local description = 'Exp in Seafoam'
-local level 	  = 60
+local level 	  = 65
 
 local ExpForSaffronQuest = Quest:new()
 

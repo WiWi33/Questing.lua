@@ -74,17 +74,6 @@ function game.inRectangle(x1, y1, x2, y2)
 	return false
 end
 
-function game.minTeamLevel()
-	local current
-	for pokemonId=1, getTeamSize(), 1 do
-		local pokemonLevel = getPokemonLevel(pokemonId)
-		if  current == nil or pokemonLevel < current then
-			current = pokemonLevel
-		end
-	end
-	return current
-end
-
 function game.maxTeamLevel()
 	local current
 	for pokemonId=1, getTeamSize(), 1 do
