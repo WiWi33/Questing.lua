@@ -14,7 +14,7 @@ local SurfTarget    = require "Data/surfTargets"
 
 local name		  = 'Traveling'
 local description = 'Route 8 To Cinnabar Island'
-local level = 55
+local level 	  = 55
 
 local ToCinnabarQuest = Quest:new()
 
@@ -46,7 +46,7 @@ function ToCinnabarQuest:PokecenterLavender()
 end
 
 function ToCinnabarQuest:LavenderTown()
-	if self:needPokecenter() or not game.isTeamFullyHealed() or not self.registeredPokecenter == "Pokecenter Lavender" then
+	if self:needPokecenter() or not game.isTeamFullyHealed() or self.registeredPokecenter ~= "Pokecenter Lavender" then
 		return moveToMap("Pokecenter Lavender")
 	else
 		return moveToMap("Route 12")
@@ -151,7 +151,7 @@ end
 
 function ToCinnabarQuest:FuchsiaHouse1()
 	--talk to the fishing guru
-	if self.isRodObtainable() then return talkToNpcOnCell(3,6)
+	if self:isRodObtainable() then return talkToNpcOnCell(3,6)
 	--leave
 	else return moveToMap("Fuchsia City") end
 end
@@ -160,12 +160,12 @@ function ToCinnabarQuest:FuchsiaCity()
 	--visiting pokecenter
 	if self:needPokecenter() or not game.isTeamFullyHealed() 		--healing
 		or not self:hasSurfer()										--getting surfer
-		or not self.registeredPokecenter == "Pokecenter Fuchsia"	--register pokecenter
+		or self.registeredPokecenter ~= "Pokecenter Fuchsia"		--register pokecenter
 	then
 		return moveToMap("Pokecenter Fuchsia")
 
 	--Item: GoodRod
-	elseif self.isRodObtainable() then
+	elseif self:isRodObtainable() then
 		return moveToMap("Fuchsia House 1")
 
 	--else progress story

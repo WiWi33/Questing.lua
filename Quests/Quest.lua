@@ -170,7 +170,7 @@ function Quest:needPokecenter()
 
 	-- else we would spend more time evolving the higher level ones
 	elseif not self:isTrainingOver() then
-		--<= needed, if last pkm has no pp, it's also unusable therefor value = 0
+		-- <= needed, if last pkm has no pp, it's also unusable therefor value = 0
 		if getUsablePokemonCount() <= 1
 			or not team.getAlivePkmToLvl(self.level)
 		then return true end
@@ -356,20 +356,24 @@ function Quest:battleMessage(message)
 		--reset after successful round progression
 		self.canRun = true
 		self.canSwitch = true
-		sys.debug("BattleMessage", true)
-		sys.debug("canRun = true")
-		sys.debug("canSwitch = true")
+		sys.debug("BattleMessage")
+		sys.debug("\tcanRun = true")
+		sys.debug("\tcanSwitch = true")
 		return true
 
-	elseif sys.stringContains(message, "$CantRun") then
-		sys.debug("BattleMessage", true)
-		sys.debug("canRun = false")
+	elseif sys.stringContains(message, "$CantRun")
+		or sys.stringContains(message, "You can not run away!")
+	then
+		sys.debug("BattleMessage")
+		sys.debug("\tcanRun = false")
 		self.canRun = false
 		return true
 
-	elseif sys.stringContains(message, "$NoSwitch") then
-		sys.debug("BattleMessage", true)
-		sys.debug("canSwitch = false")
+	elseif sys.stringContains(message, "$NoSwitch")
+		or sys.stringContains(message, "You can not switch this Pokemon!")
+	then
+		sys.debug("BattleMessage")
+		sys.debug("\tcanSwitch = false")
 		self.canSwitch = false
 		return true
 

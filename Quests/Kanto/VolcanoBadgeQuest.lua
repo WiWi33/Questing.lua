@@ -39,7 +39,7 @@ function VolcanoBadgeQuest:PokecenterCinnabar()
 end
 
 function VolcanoBadgeQuest:CinnabarIsland()
-	if self:needPokecenter() or not self.registeredPokecenter == "Pokecenter Cinnabar" then
+	if self:needPokecenter() or self.registeredPokecenter ~= "Pokecenter Cinnabar" then
 		return moveToMap("Pokecenter Cinnabar")
 	elseif not self:isTrainingOver() then
 		return moveToMap("Route 20")

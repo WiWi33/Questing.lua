@@ -173,7 +173,7 @@ function SoulBadgeQuest:FuchsiaCity()
 	if game.minTeamLevel() >= 60 then
         sys.debug("minTeamLevel >= 60, goingt to Route15 Stop House, its need is unknown atm")
 		return moveToMap("Route 15 Stop House")
-	elseif self:needPokecenter() or not game.isTeamFullyHealed() or not self.registeredPokecenter == "Pokecenter Fuchsia" then
+	elseif self:needPokecenter() or not game.isTeamFullyHealed() or self.registeredPokecenter ~= "Pokecenter Fuchsia" then
         sys.debug("heading to Pokecenter")
 		return moveToMap("Pokecenter Fuchsia")
 	elseif isNpcOnCell(13,7) then --Item: PP UP
@@ -227,7 +227,7 @@ end
 function SoulBadgeQuest:Route15StopHouse()
 	if game.minTeamLevel() >= 60 then
 		return moveToMap("Route 15")
-	elseif self:needPokecenter() or not self.registeredPokecenter == "Pokecenter Fuchsia" or self:isTrainingOver() then
+	elseif self:needPokecenter() or self.registeredPokecenter ~= "Pokecenter Fuchsia" or self:isTrainingOver() then
 		return moveToMap("Fuchsia City")
 	elseif hasItem("HM03 - Surf") then
 		return moveToMap("Route 15")
@@ -279,7 +279,7 @@ function SoulBadgeQuest:Route19()
 end
 
 function SoulBadgeQuest:Route15()
-	if self:needPokecenter() or self:isTrainingOver() or not self.registeredPokecenter == "Pokecenter Fuchsia" then
+	if self:needPokecenter() or self:isTrainingOver() or self.registeredPokecenter ~= "Pokecenter Fuchsia" then
 		return moveToMap("Route 15 Stop House")
 	else
 		return self:randomZoneExp()

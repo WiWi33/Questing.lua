@@ -1,4 +1,4 @@
--- Copyright © 2016 g0ld <g0ld@tuta.io>
+-- Copyright Â© 2016 g0ld <g0ld@tuta.io>
 -- This work is free. You can redistribute it and/or modify it under the
 -- terms of the Do What The Fuck You Want To Public License, Version 2,
 -- as published by Sam Hocevar. See the COPYING file for more details.
@@ -40,7 +40,7 @@ function HiveBadgeQuest:AzaleaPokemart()
 end
 
 function HiveBadgeQuest:AzaleaTown()
-	if self:needPokecenter() or not game.isTeamFullyHealed() or not self.registeredPokecenter == "Pokecenter Azalea" then
+	if self:needPokecenter() or not game.isTeamFullyHealed() or self.registeredPokecenter ~= "Pokecenter Azalea" then
 		return moveToMap("Pokecenter Azalea")
 	elseif self:needPokemart() then
 		return moveToMap("Azalea Pokemart")	
@@ -58,7 +58,7 @@ function HiveBadgeQuest:AzaleaTown()
 end
 
 function HiveBadgeQuest:Route33()
-	if self:needPokecenter() or self:needPokemart() or not self.registeredPokecenter == "Pokecenter Azalea" then
+	if self:needPokecenter() or self:needPokemart() or self.registeredPokecenter ~= "Pokecenter Azalea" then
 		return moveToMap("Azalea Town")
 	elseif not self:isTrainingOver() then
 		return moveToGrass()
