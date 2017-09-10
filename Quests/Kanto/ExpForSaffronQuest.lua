@@ -34,10 +34,6 @@ function ExpForSaffronQuest:isDone()
 	return false
 end
 
-function ExpForSaffronQuest:canUseNurse()
-	return getMoney() > 1500
-end
-
 function ExpForSaffronQuest:Route20()
 	if not self:isTrainingOver() then
 		return moveToCell(60,32) --Seafoam 1F
@@ -74,42 +70,38 @@ function ExpForSaffronQuest:SeafoamB2F()
 end
 
 function ExpForSaffronQuest:SeafoamB3F()
-	if not self:isTrainingOver() then
-		return moveToCell(57,26) --Seafom B4F
-	else
-		return moveToCell(64,16)
-	end
+	--Still farming then: Seafom B4F
+	if not self:isFinishedFarming() then return moveToCell(57,26)
+
+	--else go home
+	else return moveToCell(64,16) end
+end
+
+function ExpForSaffronQuest:isFinishedFarming()
+	return self:isTrainingOver() 					--as before: training
+		and (not BUY_BIKE or getMoney() > 60000)	--additional: money farming, when buying bike is set
 end
 
 function ExpForSaffronQuest:SeafoamB4F()
 	--Item: Nugget (15000 Money)
-	if isNpcOnCell(57,20) then
-		return talkToNpcOnCell(57,20)
-	end
+	if isNpcOnCell(57,20) then return talkToNpcOnCell(57,20) end
+	--moving to ladder, to leave level
+	if self:isFinishedFarming() then
+		return moveToCell(53,28) end
 
-	--farm until training level is reached and
-	--money for buying bike is reached, if selected
-	if not self:isTrainingOver() and (not BUY_BIKE or getMoney() > 65000) then
-		if self:needPokecenter() then
-			-- if have 1500 money
-			if self:canUseNurse() then
-				--talk to nurse
-				return talkToNpcOnCell(59,13)
-			else
-				if not (game.getTotalUsablePokemonCount() > 1) then
-					--using Escape Rope?
-					sys.log("Not enough Pokemons to farm 1500$ and heal the team.")
+	if self:needPokecenter() then
+		-- use on road nurse only if you have the money
+		if getMoney() > 1500 then
+			return talkToNpcOnCell(59,13)
 
-				else return moveToRectangle(50,10,62,32) end
-			end
+		--not enough money and Escape Rope (550) cheaper than feinting (5% of current money)
+		elseif hasItem("Escape Rope") and getMoney()*0.05 > 550 then
+			return useItem("Escape Rope")
 		end
-
-		--move to farming zone
-		return moveToRectangle(50,10,62,32)
 	end
 
-	--training over and money farmed if need to, go to ladder
-	return moveToCell(53,28)
+	--else farm / provoke feinting
+	return moveToRectangle(50,10,62,32)
 end
 
 return ExpForSaffronQuest
