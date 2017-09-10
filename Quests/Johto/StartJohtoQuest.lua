@@ -67,7 +67,7 @@ end
 function StartJohtoQuest:CherrygroveCity()
 	if isNpcOnCell(52,7) then
 		return talkToNpcOnCell(52,7) --Get 5 Pokeballs + 5 Potions + 10000 Money
-	elseif self:needPokecenter() or not game.isTeamFullyHealed() or not self.registeredPokecenter == "Pokecenter Cherrygrove City" then
+	elseif self:needPokecenter() or not game.isTeamFullyHealed() or self.registeredPokecenter ~= "Pokecenter Cherrygrove City" then
 		return moveToMap("Pokecenter Cherrygrove City")
 	elseif self:needPokemart() then
 		return moveToMap("Mart Cherrygrove City")
@@ -104,7 +104,7 @@ function StartJohtoQuest:pokemart_()
 end
 
 function StartJohtoQuest:Route30()
-	if self:needPokecenter() or not self.registeredPokecenter == "Pokecenter Cherrygrove City" or (getTeamSize() > 1 and getUsablePokemonCount() == 1) or getUsablePokemonCount() == 0 then
+	if self:needPokecenter() or self.registeredPokecenter ~= "Pokecenter Cherrygrove City" or (getTeamSize() > 1 and getUsablePokemonCount() == 1) or getUsablePokemonCount() == 0 then
 		return moveToCell(8,96) --Cherrygrove City
 	elseif getTeamSize() <= 2 or not self:isTrainingOver() then --Get some pokemons for fill the team
 		return moveToGrass()

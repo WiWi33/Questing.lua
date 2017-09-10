@@ -94,7 +94,7 @@ function ZephyrBadgeQuest:Route32()
 				return talkToNpcOnCell(20,120) --Item: Lummy Berry
 			elseif isNpcOnCell(20,121) then
 				return talkToNpcOnCell(20,121) --Item: Leppa Berry
-			elseif self:needPokecenter() or not self.registeredPokecenter == "Pokecenter Route 32" then
+			elseif self:needPokecenter() or self.registeredPokecenter ~= "Pokecenter Route 32" then
 				return moveToMap("Pokecenter Route 32")
 			else
 				return moveToMap("Union Cave 1F")

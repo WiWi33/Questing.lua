@@ -146,7 +146,7 @@ function GoldenrodCityQuest:PokecenterGoldenrod()
 end
 
 function GoldenrodCityQuest:GoldenrodCity()
-	if self:needPokecenter() or not game.isTeamFullyHealed() or not self.registeredPokecenter == "Pokecenter Goldenrod" then
+	if self:needPokecenter() or not game.isTeamFullyHealed() or self.registeredPokecenter ~= "Pokecenter Goldenrod" then
 		return moveToMap("Pokecenter Goldenrod")
 	elseif self:needPokemart() then
 		return moveToMap("Goldenrod Mart 1")
@@ -228,7 +228,7 @@ function GoldenrodCityQuest:GoldenrodCityHouse2()
 end
 
 function GoldenrodCityQuest:Route34()
-	if self:needPokecenter() or not self.registeredPokecenter == "Pokecenter Goldenrod" then
+	if self:needPokecenter() or self.registeredPokecenter ~= "Pokecenter Goldenrod" then
 		return moveToMap("Goldenrod City")
 	elseif self.need_oddish and (not hasPokemonInTeam("Oddish") and not hasPokemonInTeam("Gloom"))then
 		return moveToMap("Route 34 Stop House")
@@ -254,7 +254,7 @@ function GoldenrodCityQuest:Route34()
 end
 
 function GoldenrodCityQuest:Route34StopHouse()
-	if self:needPokecenter() or not self.registeredPokecenter == "Pokecenter Goldenrod" then
+	if self:needPokecenter() or self.registeredPokecenter ~= "Pokecenter Goldenrod" then
 		return moveToMap("Route 34")
 	elseif self.need_oddish and (not hasPokemonInTeam("Oddish") and not hasPokemonInTeam("Gloom"))then
 		self.need_oddish = false

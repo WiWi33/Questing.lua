@@ -1,4 +1,4 @@
--- Copyright © 2016 g0ld <g0ld@tuta.io>
+-- Copyright Â© 2016 g0ld <g0ld@tuta.io>
 -- This work is free. You can redistribute it and/or modify it under the
 -- terms of the Do What The Fuck You Want To Public License, Version 2,
 -- as published by Sam Hocevar. See the COPYING file for more details.
@@ -50,7 +50,7 @@ function PokeFluteQuest:PokecenterLavender()
 end
 
 function PokeFluteQuest:LavenderTown()
-	if self:needPokecenter() or not game.isTeamFullyHealed() or not self.registeredPokecenter == "Pokecenter Lavender" then
+	if self:needPokecenter() or not game.isTeamFullyHealed() or self.registeredPokecenter ~= "Pokecenter Lavender" then
 		return moveToMap("Pokecenter Lavender")
 	elseif dialogs.checkFujiHouse.state and not dialogs.checkFujiNote.state then
 		return moveToMap("Lavender Town Volunteer House")

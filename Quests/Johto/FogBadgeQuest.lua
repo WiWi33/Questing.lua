@@ -49,7 +49,7 @@ function FogBadgeQuest:GoldenrodCityGym()
 end
 
 function FogBadgeQuest:GoldenrodCity()
-	if self:needPokecenter() or not game.isTeamFullyHealed() or not self.registeredPokecenter == "Pokecenter Goldenrod" then
+	if self:needPokecenter() or not game.isTeamFullyHealed() or self.registeredPokecenter ~= "Pokecenter Goldenrod" then
 		return moveToMap("Pokecenter Goldenrod")
 	elseif not hasItem("SquirtBottle") then 
 		moveToMap("Goldenrod City Flower Shop")
@@ -117,7 +117,7 @@ function FogBadgeQuest:Route36()
 end
 
 function FogBadgeQuest:Route37()
-	if self:needPokecenter() or not self.registeredPokecenter == "Pokecenter Ecruteak" then
+	if self:needPokecenter() or self.registeredPokecenter ~= "Pokecenter Ecruteak" then
 		moveToMap("Ecruteak City")
 	elseif not self:isTrainingOver() then 
 		moveToGrass()
@@ -125,7 +125,7 @@ function FogBadgeQuest:Route37()
 end
 
 function FogBadgeQuest:EcruteakCity()
-	if self:needPokecenter() or not game.isTeamFullyHealed() or not self.registeredPokecenter == "Pokecenter Ecruteak" then
+	if self:needPokecenter() or not game.isTeamFullyHealed() or self.registeredPokecenter ~= "Pokecenter Ecruteak" then
 		return moveToMap("Pokecenter Ecruteak")
 	elseif not self:isTrainingOver() then
 		log("dd")

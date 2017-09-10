@@ -50,7 +50,7 @@ function StormBadgeQuest:EcruteakGym()
 end
 
 function StormBadgeQuest:EcruteakCity()
-	if self:needPokecenter() or not game.isTeamFullyHealed() or not self.registeredPokecenter == "Pokecenter Ecruteak" then
+	if self:needPokecenter() or not game.isTeamFullyHealed() or self.registeredPokecenter ~= "Pokecenter Ecruteak" then
 		moveToMap("Pokecenter Ecruteak")
 	else moveToMap("Ecruteak Stop House 1")
 	end
@@ -83,7 +83,7 @@ function StormBadgeQuest:Route39()
 end
 
 function StormBadgeQuest:OlivineCity()
-	if self:needPokecenter() or not game.isTeamFullyHealed() or not self.registeredPokecenter == "Pokecenter Olivine" then
+	if self:needPokecenter() or not game.isTeamFullyHealed() or self.registeredPokecenter ~= "Pokecenter Olivine" then
 		moveToMap("Olivine Pokecenter")
 	elseif not dialogs.phare.state then 
 		moveToMap("Glitter Lighthouse 1F")

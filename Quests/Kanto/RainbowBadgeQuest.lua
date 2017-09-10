@@ -49,7 +49,7 @@ end
 function RainbowBadgeQuest:CeladonCity()
 	if isNpcOnCell(21,51) and getPlayerX() == 21 and getPlayerY() == 50 and hasItem("Rainbow Badge") then --NPC: Trainer OP
 		return talkToNpcOnCell(21,51)
-	elseif self:needPokecenter() or not game.isTeamFullyHealed() or not self.registeredPokecenter == "Pokecenter Celadon" then
+	elseif self:needPokecenter() or not game.isTeamFullyHealed() or self.registeredPokecenter ~= "Pokecenter Celadon" then
 		return moveToMap("Pokecenter Celadon")
 	elseif not self:isTrainingOver() and not hasItem("Rainbow Badge") then
 		return moveToMap("Route 7")
@@ -85,7 +85,7 @@ function RainbowBadgeQuest:PokecenterCeladon()
 end
 
 function RainbowBadgeQuest:Route7()
-	if self:needPokecenter() or not game.isTeamFullyHealed() or not self.registeredPokecenter == "Pokecenter Celadon" then
+	if self:needPokecenter() or not game.isTeamFullyHealed() or self.registeredPokecenter ~= "Pokecenter Celadon" then
 		return moveToMap("Celadon City")
 	elseif hasItem("Rainbow Badge") and hasItem("Lemonade") then
 		return moveToMap("Underground House 3")
@@ -101,7 +101,7 @@ function RainbowBadgeQuest:Route7()
 end
 
 function RainbowBadgeQuest:CeladonGym()
-	if self:needPokecenter() or not game.isTeamFullyHealed() or not self.registeredPokecenter == "Pokecenter Celadon" or not self:isTrainingOver() then
+	if self:needPokecenter() or not game.isTeamFullyHealed() or self.registeredPokecenter ~= "Pokecenter Celadon" or not self:isTrainingOver() then
 		return moveToMap("Celadon City")
 	elseif not hasItem("Rainbow Badge") then
 		talkToNpcOnCell(8,4) -- Erika

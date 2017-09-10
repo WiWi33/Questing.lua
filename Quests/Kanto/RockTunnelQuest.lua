@@ -41,7 +41,7 @@ end
 
 function RockTunnelQuest:Route10()
 	if game.inRectangle(9,0,24,11) then
-		if self:needPokecenter() or not game.isTeamFullyHealed() or not self.registeredPokecenter == "Pokecenter Route 10" then
+		if self:needPokecenter() or not game.isTeamFullyHealed() or self.registeredPokecenter ~= "Pokecenter Route 10" then
 			return moveToMap("Pokecenter Route 10")
 		else
 			return moveToMap("Link")
@@ -79,7 +79,7 @@ function RockTunnelQuest:RockTunnel2()
 end
 
 function RockTunnelQuest:LavenderTown()
-	if self:needPokecenter() or not game.isTeamFullyHealed() or not self.registeredPokecenter == "Pokecenter Lavender" then
+	if self:needPokecenter() or not game.isTeamFullyHealed() or self.registeredPokecenter ~= "Pokecenter Lavender" then
 		return moveToMap("Pokecenter Lavender")
 	else
 		return moveToMap("Route 8")

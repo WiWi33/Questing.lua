@@ -1,4 +1,4 @@
--- Copyright © 2016 g0ld <g0ld@tuta.io>
+-- Copyright Â© 2016 g0ld <g0ld@tuta.io>
 -- This work is free. You can redistribute it and/or modify it under the
 -- terms of the Do What The Fuck You Want To Public License, Version 2,
 -- as published by Sam Hocevar. See the COPYING file for more details.
@@ -44,7 +44,7 @@ function ToCinnabarQuest:PokecenterLavender()
 end
 
 function ToCinnabarQuest:LavenderTown()
-	if self:needPokecenter() or not game.isTeamFullyHealed() or not self.registeredPokecenter == "Pokecenter Lavender" then
+	if self:needPokecenter() or not game.isTeamFullyHealed() or self.registeredPokecenter ~= "Pokecenter Lavender" then
 		return moveToMap("Pokecenter Lavender")
 	else
 		return moveToMap("Route 12")
@@ -118,7 +118,7 @@ function ToCinnabarQuest:FuchsiaHouse1()
 end
 
 function ToCinnabarQuest:FuchsiaCity()
-	if self:needPokecenter() or not game.isTeamFullyHealed() or not self.registeredPokecenter == "Pokecenter Fuchsia" then
+	if self:needPokecenter() or not game.isTeamFullyHealed() or self.registeredPokecenter ~= "Pokecenter Fuchsia" then
 		return moveToMap("Pokecenter Fuchsia")
 	elseif hasItem("Old Rod") and not hasItem("Good Rod") and getMoney() > 15000 then
 		return moveToMap("Fuchsia House 1") --Item: GoodRod
