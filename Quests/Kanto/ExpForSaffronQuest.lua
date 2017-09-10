@@ -82,26 +82,23 @@ function ExpForSaffronQuest:SeafoamB3F()
 end
 
 function ExpForSaffronQuest:SeafoamB4F()
-	if isNpcOnCell(57,20) then --Item: Nugget (15000 Money)
-		return talkToNpcOnCell(57,20)
-	end
-	if not self:isTrainingOver() then
-		if self:needPokecenter() then
-			if self:canUseNurse() then -- if have 1500 money
-				return talkToNpcOnCell(59,13)
-			else
-				if not (game.getTotalUsablePokemonCount() > 1) then
-				    fatal("don't have enough Pokemons for farm 1500 money and heal the team")
-				else 
-				    return moveToRectangle(50,10,62,32)
-				end
-			end
-		else
-			return moveToRectangle(50,10,62,32)
+	--Item: Nugget (15000 Money)
+	if isNpcOnCell(57,20) then return talkToNpcOnCell(57,20) end
+	--moving to ladder, to leave level
+	if self:isTrainingOver() then return moveToCell(53,28) end
+
+	if self:needPokecenter() then
+		-- if have 1500 money
+		if self:canUseNurse() then  return talkToNpcOnCell(59,13)
+
+		--not enough money and Escape Rope cheaper than feinting
+		elseif hasItem("Escape Rope") and getMoney()*0.05 > 550 then
+			return useItem("Escape Rope")
 		end
-	else
-		return moveToCell(53,28)
 	end
+
+	--else farm / provoke feinting
+	return moveToRectangle(50,10,62,32)
 end
 
 return ExpForSaffronQuest

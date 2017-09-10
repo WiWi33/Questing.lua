@@ -169,17 +169,22 @@ function Quest:needPokecenter()
 
 	-- else we would spend more time evolving the higher level ones
 	elseif not self:isTrainingOver() then
-		if getUsablePokemonCount() == 1 or not team.getAlivePkmToLvl(self.level) then return true end
+		-- <= needed, if last pkm has no pp, it's also unusable therefor value = 0
+		if getUsablePokemonCount() <= 1
+			or not team.getAlivePkmToLvl(self.level)
+		then return true end
 
-	elseif not game.isTeamFullyHealed() and  self.healPokemonOnceTrainingIsOver then
-		return true
+	elseif not game.isTeamFullyHealed()
+		and self.healPokemonOnceTrainingIsOver
+	then return true
 
-	else
-		-- the team is fully healed and training over
-		self.healPokemonOnceTrainingIsOver = false
-	end
+	-- the team is fully healed and training over
+	else self.healPokemonOnceTrainingIsOver = false end
+
 	return false
 end
+
+-- the team is fully healed and training over
 
 function Quest:message()
 	return self.name .. ': ' .. self.description
