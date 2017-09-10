@@ -373,13 +373,17 @@ function Quest:battleMessage(message)
 		sys.debug("\tcanSwitch = true")
 		return true
 
-	elseif sys.stringContains(message, "$CantRun") then
+	elseif sys.stringContains(message, "$CantRun")
+		or sys.stringContains(message, "You can not run away!")
+	then
 		sys.debug("BattleMessage")
 		sys.debug("\tcanRun = false")
 		self.canRun = false
 		return true
 
-	elseif sys.stringContains(message, "$NoSwitch") then
+	elseif sys.stringContains(message, "$NoSwitch")
+		or sys.stringContains(message, "You can not switch this Pokemon!")
+	then
 		sys.debug("BattleMessage")
 		sys.debug("\tcanSwitch = false")
 		self.canSwitch = false
