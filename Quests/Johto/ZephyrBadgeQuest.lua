@@ -59,24 +59,28 @@ function ZephyrBadgeQuest:VioletCity()
 		return moveToMap("Pokecenter Violet City")
 	elseif self:needPokemart() then
 		return moveToMap("Violet City Pokemart")
-	elseif not self:isTrainingOver() or getTeamSize() < minTeamSize then
+	elseif not self:isTeamReady() then
 		return moveToMap("Route 32")
 	elseif isNpcOnCell(27,44) then	
 		return moveToMap("Sprout Tower F1")
 	elseif not hasItem("Zephyr Badge") then
 		return moveToMap("Violet City Gym Entrance")
-	else
-		return moveToMap("Route 32")
 	end
+
+	return moveToMap("Route 32")
+end
+
+function ZephyrBadgeQuest:isTeamReady()
+	return self:isTrainingOver()
+		and getTeamSize() >= minTeamSize
 end
 
 function ZephyrBadgeQuest:Route32()
 	if self:needPokecenter()
 		or self:needPokemart()
 		or self.registeredPokecenter ~= "Pokecenter Violet City"
-		or self:isTrainingOver()
-		and getTeamSize() >= minTeamSize
-
+		or self:isTeamReady()
+		and not hasItem("Zephyr Badge")
 	then
 		return moveToMap("Violet City")
 
