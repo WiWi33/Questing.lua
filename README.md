@@ -1,32 +1,13 @@
 - Last Update: 
     - 2017 09 11
-    - 12:12 CEST  (UTC +1)
-- CommitID: 12
+    - 13:45 CEST  (UTC +1)
+- CommitID: 13
 - CommitLog: 
 ```
-[fix] no BattleAction
-- issue #15: TrainerBattle | no action executed, switch in last pkm
-- issue description: https://github.com/M1L4/QuestingDebug/issues/15
-
-- corrected a wrong reference in game.useAnyMove(): iterator i was referenced as moveId
-
-[improvement]
-- massive code reduction and improved readabiltiy:
-  - combined trainer and wild battles, as they were not handled differently, appart from catching
-  - canRun & canSwitch were originally reset in onPathAction, making that function unnecessary 
-    complicated and confusing, moved that to onBattleMessage
-
-[testing] removed blacklist
-- temporarily removed blacklist, as I saw no meaning to it. If nurse loop now happens more 
-  frequently, it is probably to this. At which point the leveling function has to be adressed,
-  not a blacklist.
-- allows catching following previously blacklisted pkm:
-  - "Metapod",
-  - "Kakuna",
-  - "Doduo",
-  - "Hoothoot",
-  - "Zigzagoon"
-- necessary for e.g. pokedex completion
+[fix] Route 32 Loop
+- after last fix, this issue was moved to a later state 
+"when leaving after beaten gym", but should be completely 
+fixed now
 ```
 - Branch: Master
 - Characteristics:
