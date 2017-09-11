@@ -1,7 +1,16 @@
 - Last Update: 
-    - 2017 09 10
-    - 20:38 CEST  (UTC +1)
-- CommitID: 7
+    - 2017 09 11
+    - 13:51 CEST  (UTC +1)
+- CommitID: 8
+- CommitLog:
+```
+  [merge]
+  - branch: master
+  - commitId: 13
+  - reason: for smooth testing & progressing - master resolved a issue 
+    where bot wouldn't perform a action during battle, which was added
+    as well as other smaller fixes up to date
+```
 - Branch: BikeQuest
 - Features:
     - BikeQuest
