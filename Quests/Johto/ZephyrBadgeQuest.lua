@@ -76,34 +76,26 @@ function ZephyrBadgeQuest:isTeamReady()
 end
 
 function ZephyrBadgeQuest:Route32()
-	if self:needPokecenter()
-		or self:needPokemart()
-		or self.registeredPokecenter ~= "Pokecenter Violet City"
-		or self:isTeamReady()
-		and not hasItem("Zephyr Badge")
-	then
-		return moveToMap("Violet City")
+	if not hasItem("Zephyr Badge") then
+		if 	self:needPokecenter()
+			or self:needPokemart()
+			or self.registeredPokecenter ~= "Pokecenter Violet City"
+			or self:isTeamReady()
+		then return moveToMap("Violet City") end
 
 	elseif hasItem("Zephyr Badge") then
-		if isNpcOnCell(26,23) then
-			return talkToNpcOnCell(26,23)
-		else
-			if isNpcOnCell(25,8) then
-				return talkToNpcOnCell(25,8) --Item: Chesto Berry
-			elseif isNpcOnCell(26,8) then
-				return talkToNpcOnCell(26,8) --Item: Oran Berry
-			elseif isNpcOnCell(20,119) then
-				return talkToNpcOnCell(20,119) --Item: Oran Berry
-			elseif isNpcOnCell(20,120) then
-				return talkToNpcOnCell(20,120) --Item: Lummy Berry
-			elseif isNpcOnCell(20,121) then
-				return talkToNpcOnCell(20,121) --Item: Leppa Berry
-			elseif self:needPokecenter() or self.registeredPokecenter ~= "Pokecenter Route 32" then
-				return moveToMap("Pokecenter Route 32")
-			else
-				return moveToMap("Union Cave 1F")
-			end
-		end
+		if 	   isNpcOnCell(26,23)  then return talkToNpcOnCell(26,23)
+		elseif isNpcOnCell(25,8)   then return talkToNpcOnCell(25,8)   --Item: Chesto Berry
+		elseif isNpcOnCell(26,8)   then return talkToNpcOnCell(26,8)   --Item: Oran Berry
+		elseif isNpcOnCell(20,119) then return talkToNpcOnCell(20,119) --Item: Oran Berry
+		elseif isNpcOnCell(20,120) then return talkToNpcOnCell(20,120) --Item: Lummy Berry
+		elseif isNpcOnCell(20,121) then return talkToNpcOnCell(20,121) --Item: Leppa Berry
+		elseif self:needPokecenter()
+			or self.registeredPokecenter ~= "Pokecenter Route 32"
+		then
+			return moveToMap("Pokecenter Route 32")
+
+		else return moveToMap("Union Cave 1F") end
 	end
 
 	return moveToGrass()

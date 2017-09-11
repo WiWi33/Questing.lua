@@ -1,13 +1,15 @@
 - Last Update: 
     - 2017 09 11
-    - 13:45 CEST  (UTC +1)
-- CommitID: 13
+    - 18:09 CEST  (UTC +1)
+- CommitID: 14
 - CommitLog: 
 ```
-[fix] Route 32 Loop
-- after last fix, this issue was moved to a later state 
-"when leaving after beaten gym", but should be completely 
-fixed now
+[fix] Route 32 PokeCenter-Loop
+- A few commits ago, I replaced an invalid pokecenter register comparison 
+  (not self.registerdPkmCenter == "CityName"), which never could be fullfilled. 
+  Since this statement was never considered before, but as it is now working, it
+  created a loop between violet city's and route 32's Pokecenter. This shoule be
+  resolved now
 ```
 - Branch: Master
 - Characteristics:
