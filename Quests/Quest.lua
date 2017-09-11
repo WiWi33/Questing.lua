@@ -271,14 +271,15 @@ local blackListTargets = { --it will kill this targets instead catch
 function Quest:battle()
 	-- catching
 	local isEventPkm = getOpponentForm() ~= 0
-	if isWildBattle() 															--if it's a wild battle:
-		and isOpponentShiny() or isEventPkm 									--catch special pkm
-		or (not isAlreadyCaught() 												--catch not seen pkm
-			and not self:isPokemonBlacklisted(getOpponentName()))
-		or (self.pokemon 														--catch quest related pkm
-			and getOpponentName() == self.pokemon
-			and self.forceCaught ~= nil
-			and self.forceCaught == false)
+	if isWildBattle() 													--if it's a wild battle:
+		and (isOpponentShiny() 											--catch special pkm
+			or isEventPkm
+			or (not isAlreadyCaught() 									--catch not seen pkm
+				and not self:isPokemonBlacklisted(getOpponentName()))
+			or (self.pokemon 											--catch quest related pkm
+				and getOpponentName() == self.pokemon
+				and self.forceCaught ~= nil
+				and self.forceCaught == false))
 	then if useItem("Pokeball") or useItem("Great Ball") or useItem("Ultra Ball") then return true end end
 
 	--fighting

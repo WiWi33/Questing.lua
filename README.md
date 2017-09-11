@@ -1,15 +1,14 @@
 - Last Update: 
     - 2017 09 11
-    - 18:09 CEST  (UTC +1)
-- CommitID: 14
+    - 21:42 CEST  (UTC +1)
+- CommitID: 15
 - CommitLog: 
 ```
-[fix] Route 32 PokeCenter-Loop
-- A few commits ago, I replaced an invalid pokecenter register comparison 
-  (not self.registerdPkmCenter == "CityName"), which never could be fullfilled. 
-  Since this statement was never considered before, but as it is now working, it
-  created a loop between violet city's and route 32's Pokecenter. This shoule be
-  resolved now
+[fix] Pokeballs in trainerbattles
+- I thought proShine prevented that. I got that assumption from silv3r
+  when he mentioned, that run() in trainer battles would simple return 
+  false and calling it during trainer battles wouldn't be an issue. So
+  I didn't especially check for that. Should be fixed now.
 ```
 - Branch: Master
 - Characteristics:
