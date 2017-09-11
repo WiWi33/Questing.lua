@@ -35,7 +35,7 @@ function ExpForSaffronQuest:isDone()
 end
 
 function ExpForSaffronQuest:Route20()
-	if not self:isTrainingOver() then
+	if not self:isFinishedFarming() then
 		return moveToCell(60,32) --Seafoam 1F
 	else
 		return moveToMap("Route 19")
@@ -43,7 +43,7 @@ function ExpForSaffronQuest:Route20()
 end
 
 function ExpForSaffronQuest:Seafoam1F()
-	if not self:isTrainingOver() then
+	if not self:isFinishedFarming() then
 		return moveToCell(20,8) --Seafom B1F
 	else
 		return moveToMap("Route 20")
@@ -51,7 +51,7 @@ function ExpForSaffronQuest:Seafoam1F()
 end
 
 function ExpForSaffronQuest:SeafoamB1F()
-	if not self:isTrainingOver() then
+	if not self:isFinishedFarming() then
 		return moveToCell(64,25) --Seafom B2F
 	else
 		return moveToCell(15,12)
@@ -62,7 +62,7 @@ function ExpForSaffronQuest:SeafoamB2F()
 	if isNpcOnCell(67,31) then --Item: TM13 - Ice Beam
 		return talkToNpcOnCell(67,31)
 	end
-	if not self:isTrainingOver() then
+	if not self:isFinishedFarming() then
 		return moveToCell(63,19) --Seafom B3F
 	else
 		return moveToCell(51,27)
