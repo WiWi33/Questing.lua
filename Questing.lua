@@ -5,7 +5,7 @@
 
 name = "Questing"
 author = "g0ld, wiwi33, m1l4"
-description = [[MainQuesting up to sinnoh region.]]
+description = [[MainQuesting until end of Hoenn region.]]
 
 dofile "config.lua"
 
@@ -15,6 +15,7 @@ local questManager = nil
 function onStart()
 	math.randomseed(os.time())
 	QuestManager = require "Quests/QuestManager"
+	log("all fine")
 	questManager = QuestManager:new()
 
 	--for longer botting runs
@@ -22,6 +23,9 @@ function onStart()
 		log("Private messages disabled.")
 		return disablePrivateMessage()
 	end
+
+	--disable AutoEvolve for reduced exp needed to lvl up
+	disableAutoEvolve()
 end
 
 function onPause()

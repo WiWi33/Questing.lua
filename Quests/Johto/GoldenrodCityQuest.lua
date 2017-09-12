@@ -6,7 +6,7 @@
 
 
 local sys    = require "Libs/syslib"
---local pc     = require "Libs/pclib"
+local pc     = require "Libs/pclib"
 local game   = require "Libs/gamelib"
 local Quest  = require "Quests/Quest"
 local Dialog = require "Quests/Dialog"
@@ -49,6 +49,39 @@ local dialogs = {
 	})
 }
 
+local Doors = {
+    [1] = { x = 18, y = 12 }, --this syntax is unneeded, but easy to read
+    [2] = { x = 22, y = 16 },
+    [3] = { x = 18, y = 18 },
+    [4] = { x = 9, y = 18 },
+    [5] = { x = 9, y = 12 },
+    [6] = { x = 13, y = 16 },
+    [7] = { x = 4, y = 16 },
+    [8] = { x = 4, y = 10 },
+}
+
+local leveler_name_base = "Lever "
+local Leveler = {
+    A = leveler_name_base .. "A",
+    B = leveler_name_base .. "B",
+    C = leveler_name_base .. "C",
+    D = leveler_name_base .. "D",
+    E = leveler_name_base .. "E",
+    F = leveler_name_base .. "F",
+}
+
+local DoorActivatesBy = {
+    [1] = { Leveler.A, Leveler.C }, --this syntax is unneeded, but easy to read
+    [2] = { Leveler.D, Leveler.F },
+    [3] = { Leveler.F },
+    [4] = { Leveler.C },
+    [5] = { Leveler.B, Leveler.D },
+    [6] = { Leveler.A, Leveler.E },
+    [7] = { Leveler.B },
+    [8] = { Leveler.E },
+}
+
+
 local GoldenrodCityQuest = Quest:new()
 
 function GoldenrodCityQuest:new()
@@ -81,7 +114,6 @@ function GoldenrodCityQuest:isDone()
 		return true
 	end
 	return false
-	
 end
 
 function GoldenrodCityQuest:pokemart_()
@@ -104,45 +136,51 @@ function GoldenrodCityQuest:pokemart_()
 end
 
 function GoldenrodCityQuest:PokecenterGoldenrod()
+	--go catching oddish
 	if self.need_oddish and (not hasPokemonInTeam("Oddish") and not hasPokemonInTeam("Gloom")) then
 		log("Oddish with Johto Region NOT FOUND, Next quest: llexForestQuest.lua")
 		return moveToMap("Goldenrod City")
+
 	--Get Oddish From PC 
 	elseif hasItem("Basement Key") and not hasItem("SquirtBottle") and dialogs.guardQuestPart2.state then
 		if not hasPokemonInTeam("Oddish") and not hasPokemonInTeam("Gloom")then
-			if isPCOpen() then
-				if isCurrentPCBoxRefreshed() then
-					if getCurrentPCBoxSize() ~= 0 then
-						for pokemon=1, getCurrentPCBoxSize() do
-							if getPokemonNameFromPC(getCurrentPCBoxId(),pokemon) == "Oddish" and getPokemonRegionFromPC(getCurrentPCBoxId(),pokemon) == "Johto" then	
-								if not game.hasPokemonWithName("Gastly") == false then		
-									log("LOG: Oddish Found on BOX: " .. getCurrentPCBoxId() .."  Slot: ".. pokemon .. "  Swapping with Gastly on Slot: " .. game.hasPokemonWithName("Gastly"))
-									return swapPokemonFromPC(getCurrentPCBoxId(),pokemon,game.hasPokemonWithName("Gastly")) --swap with gastly useless against Gavin Director
-								else
-									log("LOG: Oddish Found on BOX: " .. getCurrentPCBoxId() .."  Slot: ".. pokemon .. "  Swapping with pokemon in team N: " .. getTeamSize())
-									return swapPokemonFromPC(getCurrentPCBoxId(),pokemon,getTeamSize()) --swap the pokemon with last pokemon in team
-								end
-							end
-						end
-						return openPCBox(getCurrentPCBoxId()+1)
-					else
-						self.need_oddish = true
-						return
-					end
-				else
-					return
-				end
+            --swap with gastly useless against Gavin Director
+            --swap the pokemon with last pokemon in team | comment m1l4: why the highest lvl pkm?
+            sys.todo("check if teamsize is < 6, then replace swap with retrieve", "GoldenRodCityQuest.PokecenterGoldenro")
+            local swapId = game.hasPokemonWithName("Gastly") or getTeamSize()
+
+            --check for oddish
+            sys.todo("Adding checks for (1)bellsprout with sleep powder, (2)odish and "..
+            "(3)bellsprout below sleep powder level or (4-8)theier evolutions.", "GoldenRodCityQuest.PokecenterGoldenro")
+
+			local regionMatches = {"Jotho"}
+			local moveMatches = {"Sleep Powder"}
+            local result, boxId = pc.retrieveFirstWithMovesFromRegions(moveMatches, regionMatches)
+
+			--need to be verified with ingame data
+			--oddish, gloom --15
+			--Bellsprout, Weepinbell --13
+			local pkmMatches = {"Oddish", "Gloom", "Bellsprout", "Weepinbell" }
+
+
+
+			-- no solution
+            if result == pc.result.NO_RESULT then self.need_oddish = true
+
+            --still searching
+            elseif result == pc.result.STILL_WORKING then return sys.debug("Starting PC or Switching Boxes")
+
+            --solution found and gastly in team
 			else
-				return usePC()
-			end
-		--END get Oddish or Bellsprout
-		else
-			-- have Oddish
-			self:pokecenter("Goldenrod City")
-		end
-	else
-		self:pokecenter("Goldenrod City")
-	end	
+				local pkmId = result
+                log("LOG: Oddish Found on BOX: " .. boxId .."  Slot: ".. pkmId .. "  Swapping with pokemon in team N: " .. swapId)
+                return swapPokemonFromPC(boxId, pkmId, swapId)
+            end
+        end
+    end
+
+    -- have Oddish
+    self:pokecenter("Goldenrod City")
 end
 
 function GoldenrodCityQuest:GoldenrodCity()
@@ -200,7 +238,6 @@ function GoldenrodCityQuest:GoldenrodUndergroundEntranceTop()
 	else
 		return moveToMap("Goldenrod Underground Path")
 	end
-	
 end
 
 function GoldenrodCityQuest:GoldenrodUndergroundPath()
@@ -347,7 +384,6 @@ function GoldenrodCityQuest:GoldenrodMartB1F()
 	else
 		return moveToMap("Goldenrod Mart Elevator")
 	end
-	
 end
 
 function GoldenrodCityQuest:UndergroundWarehouse()
@@ -424,64 +460,108 @@ function GoldenrodCityQuest:UndergroundWarehouse()
 end
 
 function GoldenrodCityQuest:GoldenrodUndergroundBasement()
-	-- BASEMENT LEVELRS PUZZLE
-	if not isNpcOnCell(5,4) then
-		dialogs.guardQuestPart2.state = false
-		self.gavin_done = true
-		if isNpcOnCell(9,18) then
-			return talkToNpcOnCell(8,19)
-		elseif isNpcOnCell(18,12) then
-			return talkToNpcOnCell(17,13)
-		else
-			return moveToMap("Goldenrod Underground Path")
-		end	
-	elseif isNpcOnCell(18,12) and isNpcOnCell(22,16) and isNpcOnCell(18,18) and isNpcOnCell(13,16) and isNpcOnCell(9,12) and isNpcOnCell(9,18) and isNpcOnCell(4,16) and isNpcOnCell(4,10) then --Lever A
-		return talkToNpcOnCell(26,13)
-	elseif not isNpcOnCell(18,12) and isNpcOnCell(22,16) and isNpcOnCell(18,18) and isNpcOnCell(13,16) and isNpcOnCell(9,12) and not isNpcOnCell(9,18) and isNpcOnCell(4,16) and isNpcOnCell(4,10) then --Lever C
-		return talkToNpcOnCell(17,13)
-	elseif isNpcOnCell(18,12) and isNpcOnCell(22,16) and isNpcOnCell(18,18) and not isNpcOnCell(13,16) and isNpcOnCell(9,12) and not isNpcOnCell(9,18) and isNpcOnCell(4,16) and isNpcOnCell(4,10) then --Lever D
-		return talkToNpcOnCell(17,17)
-	elseif isNpcOnCell(18,12) and not isNpcOnCell(22,16) and isNpcOnCell(18,18) and not isNpcOnCell(13,16) and not isNpcOnCell(9,12) and not isNpcOnCell(9,18) and isNpcOnCell(4,16) and isNpcOnCell(4,10) then --Lever C
-		return talkToNpcOnCell(17,13)
-	elseif not isNpcOnCell(18,12) and not isNpcOnCell(22,16) and isNpcOnCell(18,18) and isNpcOnCell(13,16) and not isNpcOnCell(9,12) and not isNpcOnCell(9,18) and isNpcOnCell(4,16) and isNpcOnCell(4,10) then --Lever B
-		return talkToNpcOnCell(26,17)
-	elseif not isNpcOnCell(18,12) and not isNpcOnCell(22,16) and isNpcOnCell(18,18) and isNpcOnCell(13,16) and isNpcOnCell(9,12) and not isNpcOnCell(9,18) and not isNpcOnCell(4,16) and isNpcOnCell(4,10) then --Lever C
-		return talkToNpcOnCell(17,13)
-	elseif isNpcOnCell(18,12) and not isNpcOnCell(22,16) and isNpcOnCell(18,18) and not isNpcOnCell(13,16) and isNpcOnCell(9,12) and not isNpcOnCell(9,18) and not isNpcOnCell(4,16) and isNpcOnCell(4,10) then --Lever C
-		return talkToNpcOnCell(8,19)
-	elseif isNpcOnCell(18,12) and not isNpcOnCell(22,16) and isNpcOnCell(18,18) and not isNpcOnCell(13,16) and isNpcOnCell(9,12) and isNpcOnCell(9,18) and not isNpcOnCell(4,16) and not isNpcOnCell(4,10) then	--Lever C
-		if game.inRectangle(19,0,40,20) then
-			return talkToNpcOnCell(26,13) --Leveler A
-		else
-			if isNpcOnCell(8,8) then --TM62 - Taunt
-				return talkToNpcOnCell(8,8)
-			elseif isNpcOnCell(5,4) then --Galvin Director
-				return talkToNpcOnCell(5,4)
-			else
-				fatal("Error GoldenrodCityQuest:GoldenrodUndergroundBasement()")
-			end
-		end
-	elseif not isNpcOnCell(18,12) and not isNpcOnCell(22,16) and isNpcOnCell(18,18) and not isNpcOnCell(13,16) and isNpcOnCell(9,12) and not isNpcOnCell(9,18) and not isNpcOnCell(4,16) and not isNpcOnCell(4,10) then	--Lever C
-			if isNpcOnCell(5,4) then --Galvin Director
-				return talkToNpcOnCell(5,4)
-			else
-				fatal("Error GoldenrodCityQuest:GoldenrodUndergroundBasement()")
-			end
-	else
-	fatal("Error ON PUZZLE RESOLUTION  GoldenrodCityQuest:GoldenrodUndergroundBasement()")
-	end
+    -- BASEMENT LEVELRS PUZZLE
+    log("DEBUG | GoldenRodPuzzle start")
+
+    -- Radio Director Gavin
+    if not isNpcOnCell(5, 4) then
+        log("DEBUG | director beaten")
+        dialogs.guardQuestPart2.state = false
+        self.gavin_done = true
+
+        --leaving
+        if self:isDoorClosed(4) then return talkToNpc(Leveler.E)
+        elseif self:isDoorClosed(1) then return talkToNpc(Leveler.C)
+        else return moveToMap("Goldenrod Underground Path")
+        end
+    end
+
+    log("DEBUG | start")
+    if self:isDoorClosed(8) then return self:openDoor(id) end
+
+--    for id = 8, 1, -1 do
+--        log("DEBUG | is door " .. id .. " closed: " .. tostring(self:isDoorClosed(id)))
+--        if self:isDoorClosed(id) then
+--            log("DEBUG | opening door " .. id)
+--            if self:openDoor(id) then return end
+--        end
+--    end
 end
 
-function GoldenrodCityQuest:MapName()
-	
+function GoldenrodCityQuest:isDoorClosed(doorId)
+    log("DEBUG | isDoorClosed(): " .. doorId)
+    local door = Doors[doorId]
+    return isNpcOnCell(door.x, door.y)
 end
 
-function GoldenrodCityQuest:MapName()
-	
+function GoldenrodCityQuest:openDoor(doorId)
+    --    log(DoorActivatesBy[doorId])
+    for _, leveler in pairs(DoorActivatesBy[doorId]) do
+        log("DEBUG | Attempting using : " .. leveler)
+
+        if talkToNpc(leveler) then
+            log("DEBUG | used: " .. leveler)
+            return true
+        end
+    end
 end
 
-function GoldenrodCityQuest:MapName()
-	
-end
+
+--log("DEBUG | 8")
+--if game.inRectangle(19, 0, 40, 20) then
+--    return talkToNpcOnCell(26, 13) --Leveler A
+--else
+--    if isNpcOnCell(8, 8) then --TM62 - Taunt
+--        return talkToNpcOnCell(8, 8)
+--    elseif isNpcOnCell(5, 4) then --Galvin Director
+--        return talkToNpcOnCell(5, 4)
+--    else
+--        fatal("Error GoldenrodCityQuest:GoldenrodUndergroundBasement()")
+--    end
+--
+--    if not isNpcOnCell(18, 12) and not isNpcOnCell(22, 16) and isNpcOnCell(18, 18) and not isNpcOnCell(13, 16) and isNpcOnCell(9, 12) and not isNpcOnCell(9, 18) and not isNpcOnCell(4, 16) and not isNpcOnCell(4, 10) then --Lever C
+--        if isNpcOnCell(5, 4) then --Galvin Director
+--            return talkToNpcOnCell(5, 4)
+--        else
+--            fatal("Error GoldenrodCityQuest:GoldenrodUndergroundBasement()")
+--        end
+--    else
+--        fatal("Error ON PUZZLE RESOLUTION  GoldenrodCityQuest:GoldenrodUndergroundBasement()")
+--    end
+--end
+
+--	elseif self:isDoorClosed(1) and self:isDoorClosed(2) and self:isDoorClosed(3) and self:isDoorClosed(6) and self:isDoorClosed(5) and self:isDoorClosed(4) and self:isDoorClosed(7) and self:isDoorClosed(8) then --Lever A
+--		log("DEBUG | 1")
+--		return talkToNpcOnCell(26,13)
+--
+--	elseif not self:isDoorClosed(1) and self:isDoorClosed(2) and self:isDoorClosed(3) and self:isDoorClosed(6) and self:isDoorClosed(5) and not self:isDoorClosed(4) and self:isDoorClosed(7) and self:isDoorClosed(8) then --Lever C
+--		log("DEBUG | 2")
+--		return talkToNpcOnCell(17,13)
+--
+--	elseif self:isDoorClosed(1) and self:isDoorClosed(2) and self:isDoorClosed(3) and not self:isDoorClosed(6) and self:isDoorClosed(5) and not self:isDoorClosed(4) and self:isDoorClosed(7) and self:isDoorClosed(8) then --Lever D
+--		log("DEBUG | 3")
+--		return talkToNpcOnCell(17,17)
+--
+--	elseif self:isDoorClosed(1) and not self:isDoorClosed(2) and self:isDoorClosed(3) and not self:isDoorClosed(6) and not self:isDoorClosed(5) and not self:isDoorClosed(4) and self:isDoorClosed(7) and self:isDoorClosed(8) then --Lever C
+--		log("DEBUG | 4")
+--		return talkToNpcOnCell(17,13)
+--
+--	elseif not self:isDoorClosed(1) and not self:isDoorClosed(2) and self:isDoorClosed(3) and self:isDoorClosed(6) and not self:isDoorClosed(5) and not self:isDoorClosed(4) and self:isDoorClosed(7) and self:isDoorClosed(8) then --Lever B
+--		log("DEBUG | 5")
+--		return talkToNpcOnCell(26,17)
+--
+--	elseif not self:isDoorClosed(1) and not self:isDoorClosed(2) and self:isDoorClosed(3) and self:isDoorClosed(6) and self:isDoorClosed(5) and not self:isDoorClosed(4) and not self:isDoorClosed(7) and self:isDoorClosed(8) then --Lever C
+--		log("DEBUG | 6")
+--		return talkToNpcOnCell(17,13)
+--
+--	elseif self:isDoorClosed(1) and not self:isDoorClosed(2) and self:isDoorClosed(3) and not self:isDoorClosed(6) and self:isDoorClosed(5) and not self:isDoorClosed(4) and not self:isDoorClosed(7) and self:isDoorClosed(8) then --Lever C
+--		log("DEBUG | 7")
+--		return talkToNpcOnCell(8,19)
+--
+--	elseif self:isDoorClosed(1) and not self:isDoorClosed(2) and self:isDoorClosed(3) and not self:isDoorClosed(6) and self:isDoorClosed(5) and self:isDoorClosed(4) and not self:isDoorClosed(7) and not self:isDoorClosed(8) then	--Lever C
+
+
+
+
 
 return GoldenrodCityQuest

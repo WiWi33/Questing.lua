@@ -8,11 +8,13 @@
 local sys    = require "Libs/syslib"
 local game   = require "Libs/gamelib"
 local Quest  = require "Quests/Quest"
-local Dialog = require "Quests/Dialog"
+local pc            = require "Libs/pclib"
+local team          = require "Libs/teamlib"
+local SurfTarget    = require "Data/surfTargets"
 
 local name		  = 'Traveling'
 local description = 'Route 8 To Cinnabar Island'
-local level = 55
+local level 	  = 55
 
 local ToCinnabarQuest = Quest:new()
 
@@ -105,26 +107,69 @@ function ToCinnabarQuest:Route15StopHouse()
 	return moveToMap("Fuchsia City")
 end
 
+function ToCinnabarQuest:hasSurfer()
+	local surferIds = SurfTarget.getIds()
+	local teamIds = team.getPkmIds()
+	local matches = Set.intersection(teamIds, surferIds)
+
+	return team.getFirstPkmWithMove("surf") or matches
+end
+
 function ToCinnabarQuest:PokecenterFuchsia()
-	self:pokecenter("Fuchsia City")
+
+	local surferIds = SurfTarget.getIds()
+
+	--1. check for surfer
+	if not self:hasSurfer() then
+		local result, pkmBoxId, slotId, swapTeamId =
+		pc.retrieveFirstFromIds(surferIds)
+
+		--working 	| then return because of open proShine functions to be resolved
+		--			| if not returned, a "can only execute one function per frame" might occur
+		if result == pc.result.WORKING then return sys.info("Searching PC")
+
+		--no solution, terminate bot
+		elseif  result == pc.result.NO_RESULT then
+			return sys.error("No pokemon in your team or on your computer has the ability to surf. Can't progress Quest")
+		end
+
+		--solution found and added
+		local pkm = result
+		local msg = "Found Surfer "..pkm.name.." on BOX: " .. pkmBoxId .. "  Slot: " .. slotId
+		if swapTeamId then  msg = msg .. " | Swapping with pokemon in team N: " .. swapTeamId
+		else                msg = msg .. " | Added to team." end
+		sys.log(msg)
+
+		--do basic pokecenter related stuff...
+	else self:pokecenter("Fuchsia City") end
+
+end
+
+function ToCinnabarQuest:isRodObtainable()
+	return BUY_RODS and hasItem("Old Rod") and not hasItem("Good Rod") and getMoney() >= 15000
 end
 
 function ToCinnabarQuest:FuchsiaHouse1()
-	if hasItem("Old Rod") and not hasItem("Good Rod") and getMoney() > 15000 then
-		return talkToNpcOnCell(3,6)
-	else
-		return moveToMap("Fuchsia City")
-	end
+	--talk to the fishing guru
+	if self:isRodObtainable() then return talkToNpcOnCell(3,6)
+	--leave
+	else return moveToMap("Fuchsia City") end
 end
 
 function ToCinnabarQuest:FuchsiaCity()
-	if self:needPokecenter() or not game.isTeamFullyHealed() or self.registeredPokecenter ~= "Pokecenter Fuchsia" then
+	--visiting pokecenter
+	if self:needPokecenter() or not game.isTeamFullyHealed() 		--healing
+		or not self:hasSurfer()										--getting surfer
+		or self.registeredPokecenter ~= "Pokecenter Fuchsia"		--register pokecenter
+	then
 		return moveToMap("Pokecenter Fuchsia")
-	elseif hasItem("Old Rod") and not hasItem("Good Rod") and getMoney() > 15000 then
-		return moveToMap("Fuchsia House 1") --Item: GoodRod
-	else
-		return moveToMap("Fuchsia City Stop House")
-	end
+
+	--Item: GoodRod
+	elseif self:isRodObtainable() then
+		return moveToMap("Fuchsia House 1")
+
+	--else progress story
+	else return moveToMap("Fuchsia City Stop House") end
 end
 
 function ToCinnabarQuest:FuchsiaCityStopHouse()	

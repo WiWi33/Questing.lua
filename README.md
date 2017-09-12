@@ -1,18 +1,24 @@
 - Last Update: 
     - 2017 09 12
-    - 14:35 CEST  (UTC +1)
-- CommitID: 16
+    - 15:41 CEST  (UTC +1)
+- CommitID: 17
 - CommitLog: 
 ```
-[fix] EscapeRope Shop Error
-- removed escape rope from the buyable items, since this created an error. Will
-  try to add them in the future though.
+  [merge]
+  - branch: bikeQuest
+  - commitId: 8
+  - little feedback about any open issues, so there might be none (That is
+    very unlikely xD)
 ```
 - Branch: Master
 - Characteristics:
     - most recent bugfixes
     - most stable version
     - no features of branches
+
+- new: Branch/Feature BikeQuest integrated, therefore branch will probably be removed 
+  in time. Still have to read gits specifc workflow/-process to know, whether it
+  should stay as it is or be removed.
 
 Hi everyone,
 
@@ -29,7 +35,7 @@ My current priority list:
 1. mandatory fixes
 2. some appointed features
 
-For the time being I don't intend add:s
+For the time being I don't intend add:
 
 3. new functionallity
 4. new content

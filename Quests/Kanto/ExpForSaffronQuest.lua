@@ -12,7 +12,7 @@ local Dialog = require "Quests/Dialog"
 
 local name		  = 'Training for Saffron'
 local description = 'Exp in Seafoam'
-local level = 60
+local level 	  = 65
 
 local ExpForSaffronQuest = Quest:new()
 
@@ -34,12 +34,8 @@ function ExpForSaffronQuest:isDone()
 	return false
 end
 
-function ExpForSaffronQuest:canUseNurse()
-	return getMoney() > 1500
-end
-
 function ExpForSaffronQuest:Route20()
-	if not self:isTrainingOver() then
+	if not self:isFinishedFarming() then
 		return moveToCell(60,32) --Seafoam 1F
 	else
 		return moveToMap("Route 19")
@@ -47,7 +43,7 @@ function ExpForSaffronQuest:Route20()
 end
 
 function ExpForSaffronQuest:Seafoam1F()
-	if not self:isTrainingOver() then
+	if not self:isFinishedFarming() then
 		return moveToCell(20,8) --Seafom B1F
 	else
 		return moveToMap("Route 20")
@@ -55,7 +51,7 @@ function ExpForSaffronQuest:Seafoam1F()
 end
 
 function ExpForSaffronQuest:SeafoamB1F()
-	if not self:isTrainingOver() then
+	if not self:isFinishedFarming() then
 		return moveToCell(64,25) --Seafom B2F
 	else
 		return moveToCell(15,12)
@@ -66,7 +62,7 @@ function ExpForSaffronQuest:SeafoamB2F()
 	if isNpcOnCell(67,31) then --Item: TM13 - Ice Beam
 		return talkToNpcOnCell(67,31)
 	end
-	if not self:isTrainingOver() then
+	if not self:isFinishedFarming() then
 		return moveToCell(63,19) --Seafom B3F
 	else
 		return moveToCell(51,27)
@@ -74,24 +70,31 @@ function ExpForSaffronQuest:SeafoamB2F()
 end
 
 function ExpForSaffronQuest:SeafoamB3F()
-	if not self:isTrainingOver() then
-		return moveToCell(57,26) --Seafom B4F
-	else
-		return moveToCell(64,16)
-	end
+	--Still farming then: Seafom B4F
+	if not self:isFinishedFarming() then return moveToCell(57,26)
+
+	--else go home
+	else return moveToCell(64,16) end
+end
+
+function ExpForSaffronQuest:isFinishedFarming()
+	return self:isTrainingOver() 					--as before: training
+		and (not BUY_BIKE or getMoney() > 60000)	--additional: money farming, when buying bike is set
 end
 
 function ExpForSaffronQuest:SeafoamB4F()
 	--Item: Nugget (15000 Money)
 	if isNpcOnCell(57,20) then return talkToNpcOnCell(57,20) end
 	--moving to ladder, to leave level
-	if self:isTrainingOver() then return moveToCell(53,28) end
+	if self:isFinishedFarming() then
+		return moveToCell(53,28) end
 
 	if self:needPokecenter() then
-		-- if have 1500 money
-		if self:canUseNurse() then  return talkToNpcOnCell(59,13)
+		-- use on road nurse only if you have the money
+		if getMoney() > 1500 then
+			return talkToNpcOnCell(59,13)
 
-		--not enough money and Escape Rope cheaper than feinting
+		--not enough money and Escape Rope (550) cheaper than feinting (5% of current money)
 		elseif hasItem("Escape Rope") and getMoney()*0.05 > 550 then
 			return useItem("Escape Rope")
 		end

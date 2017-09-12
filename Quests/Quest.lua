@@ -95,7 +95,7 @@ function Quest:pokemart(exitMapName)
 end
 
 function Quest:isTrainingOver()
-	if game.minTeamLevel() >= self.level then
+	if team.getLowestLvl() >= self.level then
 		if self.training then -- end the training
 			self:stopTraining()
 		end
@@ -105,6 +105,7 @@ function Quest:isTrainingOver()
 end
 
 function Quest:leftovers()
+	if leftovers_disabled then return end
 	ItemName = "Leftovers"
 	local PokemonNeedLeftovers = game.getFirstUsablePokemon()
 	local PokemonWithLeftovers = game.getPokemonIdWithItem(ItemName)
@@ -152,7 +153,7 @@ function Quest:useBike()
 	if hasItem("Bicycle") then
 		if isOutside() and not isMounted() and not isSurfing() and getMapName() ~= "Cianwood City" and getMapName() ~= "Route 41" then
 			useItem("Bicycle")
-			log("Using: Bicycle")
+			sys.log("Using: Bicycle")
 			return true --Mounting the Bike
 		else
 			return false
@@ -200,8 +201,6 @@ function Quest:needPokecenter()
 	return false
 end
 
--- the team is fully healed and training over
-
 function Quest:message()
 	return self.name .. ': ' .. self.description
 end
@@ -239,7 +238,7 @@ function Quest:sortInMemory()
 	then return swapPokemon(lowestAlivePkmToLvl, starter) end
 
 	--setting highest level pkm, as last defense wall
-	local highestAlivePkm = team.getHighestPkmAlive()
+	local highestAlivePkm = team.getHighestPkmAlive() --has to be found or you would have feinted
 	local lastPkm = team.getLastPkmAlive()
 	if highestAlivePkm ~= lastPkm then return swapPokemon(highestAlivePkm, lastPkm) end
 end
@@ -405,7 +404,7 @@ function Quest:chooseForgetMove(moveName, pokemonIndex) -- Calc the WrostAbility
 			end
 		end
 	end
-	log("[Learning Move: " .. moveName .. "  -->  Forget Move: " .. ForgetMoveName .. "]")
+	sys.log("[Learning Move: " .. moveName .. "  -->  Forget Move: " .. ForgetMoveName .. "]")
 	return ForgetMoveName
 end
 

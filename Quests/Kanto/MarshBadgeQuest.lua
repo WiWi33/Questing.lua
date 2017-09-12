@@ -61,36 +61,33 @@ end
 
 
 function MarshBadgeQuest:Route8StopHouse()
---  sys.debug("MarshBadgeQuest", "Route8StopHouse()", true)
---  sys.debug("item marsh badge", hasItem("Marsh Badge"))
---  sys.debug("pokecenter", self:needPokecenter())
---  sys.debug("training", self:isTrainingOver())
-
   if not hasItem("Marsh Badge")
       and (self:needPokecenter() or self:isTrainingOver())
 
   --updated link name
-  then
---    sys.debug("state", 2)
-    return moveToMap("Link")
-  end
+  then return moveToMap("Link") end
 
---  sys.debug("state", 2)
   return moveToMap("Route 8")
 end
 
+function MarshBadgeQuest:isBuyingBike()
+  sys.debug("BUY_BIKE: ", BUY_BIKE)
+  sys.debug("Voucer: ", hasItem("Bike Voucher"))
+  sys.debug("money: ", getMoney() >=60000)
+  return BUY_BIKE and hasItem("Bike Voucher") and getMoney() >=60000
+end
+
 function MarshBadgeQuest:Route5StopHouse()
-  if hasItem("Bike Voucher") then
-    return moveToMap("Route 5")
-  else
-    return moveToMap("Saffron City")
-  end
+  --when bying a bike move towards Cerulean City
+  if self:isBuyingBike() then return moveToMap("Route 5") end
+  --coming back
+  return moveToMap("Link")
 end
 
 function MarshBadgeQuest:SaffronCity()
   if self:needPokecenter() or not game.isTeamFullyHealed() or self.registeredPokecenter ~= "Pokecenter Saffron" then
     return moveToMap("Pokecenter Saffron")
-  elseif hasItem("Bike Voucher") then
+  elseif self:isBuyingBike() then
     return moveToMap("Route 5 Stop House")
   elseif not self:isTrainingOver() then
     return moveToMap("Route 8 Stop House")

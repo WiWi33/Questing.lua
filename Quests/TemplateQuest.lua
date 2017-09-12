@@ -16,6 +16,7 @@
 
 local sys    = require "Libs/syslib"
 local game   = require "Libs/gamelib"
+local team   = require "Libs/teamlib"
 local Quest  = require "Quests/Quest"
 local Dialog = require "Quests/Dialog"
 
@@ -108,7 +109,7 @@ end
 
 -- a simple method to divide our code and avoid duplication
 function TemplateQuest:isReadyForJackson()
-	if getTeamSize() >= 2 and game.minTeamLevel() >= 8 then
+	if getTeamSize() >= 2 and team.getLowestLvl() >= 8 then
 		return true
 	end
 	return false
