@@ -63,7 +63,7 @@ end
 -- use this function then
 function Quest:pokemart(exitMapName)
 	local pokeballCount = getItemQuantity("Pokeball")
-	local escapeRopeCount = getItemQuantity("Escape Rope")
+	--local escapeRopeCount = getItemQuantity("Escape Rope")
 	local money         = getMoney()
 
 	--pokeballs
@@ -79,16 +79,16 @@ function Quest:pokemart(exitMapName)
 		return buyItem("Pokeball", pokeballToBuy)
 
 	--escape ropes added for jails and other circumstances
-	elseif money >= 550 and escapeRopeCount < 3 then
-		--talk to shop owner - can it be they are always located at 3,5? Doesn't seem right
-		if not isShopOpen() then return talkToNpcOnCell(3,5) end
-
-		--else prepare buying
-		local ropesToBuy = 5 - escapeRopeCount
-		local maxBuyableRopes = money / 550
-		ropesToBuy = math.min(ropesToBuy, maxBuyableRopes)
-
-		return buyItem("Escape Rope", ropesToBuy)
+--	elseif money >= 550 and escapeRopeCount < 3 then
+--		--talk to shop owner - can it be they are always located at 3,5? Doesn't seem right
+--		if not isShopOpen() then return talkToNpcOnCell(3,5) end
+--
+--		--else prepare buying
+--		local ropesToBuy = 5 - escapeRopeCount
+--		local maxBuyableRopes = money / 550
+--		ropesToBuy = math.min(ropesToBuy, maxBuyableRopes)
+--
+--		return buyItem("Escape Rope", ropesToBuy)
 
 	--if nothing to buy, leave mart
 	else return moveToMap(exitMapName) end

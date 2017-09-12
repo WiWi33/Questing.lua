@@ -1,14 +1,12 @@
 - Last Update: 
-    - 2017 09 11
-    - 21:42 CEST  (UTC +1)
-- CommitID: 15
+    - 2017 09 12
+    - 14:35 CEST  (UTC +1)
+- CommitID: 16
 - CommitLog: 
 ```
-[fix] Pokeballs in trainerbattles
-- I thought proShine prevented that. I got that assumption from silv3r
-  when he mentioned, that run() in trainer battles would simple return 
-  false and calling it during trainer battles wouldn't be an issue. So
-  I didn't especially check for that. Should be fixed now.
+[fix] EscapeRope Shop Error
+- removed escape rope from the buyable items, since this created an error. Will
+  try to add them in the future though.
 ```
 - Branch: Master
 - Characteristics:
