@@ -112,6 +112,10 @@ function team.getLowestPkmAlive()
     return team._compare(team.getAlivePkm(), gen.minLvl)
 end
 
+function team.getLowestLvl()
+    return getPokemonLevel(team.getLowestLvlPkm())
+end
+
 function team.getPkm()
     local pkm = {}
     for index = 1, getTeamSize() do
@@ -198,18 +202,6 @@ function team.giveLeftoversTo(leftoversTarget)
     log("DEBUG | pkmWithLeftovers: "..tostring(pkmWithLeftovers))
     if pkmWithLeftovers then return takeItemFromPokemon(pkmWithLeftovers) end
 end
-
-function team.getLowestLvl()
-    local minLvl = nil
-    for i = 1, getTeamSize() do
-        local pkmLvl =  getPokemonLevel(i)
-        minLvl = minLvl or pkmLvl			--set first pkm as lvl reference
-        minLvl = math.min(minLvl, pkmLvl)	--get minimum between following team members
-    end
-    return minLvl
-end
-
-
 
 --actual calculations
 function team._compare(t, fn)

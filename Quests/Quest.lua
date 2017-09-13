@@ -347,7 +347,7 @@ function Quest:battleMessage(message)
 		if self.level < 100
 			and self:isTrainingOver()
 		then
-			self.level = math.max(team:getTeamLevel(), self.level) + 1
+			self.level = math.max(team:getLowestLvl(), self.level) + 1
 			self:startTraining()
 			log("Increasing " .. self.name .. " quest level to " .. self.level .. ". Training time!")
 		end

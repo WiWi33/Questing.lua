@@ -1,14 +1,16 @@
 - Last Update: 
-    - 2017 09 12
-    - 15:41 CEST  (UTC +1)
-- CommitID: 17
+    - 2017 09 13
+    - 08:11 CEST  (UTC +1)
+- CommitID: 18
 - CommitLog: 
 ```
-  [merge]
-  - branch: bikeQuest
-  - commitId: 8
-  - little feedback about any open issues, so there might be none (That is
-    very unlikely xD)
+  [fix] feinting
+  - renamed a method to fit into the overall interface format and
+    apparantly forgot to fix references. Corrected now.
+
+  [improvement] getLowestLevel
+  - reduced redundancies: removed calculation and instead returns a 
+    modified output of another method. 
 ```
 - Branch: Master
 - Characteristics:
