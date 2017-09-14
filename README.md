@@ -1,16 +1,11 @@
 - Last Update: 
-    - 2017 09 13
-    - 08:11 CEST  (UTC +1)
-- CommitID: 18
+    - 2017 09 14
+    - 11:19 CEST  (UTC +1)
+- CommitID: 19
 - CommitLog: 
 ```
-  [fix] feinting
-  - renamed a method to fit into the overall interface format and
-    apparantly forgot to fix references. Corrected now.
-
-  [improvement] getLowestLevel
-  - reduced redundancies: removed calculation and instead returns a 
-    modified output of another method. 
+  [restore] 
+  - a wrong commit from the GoldenRod branch slipped in
 ```
 - Branch: Master
 - Characteristics:
