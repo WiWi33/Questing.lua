@@ -1,4 +1,4 @@
--- Copyright © 2016 g0ld <g0ld@tuta.io>
+-- Copyright Â© 2016 g0ld <g0ld@tuta.io>
 -- This work is free. You can redistribute it and/or modify it under the
 -- terms of the Do What The Fuck You Want To Public License, Version 2,
 -- as published by Sam Hocevar. See the COPYING file for more details.
@@ -6,6 +6,7 @@
 
 
 local sys    = require "Libs/syslib"
+local pc     = require "Libs/pclib"
 local game   = require "Libs/gamelib"
 local Quest  = require "Quests/Quest"
 local Dialog = require "Quests/Dialog"
@@ -17,9 +18,7 @@ local level = 55
 local SaffronGuardQuest = Quest:new()
 
 function SaffronGuardQuest:new()
-	local o = Quest.new(SaffronGuardQuest, name, description, level)
-	o.BUY_BIKE = BUY_BIKE
-	return o
+	return Quest.new(SaffronGuardQuest, name, description, level)
 end
 
 function SaffronGuardQuest:isDoable()
@@ -87,31 +86,101 @@ function SaffronGuardQuest:VermilionPokemart()
 end
 
 function SaffronGuardQuest:VermilionCity()
-	if self.BUY_BIKE and getMoney() > 75000 and not hasItem("Bike Voucher") and not hasItem("Bicycle") then
-		return moveToCell(32,21)
-	elseif self:needPokemart() and getMoney() > 200 then
+
+	if self:needPokemart() and getMoney() > 200 then
 		return moveToMap("Vermilion Pokemart")
-	elseif not hasItem("Old Rod") then
-		return moveToMap("Fisherman House - Vermilion")
-	else
-		return moveToMap("Route 6")
+
+	elseif self:isDittoSwapNeeded() or self:isReSwapNeeded() then
+		return moveToMap("Pokecenter Vermilion")
+
+	--has ditto, get Bike Voucher
+	elseif self:isVoucherNeeded() then
+		return moveToCell(32,21)
 	end
+
+	--all done - move to next quest location
+	return moveToMap("Route 6")
+end
+
+function SaffronGuardQuest:isVoucherNeeded()
+	return not hasItem("Bike Voucher")
+		and hasPokemonInTeam("Ditto")
+		and not hasItem("Bicycle")
+		and BUY_BIKE
+end
+
+
+function SaffronGuardQuest:isDittoSwapNeeded()
+	return not hasItem("Bike Voucher")
+		and not hasPokemonInTeam("Ditto")
+		and not hasItem("Bicycle")
+		and BUY_BIKE
+end
+
+function SaffronGuardQuest:isReSwapNeeded()
+	return swapBoxId and swapSlotId	-- parameters for swap are set
+		and hasItem("Bike Voucher") -- and preQuest "Voucher" is done
+end
+
+function SaffronGuardQuest:PokecenterVermilion()
+	if self:isDittoSwapNeeded() then
+		sys.debug("entered regardless", "yes")
+
+		local isDittoSwaped = getTeamSize() >= 6
+
+		local dittoId = {132 }
+		local result, pkmBoxId, slotId, swapTeamId = pc.retrieveFirstFromIds(dittoId)
+
+		--working 	| then return because of open proShine functions to be resolved
+		--			| if not returned, a "can only execute one function per frame" might occur
+		if result == pc.result.WORKING then return sys.info("Searching PC")
+
+		--no solution, terminate bot
+		elseif  result == pc.result.NO_RESULT then
+			-- quick fix until pathfinder is added, then moving to route 8 wouldn't
+			-- such a hassle to implement
+			BUY_BIKE = false
+			return sys.log("No ditto caught, you skipped a quest. You missed out on a fancy new bike :(")
+		end
+
+		--solution found and already added to team
+
+		--if team was full set values, needed to return swap target
+		if isDittoSwaped then
+			swapBoxId = pkmBoxId
+			swapSlotId = slotId
+		end
+
+		local pkm = result
+		local msg = "Found "..pkm.name.." on BOX: " .. pkmBoxId .. "  Slot: " .. slotId
+		if swapTeamId then  msg = msg .. " | Swapping with pokemon in team N: " .. swapTeamId
+		else                msg = msg .. " | Added to team." end
+		return sys.log(msg)
+
+	--getting the pokemon, we needed to put down because of ditto
+	elseif self:isReSwapNeeded() then
+		--start pc
+		if not isPCOpen() then return usePC() end
+		--refresing
+		if not isCurrentPCBoxRefreshed() then return sys.debug("refreshed") end
+		-- open correct box for transfer
+		if swapBoxId ~= getCurrentPCBoxId() then return openPCBox(swapBoxId) end
+
+		--get the pokemon we put down to retrieve
+	    withdrawPokemonFromPC(swapBoxId, swapSlotId)
+		swapBoxId, swapSlotId = nil, nil	--reset after swap
+		return
+
+	--do basic pokecenter related stuff...
+	else self:pokecenter("Vermilion City") end
 end
 
 function SaffronGuardQuest:VermilionHouse2Bottom()
-	if self.BUY_BIKE and getMoney() > 75000 and not hasItem("Bike Voucher") and not hasItem("Bicycle")then
-		return talkToNpcOnCell(8,6)
-	else
-		return moveToMap("Vermilion City")
-	end
-end
+	--retrieve bike voucher
+	if self:isVoucherNeeded() then return talkToNpcOnCell(6,6)
 
-function SaffronGuardQuest:FishermanHouseVermilion()
-	if not hasItem("Old Rod") then
-		return talkToNpcOnCell(0,6)
-	else
-		return moveToMap("Vermilion City")
-	end
+	--leave house otherwise when done
+	else return moveToMap("Vermilion City") end
 end
 
 function SaffronGuardQuest:Route6()
@@ -129,7 +198,7 @@ function SaffronGuardQuest:Route6()
 end
 
 function SaffronGuardQuest:Route6StopHouse()
-	return moveToMap("Saffron City")
+	return moveToMap("Link")
 end
 
 return SaffronGuardQuest

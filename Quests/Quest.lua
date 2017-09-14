@@ -5,6 +5,7 @@
 
 local sys  = require "Libs/syslib"
 local game = require "Libs/gamelib"
+local team = require "Libs/teamlib"
 
 local blacklist = require "blacklist"
 
@@ -19,6 +20,8 @@ function Quest:new(name, description, level, dialogs)
 	o.level       = level or 1
 	o.dialogs     = dialogs
 	o.training    = true
+	o.canRun	  = true
+	o.canSwitch   = true
 	return o
 end
 
@@ -60,25 +63,39 @@ end
 -- use this function then
 function Quest:pokemart(exitMapName)
 	local pokeballCount = getItemQuantity("Pokeball")
+	--local escapeRopeCount = getItemQuantity("Escape Rope")
 	local money         = getMoney()
+
+	--pokeballs
 	if money >= 200 and pokeballCount < 50 then
-		if not isShopOpen() then
-			return talkToNpcOnCell(3,5)
-		else
-			local pokeballToBuy = 50 - pokeballCount
-			local maximumBuyablePokeballs = money / 200
-			if maximumBuyablePokeballs < pokeballToBuy then
-				pokeballToBuy = maximumBuyablePokeballs
-			end
-			return buyItem("Pokeball", pokeballToBuy)
-		end
-	else
-		return moveToMap(exitMapName)
-	end
+		--talk to shop owner - can it be they are always located at 3,5? Doesn't seem right
+		if not isShopOpen() then return talkToNpcOnCell(3,5) end
+
+		--else prepare buying
+		local pokeballToBuy = 50 - pokeballCount
+		local maximumBuyablePokeballs = money / 200
+		pokeballToBuy = math.min(pokeballToBuy, maximumBuyablePokeballs)
+
+		return buyItem("Pokeball", pokeballToBuy)
+
+	--escape ropes added for jails and other circumstances
+--	elseif money >= 550 and escapeRopeCount < 3 then
+--		--talk to shop owner - can it be they are always located at 3,5? Doesn't seem right
+--		if not isShopOpen() then return talkToNpcOnCell(3,5) end
+--
+--		--else prepare buying
+--		local ropesToBuy = 5 - escapeRopeCount
+--		local maxBuyableRopes = money / 550
+--		ropesToBuy = math.min(ropesToBuy, maxBuyableRopes)
+--
+--		return buyItem("Escape Rope", ropesToBuy)
+
+	--if nothing to buy, leave mart
+	else return moveToMap(exitMapName) end
 end
 
 function Quest:isTrainingOver()
-	if game.minTeamLevel() >= self.level then
+	if team.getLowestLvl() >= self.level then
 		if self.training then -- end the training
 			self:stopTraining()
 		end
@@ -88,6 +105,7 @@ function Quest:isTrainingOver()
 end
 
 function Quest:leftovers()
+	if leftovers_disabled then return end
 	ItemName = "Leftovers"
 	local PokemonNeedLeftovers = game.getFirstUsablePokemon()
 	local PokemonWithLeftovers = game.getPokemonIdWithItem(ItemName)
@@ -135,7 +153,7 @@ function Quest:useBike()
 	if hasItem("Bicycle") then
 		if isOutside() and not isMounted() and not isSurfing() and getMapName() ~= "Cianwood City" and getMapName() ~= "Route 41" then
 			useItem("Bicycle")
-			log("Using: Bicycle")
+			sys.log("Using: Bicycle")
 			return true --Mounting the Bike
 		else
 			return false
@@ -164,24 +182,22 @@ end
 
 function Quest:needPokecenter()
 	if getTeamSize() == 1 then
-		if getPokemonHealthPercent(1) <= 50 then
-			return true
-		end
+		if getPokemonHealthPercent(1) <= 50 then return true end
+
 	-- else we would spend more time evolving the higher level ones
 	elseif not self:isTrainingOver() then
-		if getUsablePokemonCount() == 1 or game.getUsablePokemonCountUnderLevel(self.level) == 0 then
-			return true
-		end
-	else
-		if not game.isTeamFullyHealed() then
-			if self.healPokemonOnceTrainingIsOver then
-				return true
-			end
-		else
-			-- the team is healed and we do not need training
-			self.healPokemonOnceTrainingIsOver = false
-		end
-	end
+		-- <= needed, if last pkm has no pp, it's also unusable therefor value = 0
+		if getUsablePokemonCount() <= 1
+			or not team.getAlivePkmToLvl(self.level)
+		then return true end
+
+	elseif not game.isTeamFullyHealed()
+		and self.healPokemonOnceTrainingIsOver
+	then return true
+
+	-- the team is fully healed and training over
+	else self.healPokemonOnceTrainingIsOver = false end
+
 	return false
 end
 
@@ -199,26 +215,12 @@ local moonStoneTargets = {
 	"Skitty"
 }
 
-function Quest:advanceSorting()
-	local pokemonsUsable = game.getTotalUsablePokemonCount()
-	for pokemonId=1, pokemonsUsable, 1 do
-		if not isPokemonUsable(pokemonId) then --Move it at bottom of the Team
-			for pokemonId_ = pokemonsUsable + 1, getTeamSize(), 1 do
-				if isPokemonUsable(pokemonId_) then
-					swapPokemon(pokemonId, pokemonId_)
-					return true
-				end
-			end
-			
-		end
-	end
-	if not isTeamRangeSortedByLevelAscending(1, pokemonsUsable) then --Sort the team without not usable pokemons
-		return sortTeamRangeByLevelAscending(1, pokemonsUsable)
-	end
-	return false
-end
-
 function Quest:evolvePokemon()
+	-- some buffer levels, to ensure every teammember is fully evolved when figthing e4
+	-- some leeway for indiviudal quest caps: Kanto e4 is started with lv 95, so evolving could start at 93
+	if team.getLowestLvl() >= 90 then enableAutoEvolve() end
+	-- or team.getHighestLvl() >= 93 --not leveling mixed teams efficiently: lv 38, ...., lv 93
+
 	local hasMoonStone = hasItem("Moon Stone")
 	for pokemonId=1, getTeamSize(), 1 do
 		local pokemonName = getPokemonName(pokemonId)
@@ -231,26 +233,27 @@ function Quest:evolvePokemon()
 	return false
 end
 
+--prevents the sort algorithm being visualized - e.g. when gm inspects team
+function Quest:sortInMemory()
+	--setting lowest level pkm as starter
+	local starter = team.getStarter()
+	local lowestAlivePkmToLvl = team.getLowestAlivePkmToLvl(self.level)
+	if lowestAlivePkmToLvl and 			--if one exists, skips if nothing found
+		starter ~= lowestAlivePkmToLvl	--skips if found target the starter already
+	then return swapPokemon(lowestAlivePkmToLvl, starter) end
+
+	--setting highest level pkm, as last defense wall
+	local highestAlivePkm = team.getHighestPkmAlive() --has to be found or you would have feinted
+	local lastPkm = team.getLastPkmAlive()
+	if highestAlivePkm ~= lastPkm then return swapPokemon(highestAlivePkm, lastPkm) end
+end
+
+
 function Quest:path()
-	if self.inBattle then
-		self.inBattle = false
-		self:battleEnd()
-	end
-	if self:evolvePokemon() then
-		return true
-	end
-	--if not isTeamSortedByLevelAscending() then
-		--return sortTeamByLevelAscending()
-	--end
-	if self:advanceSorting() then
-		return true
-	end
-	if self:leftovers() then
-		return true
-	end
-	if self:useBike() then
-		return true
-	end
+	if self:evolvePokemon() then 	return true end
+	if self:sortInMemory() then 	return true end
+	if self:leftovers() then 		return true end
+	if self:useBike() then 			return true end
 	local mapFunction = self:mapToFunction()
 	assert(self[mapFunction] ~= nil, self.name .. " quest has no method for map: " .. getMapName())
 	self[mapFunction](self)
@@ -260,90 +263,65 @@ function Quest:isPokemonBlacklisted(pokemonName)
 	return sys.tableHasValue(blacklist, pokemonName)
 end
 
-function Quest:battleBegin()
-	self.canRun = true
-	self.canSwitch = true
-end
-
-function Quest:battleEnd()
-	self.canRun = true
-	self.canSwitch = true
-end
-
 -- I'll need a TeamManager class very soon
 local blackListTargets = { --it will kill this targets instead catch
-	"Metapod",
-	"Kakuna",
-	"Doduo",
-	"Hoothoot",
-	"Zigzagoon"
+--	"Metapod",
+--	"Kakuna",
+--	"Doduo",
+--	"Hoothoot",
+--	"Zigzagoon"
 }
 
-function Quest:wildBattle()
+function Quest:battle()
 	-- catching
 	local isEventPkm = getOpponentForm() ~= 0
-	if isOpponentShiny() or isEventPkm 																--catch special pkm
-		or (not isAlreadyCaught() and not sys.tableHasValue(blackListTargets, getOpponentName())) 	--catch not seen pkm
-		or (self.pokemon and getOpponentName() == self.pokemon		--catch quest related pkm
-		and self.forceCaught ~= nil and self.forceCaught == false)	--try caught only if never caught in this quest
-	then
-		if useItem("Pokeball") or useItem("Great Ball") or useItem("Ultra Ball") then return true end
-	end
+	if isWildBattle() 													--if it's a wild battle:
+		and (isOpponentShiny() 											--catch special pkm
+			or isEventPkm
+			or (not isAlreadyCaught() 									--catch not seen pkm
+				and not self:isPokemonBlacklisted(getOpponentName()))
+			or (self.pokemon 											--catch quest related pkm
+				and getOpponentName() == self.pokemon
+				and self.forceCaught ~= nil
+				and self.forceCaught == false))
+	then if useItem("Pokeball") or useItem("Great Ball") or useItem("Ultra Ball") then return true end end
 
-	-- team needs no healing
-	if getTeamSize() == 1 or getUsablePokemonCount() > 1 then
+	--fighting
+	local isTeamUsable = getTeamSize() == 1 --if it's our starter, it has to atk
+		or getUsablePokemonCount() > 1		--otherwise we atk, as long as we have 2 usable pkm
+	if isTeamUsable then
+		--level low leveled pkm | switching
 		local opponentLevel = getOpponentLevel()
 		local myPokemonLvl  = getPokemonLevel(getActivePokemonNumber())
-		if opponentLevel >= myPokemonLvl then
+		if opponentLevel >= myPokemonLvl
+			and self.canSwitch
+		then
 			local requestedId, requestedLevel = game.getMaxLevelUsablePokemon()
-			if requestedId ~= nil and requestedLevel > myPokemonLvl then
-				return sendPokemon(requestedId)
-			end
+			if requestedLevel > myPokemonLvl
+				and requestedId ~= nil
+			then return sendPokemon(requestedId) end
 		end
 
-		--TODO:
-		sys.todo("rested canRun & canSwitch after successful round progression - see survivor class")
-		if attack() 								--atk
-			or self.canSwitch and sendUsablePokemon() 	--switch in battle ready pkm if able
-			or self.canRun and run() 					--run if able
+		--actual battle
+		if 	attack() 									--atk
+			or self.canSwitch and sendUsablePokemon()	--switch in battle ready pkm if able
+			or self.canRun and run()					--run if able
 			or self.canSwitch and sendAnyPokemon()		--switch in any alive pkm if able
 			or game.useAnyMove()						--use none damaging moves, to progress battle round
-		then return
-		else sys.error("quest.wildBattle", "no battle progression found for a battle headed team") end
+		then return sys.debug("fighting team", "battle action performed")
+		else return sys.error("quest.battle", "no battle action for a fighting team") end
 	end
 
-	-- team needs healing
-	if self.canRun and run() 						--run if able
-		or self.canSwitch and sendUsablePokemon() 	--switch in battle ready pkm if able
-		or attack() 								--atk
-		or self.canSwitch and sendAnyPokemon()		--switch in any alive pkm if able
-		or game.useAnyMove()						--use none damaging moves, to progress battle round
-	then return
+	-- running
+	if 	self.canRun and run()           			--1. we try to run
+		or attack()                                 --2. we try to attack
+		or self.canSwitch and sendUsablePokemon()  	--3. we try to switch pokemon that has pp
+		or self.canSwitch and sendAnyPokemon()     	--4. we try to switch to any pokemon alive
+		or game.useAnyMove()                     	--5. we try to use non-damaging attack
+		--or BattleManager.useAnyAction()             --6. we try to use garbage items
+	then return end sys.debug("running team", "battle action performed")
+	sys.error("quest.battle", "no battle action for a running team")
 
-	else sys.error("quest.wildBattle", "no battle progression found for a pocecenter headed team") end
-
-end
-
---could probably be left out | throwing pokeballs at trainer pkms might be an issue. run just returns false
-function Quest:trainerBattle()
-	-- bug: if last pokemons have only damaging but type ineffective
-	-- attacks, then we cannot use the non damaging ones to continue.
-	if not self.canRun then -- trying to switch while a pokemon is squeezed end up in an infinity loop
-		return attack() or game.useAnyMove()
-	end
-	return attack() or sendUsablePokemon() or sendAnyPokemon() -- or game.useAnyMove()
-end
-
-function Quest:battle()
-	if not self.inBattle then
-		self.inBattle = true
-		self:battleBegin()
-	end
-	if isWildBattle() then
-		return self:wildBattle()
-	else
-		return self:trainerBattle()
-	end
 end
 
 function Quest:dialog(message)
@@ -360,47 +338,54 @@ function Quest:dialog(message)
 end
 
 function Quest:battleMessage(message)
-	sys.debug("battleMessage: "..message)
+	--reset after successful round progression
 	if sys.stringContains(message, "Attacks") then
-		--reset after successful round progression
 		self.canRun = true
 		self.canSwitch = true
 
-	elseif sys.stringContains(message, "$CantRun") then
-		self.canRun = false
+	--reset after ended fight | feinting
+	elseif sys.stringContains(message, "black out") then
+		self.canRun = true
+		self.canSwitch = true
 
-	elseif sys.stringContains(message, "$NoSwitch") then
-		self.canSwitch = false
-
-	elseif self.pokemon ~= nil and self.forceCaught ~= nil then
-		if sys.stringContains(message, "caught") and sys.stringContains(message, self.pokemon) then --Force caught the specified pokemon on quest 1time
-			log("Selected Pokemon: " .. self.pokemon .. " is Caught")
-			self.forceCaught = true
-			return true
+		--feinting
+		if self.level < 100
+			and self:isTrainingOver()
+		then
+			self.level = math.max(team:getLowestLvl(), self.level) + 1
+			self:startTraining()
+			log("Increasing " .. self.name .. " quest level to " .. self.level .. ". Training time!")
 		end
 
-	elseif sys.stringContains(message, "black out") and self.level < 100 and self:isTrainingOver() then
-		self.level = math.max(self:getTeamLevel(), self.level) + 1
-		self:startTraining()
-		log("Increasing " .. self.name .. " quest level to " .. self.level .. ". Training time!")
-		return true
+	--reset after ended fight | win
+	elseif sys.stringContains(message, "won the battle") then
+		self.canRun = true
+		self.canSwitch = true
+		
+	--restrain running
+	elseif sys.stringContains(message, "$CantRun")				--in case resource folder was missing
+		or sys.stringContains(message, "You can not run away!")
+	then
+		self.canRun = false
 
-	end
-	return false
-end
+	--restrain switching
+	elseif sys.stringContains(message, "$NoSwitch")
+		or sys.stringContains(message, "You can not switch this Pokemon!")
+	then
+		self.canSwitch = false
 
-function Quest:getTeamLevel()
-	local minLvl = nil
-	for i = 1, getTeamSize() do
-		local pkmLvl =  getPokemonLevel(i)
-		minLvl = minLvl or pkmLvl			--set first pkm as lvl reference
-		minLvl = math.min(minLvl, pkmLvl)	--get minimum between following team members
+	--force caught the specified pokemon on quest 1time
+	elseif self.pokemon ~= nil
+		and self.forceCaught ~= nil
+		and sys.stringContains(message, "caught")
+		and sys.stringContains(message, self.pokemon)
+	then
+		log("Selected Pokemon: " .. self.pokemon .. " is Caught")
+		self.forceCaught = true
 	end
-	return minLvl
 end
 
 function Quest:systemMessage(message)
-	sys.debug("systemMessage: "..message)
 	return false
 end
 
@@ -424,7 +409,7 @@ function Quest:chooseForgetMove(moveName, pokemonIndex) -- Calc the WrostAbility
 			end
 		end
 	end
-	log("[Learning Move: " .. moveName .. "  -->  Forget Move: " .. ForgetMoveName .. "]")
+	sys.log("[Learning Move: " .. moveName .. "  -->  Forget Move: " .. ForgetMoveName .. "]")
 	return ForgetMoveName
 end
 

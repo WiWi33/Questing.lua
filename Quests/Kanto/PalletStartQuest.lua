@@ -32,6 +32,8 @@ local dialogs = {
 
 local PalletStartQuest = Quest:new()
 function PalletStartQuest:new()
+	--setting moon fossil, if no none defined
+	if not KANTO_STARTER_ID then KANTO_STARTER_ID = math.random(1,4) end
 	return Quest.new(PalletStartQuest, name, description, _, dialogs)
 end
 

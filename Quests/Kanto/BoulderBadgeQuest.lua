@@ -76,7 +76,8 @@ function BoulderBadgeQuest:PewterCity()
 	elseif self:needPokemart() then
 		return moveToMap("Pewter Pokemart")
 	elseif hasItem("Boulder Badge") then
-		return moveToMap("Route 3")
+		--so they even changed the Jail map to "Link" as well, those bastards xDs
+		return moveToCell(65,34)
 	elseif self.registeredPokecenter ~= "Pokecenter Pewter"
 		or not game.isTeamFullyHealed()
 	then

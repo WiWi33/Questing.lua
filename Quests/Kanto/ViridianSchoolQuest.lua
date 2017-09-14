@@ -5,6 +5,7 @@
 
 local sys    = require "Libs/syslib"
 local game   = require "Libs/gamelib"
+local team   = require "Libs/teamlib"
 local Quest  = require "Quests/Quest"
 local Dialog = require "Quests/Dialog"
 
@@ -61,7 +62,7 @@ function ViridianSchoolQuest:Route1StopHouse()
 end
 
 function ViridianSchoolQuest:isTrainingOver()
-	if getTeamSize() >= 2 and game.minTeamLevel() >= self.level then
+	if getTeamSize() >= 2 and team.getLowestLvl() >= self.level then
 		return true
 	end
 	return false

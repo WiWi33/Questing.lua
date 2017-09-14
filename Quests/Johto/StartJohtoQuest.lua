@@ -1,4 +1,4 @@
--- Copyright © 2016 g0ld <g0ld@tuta.io>
+-- Copyright Â© 2016 g0ld <g0ld@tuta.io>
 -- This work is free. You can redistribute it and/or modify it under the
 -- terms of the Do What The Fuck You Want To Public License, Version 2,
 -- as published by Sam Hocevar. See the COPYING file for more details.
@@ -18,7 +18,6 @@ local StartJohtoQuest = Quest:new()
 
 function StartJohtoQuest:new()
 	local o = Quest.new(StartJohtoQuest, name, description, level)
-	o.BUY_BIKE = true
 	return o
 end
 
@@ -68,7 +67,7 @@ end
 function StartJohtoQuest:CherrygroveCity()
 	if isNpcOnCell(52,7) then
 		return talkToNpcOnCell(52,7) --Get 5 Pokeballs + 5 Potions + 10000 Money
-	elseif self:needPokecenter() or not game.isTeamFullyHealed() or not self.registeredPokecenter == "Pokecenter Cherrygrove City" then
+	elseif self:needPokecenter() or not game.isTeamFullyHealed() or self.registeredPokecenter ~= "Pokecenter Cherrygrove City" then
 		return moveToMap("Pokecenter Cherrygrove City")
 	elseif self:needPokemart() then
 		return moveToMap("Mart Cherrygrove City")
@@ -105,7 +104,7 @@ function StartJohtoQuest:pokemart_()
 end
 
 function StartJohtoQuest:Route30()
-	if self:needPokecenter() or not self.registeredPokecenter == "Pokecenter Cherrygrove City" or (getTeamSize() > 1 and getUsablePokemonCount() == 1) or getUsablePokemonCount() == 0 then
+	if self:needPokecenter() or self.registeredPokecenter ~= "Pokecenter Cherrygrove City" or (getTeamSize() > 1 and getUsablePokemonCount() == 1) or getUsablePokemonCount() == 0 then
 		return moveToCell(8,96) --Cherrygrove City
 	elseif getTeamSize() <= 2 or not self:isTrainingOver() then --Get some pokemons for fill the team
 		return moveToGrass()
@@ -113,18 +112,8 @@ function StartJohtoQuest:Route30()
 		return talkToNpcOnCell(15,67)
 	elseif isNpcOnCell(20,3) then --Item: Pecha Berry
 		return talkToNpcOnCell(20,3)
-	elseif self.BUY_BIKE and getMoney() > 75000 and not hasItem("Bicycle") and not hasItem("Bike Voucher") then
-		return moveToMap("Route 30 House 2")
 	elseif game.tryTeachMove("Cut","HM01 - Cut") == true then
 		return moveToMap("Route 31")
-	end
-end
-
-function StartJohtoQuest:Route30House2()
-	if self.BUY_BIKE and getMoney() > 75000 and not hasItem("Bicycle") and not hasItem("Bike Voucher") then
-		return talkToNpcOnCell(2,6)
-	else
-		return moveToMap("Route 30")
 	end
 end
 

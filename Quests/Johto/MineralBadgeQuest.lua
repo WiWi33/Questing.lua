@@ -1,4 +1,4 @@
--- Copyright © 2016 g0ld <g0ld@tuta.io>
+-- Copyright Â© 2016 g0ld <g0ld@tuta.io>
 -- This work is free. You can redistribute it and/or modify it under the
 -- terms of the Do What The Fuck You Want To Public License, Version 2,
 -- as published by Sam Hocevar. See the COPYING file for more details.
@@ -45,7 +45,7 @@ function MineralBadgeQuest:isDone()
 end
 
 function MineralBadgeQuest:CianwoodCity()
-	if self:needPokecenter() or not game.isTeamFullyHealed() or not self.registeredPokecenter == "Pokecenter Cianwood" then
+	if self:needPokecenter() or not game.isTeamFullyHealed() or self.registeredPokecenter ~= "Pokecenter Cianwood" then
 		moveToMap("Pokecenter Cianwood")
 	elseif not dialogs.potion.state then 
 		moveToMap("Cianwood Shop")
@@ -69,7 +69,10 @@ function MineralBadgeQuest:Route40()
 end
 
 function MineralBadgeQuest:OlivineCity()
-	if self:needPokecenter() or not game.isTeamFullyHealed() or not self.registeredPokecenter == "Pokecenter Olivine City" then
+	if BUY_RODS and hasItem("Good Rod") and not hasItem("Super Rod") and getMoney() >= 75000 then
+		--go to fising guru's map, if you have enough money and want to buy the super rod
+		return moveToMap("Olivine House 1")
+	elseif self:needPokecenter() or not game.isTeamFullyHealed() or self.registeredPokecenter ~= "Pokecenter Olivine City" then
 		moveToMap("Olivine Pokecenter")
 	elseif not dialogs.phare.state then 
 		moveToMap("Glitter Lighthouse 1F")
@@ -77,6 +80,13 @@ function MineralBadgeQuest:OlivineCity()
 		moveToMap("Route 40") 
 	else moveToMap("Olivine City Gym")
 	end
+end
+
+function MineralBadgeQuest:OlivineHouse1()
+	--talk to the even better fishing guru
+	if hasItem("Good Rod") and not hasItem("Super Rod") then return talkToNpcOnCell(0, 10)
+	--leave when rod obtained
+	else return moveToMap("Olivine City") end
 end
 
 function MineralBadgeQuest:GlitterLighthouse1F()

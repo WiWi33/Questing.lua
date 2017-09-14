@@ -12,7 +12,7 @@ local Dialog = require "Quests/Dialog"
 
 local name		  = 'Volcano Badge'
 local description = 'Revive Fossil + Cinnabar Key + Exp on Seafoam B4F'
-local level = 75 
+local level = 85
 
 local VolcanoBadgeQuest = Quest:new()
 
@@ -39,7 +39,7 @@ function VolcanoBadgeQuest:PokecenterCinnabar()
 end
 
 function VolcanoBadgeQuest:CinnabarIsland()
-	if self:needPokecenter() or not self.registeredPokecenter == "Pokecenter Cinnabar" then
+	if self:needPokecenter() or self.registeredPokecenter ~= "Pokecenter Cinnabar" then
 		return moveToMap("Pokecenter Cinnabar")
 	elseif not self:isTrainingOver() then
 		return moveToMap("Route 20")
@@ -139,7 +139,7 @@ function VolcanoBadgeQuest:SeafoamB4F()
 			if self:canUseNurse() then -- if have 1500 money
 				return talkToNpcOnCell(59,13)
 			else
-				if not game.getTotalUsablePokemonCount() > 1 then -- Try get 1500money
+				if not (game.getTotalUsablePokemonCount() > 1) then -- Try get 1500money
 				    fatal("don't have enough Pokemons for farm 1500 money and heal the team")
 				else 
 				    return moveToRectangle(50,10,62,32)
