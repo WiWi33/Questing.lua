@@ -216,6 +216,11 @@ local moonStoneTargets = {
 }
 
 function Quest:evolvePokemon()
+	-- some buffer levels, to ensure every teammember is fully evolved when figthing e4
+	-- some leeway for indiviudal quest caps: Kanto e4 is started with lv 95, so evolving could start at 93
+	if team.getLowestLvl() >= 90 then enableAutoEvolve() end
+	-- or team.getHighestLvl() >= 93 --not leveling mixed teams efficiently: lv 38, ...., lv 93
+
 	local hasMoonStone = hasItem("Moon Stone")
 	for pokemonId=1, getTeamSize(), 1 do
 		local pokemonName = getPokemonName(pokemonId)
@@ -245,10 +250,10 @@ end
 
 
 function Quest:path()
-	if self:evolvePokemon() then return true end
-	if self:sortInMemory() then return true end
-	if self:leftovers() then return true end
-	if self:useBike() then return true end
+	if self:evolvePokemon() then 	return true end
+	if self:sortInMemory() then 	return true end
+	if self:leftovers() then 		return true end
+	if self:useBike() then 			return true end
 	local mapFunction = self:mapToFunction()
 	assert(self[mapFunction] ~= nil, self.name .. " quest has no method for map: " .. getMapName())
 	self[mapFunction](self)

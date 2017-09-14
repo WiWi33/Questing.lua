@@ -1,11 +1,11 @@
 - Last Update: 
     - 2017 09 14
-    - 11:19 CEST  (UTC +1)
-- CommitID: 19
+    - 13:06 CEST  (UTC +1)
+- CommitID: 20
 - CommitLog: 
 ```
-  [restore] 
-  - a wrong commit from the GoldenRod branch slipped in
+  [tag] 
+  - finalized kanto release
 ```
 - Branch: Master
 - Characteristics:
