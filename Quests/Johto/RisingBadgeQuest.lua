@@ -1,4 +1,4 @@
--- Copyright © 2016 g0ld <g0ld@tuta.io>
+-- Copyright Â© 2016 g0ld <g0ld@tuta.io>
 -- This work is free. You can redistribute it and/or modify it under the
 -- terms of the Do What The Fuck You Want To Public License, Version 2,
 -- as published by Sam Hocevar. See the COPYING file for more details.
@@ -60,7 +60,7 @@ end
 
 
 function RisingBadgeQuest:MahoganyTown()
-	if self:needPokecenter() or not game.isTeamFullyHealed() or not self.registeredPokecenter == "Pokecenter Mahogany Town" then
+	if self:needPokecenter() or not game.isTeamFullyHealed() or self.registeredPokecenter ~= "Pokecenter Mahogany Town" then
 		moveToMap("Pokecenter Mahogany")
 	else moveToMap("Route 44")
 	end
@@ -98,7 +98,7 @@ function RisingBadgeQuest:IcePathB3F()
 end
 
 function RisingBadgeQuest:BlackthornCity()
-	if self:needPokecenter() or not game.isTeamFullyHealed() or not self.registeredPokecenter == "Pokecenter Blackthorn City" then
+	if self:needPokecenter() or not game.isTeamFullyHealed() or self.registeredPokecenter ~= "Pokecenter Blackthorn City" then
 		moveToMap("Pokecenter Blackthorn" )
 	elseif not self:isTrainingOver() then 
 		moveToMap("Dragons Den Entrance")

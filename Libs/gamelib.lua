@@ -10,17 +10,16 @@ local sys = require("Libs/syslib")
 function game.isTeamFullyHealed()
 	for pokemonId=1, getTeamSize(), 1 do
 		if getPokemonHealthPercent(pokemonId) < 100
-			or not game.isFullPP(pokemonId) then
+			or not game.isPokemonFullPP(pokemonId) then
 			return false
 		end
 	end
 	return true
 end
 
-function game.isFullPP(pokemonId)
+function game.isPokemonFullPP(pokemonId)
 	for moveId = 1, 4 do
 		local move = getPokemonMoveName(pokemonId, moveId)
-		sys.debug("move: "..tostring(move))
 		if move and 																				--has a move on index and
 			getRemainingPowerPoints(pokemonId, move) ~= getPokemonMaxPowerPoints(pokemonId, moveId) --move is not full recovered
 		then return false end
@@ -28,20 +27,19 @@ function game.isFullPP(pokemonId)
 	return true
 end
 
-function game.isPokemonFullPP(pokemonId)
-	sys.todo("add getPokemonMoves() to PROShine")
-	error("waiting for proshine update")
-	return true
-end
-
 function game.useAnyMove()
+	sys.debug("game.useAnyMove()", "start", true)
 	local pokemonId = getActivePokemonNumber()
-	for i=1,4 do
-		local moveName = getPokemonMoveName(pokemonId, i)
-		if not moveName and getPokemonMoveRemainingPowerPoints() > 0 then
+	sys.debug("activeId", pokemonId)
+	for moveId=1,4 do
+		local moveName = getPokemonMoveName(pokemonId, moveId)
+		if moveName and getPokemonMaxPowerPoints(pokemonId, moveId) > 0 then
+			sys.debug("Using any move", moveName)
+			sys.debug("game.useAnyMove()", "end", true)
 			return useMove(moveName)
 		end
 	end
+	sys.debug("game.useAnyMove()", "end", true)
 	return false
 end
 
@@ -79,17 +77,6 @@ function game.inRectangle(x1, y1, x2, y2)
 		return true
 	end
 	return false
-end
-
-function game.minTeamLevel()
-	local current
-	for pokemonId=1, getTeamSize(), 1 do
-		local pokemonLevel = getPokemonLevel(pokemonId)
-		if  current == nil or pokemonLevel < current then
-			current = pokemonLevel
-		end
-	end
-	return current
 end
 
 function game.maxTeamLevel()

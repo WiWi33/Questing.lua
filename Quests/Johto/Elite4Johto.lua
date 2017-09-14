@@ -74,7 +74,7 @@ function Elite4Johto:BlackthornCityGym()
 end
 
 function Elite4Johto:BlackthornCity()
-	if game.isTeamFullyHealed() or not self.registeredPokecenter == "Pokecenter Blackthorn City" then
+	if game.isTeamFullyHealed() or self.registeredPokecenter ~= "Pokecenter Blackthorn City" then
 		return moveToMap("Pokecenter Blackthorn")
 	else 
 		return moveToMap("Route 45")
@@ -194,7 +194,7 @@ function Elite4Johto:CinnabarIsland()
         return moveToMap("Route 21")
     elseif hasPokemonInTeam("Rattata") then
         return moveToMap("Route 20")
-    elseif self:needPokecenter() or not self.registeredPokecenter == "Pokecenter Cinnabar Island"
+    elseif self:needPokecenter() or self.registeredPokecenter ~= "Pokecenter Cinnabar Island"
         or (self.forceCaught and not hasPokemonInTeam("Rattata")) then
         return moveToMap("Pokecenter Cinnabar")
     elseif self:needPokemart() and not (getItemQuantity("Great Ball") > 9)then

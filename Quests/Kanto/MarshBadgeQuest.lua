@@ -1,4 +1,4 @@
--- Copyright © 2016 g0ld <g0ld@tuta.io>
+-- Copyright Â© 2016 g0ld <g0ld@tuta.io>
 -- This work is free. You can redistribute it and/or modify it under the
 -- terms of the Do What The Fuck You Want To Public License, Version 2,
 -- as published by Sam Hocevar. See the COPYING file for more details.
@@ -23,6 +23,8 @@ local dialogs = {
 local MarshBadgeQuest = Quest:new()
 
 function MarshBadgeQuest:new()
+  --setting starter, if no none defined
+  if not KANTO_DOJO_POKEMON_ID then KANTO_DOJO_POKEMON_ID = math.random(1,2) end
   local o = Quest.new(MarshBadgeQuest, name, description, level, dialogs)
   o.dojoState = false
   return o
@@ -36,7 +38,9 @@ function MarshBadgeQuest:isDoable()
 end
 
 function MarshBadgeQuest:isDone()
-  if (hasItem("Marsh Badge") and getMapName() == "Route 8") or getMapName() == "Silph Co 1F" or getMapName() == "Route 5" then
+  if hasItem("Marsh Badge") and getMapName() == "Lavender Town"
+      or getMapName() == "Silph Co 1F"
+      or getMapName() == "Route 5" then
     return true
   else
     return false
@@ -45,34 +49,45 @@ end
 
 
 function MarshBadgeQuest:Route8()
-  if not self:needPokecenter() and not self:isTrainingOver() then
-    return moveToGrass()
-  else
-    return moveToMap("Route 8 Stop House")
-  end
+  if self:needPokecenter() or self:isTrainingOver() then
+    --if we won gym fight, self:isTrainingOver() should be true. So another test against badge has
+    --to be made, to fix looping between Rout8StopHouse and Route8 itself
+    if hasItem("Marsh Badge")then return moveToMap("Lavender Town")
+      
+    else return moveToMap("Route 8 Stop House") end
+
+  else return moveToGrass() end
 end
 
 
 function MarshBadgeQuest:Route8StopHouse()
-  if hasItem("Marsh Badge") or not self:isTrainingOver() then
-    return moveToMap("Route 8")
-  else
-    return moveToMap("Saffron City")
-  end
+  if not hasItem("Marsh Badge")
+      and (self:needPokecenter() or self:isTrainingOver())
+
+  --updated link name
+  then return moveToMap("Link") end
+
+  return moveToMap("Route 8")
+end
+
+function MarshBadgeQuest:isBuyingBike()
+  sys.debug("BUY_BIKE: ", BUY_BIKE)
+  sys.debug("Voucer: ", hasItem("Bike Voucher"))
+  sys.debug("money: ", getMoney() >=60000)
+  return BUY_BIKE and hasItem("Bike Voucher") and getMoney() >=60000
 end
 
 function MarshBadgeQuest:Route5StopHouse()
-  if hasItem("Bike Voucher") then
-    return moveToMap("Route 5")
-  else
-    return moveToMap("Saffron City")
-  end
+  --when bying a bike move towards Cerulean City
+  if self:isBuyingBike() then return moveToMap("Route 5") end
+  --coming back
+  return moveToMap("Link")
 end
 
 function MarshBadgeQuest:SaffronCity()
-  if self:needPokecenter() or not game.isTeamFullyHealed() or not self.registeredPokecenter == "Pokecenter Saffron" then
+  if self:needPokecenter() or not game.isTeamFullyHealed() or self.registeredPokecenter ~= "Pokecenter Saffron" then
     return moveToMap("Pokecenter Saffron")
-  elseif hasItem("Bike Voucher") then
+  elseif self:isBuyingBike() then
     return moveToMap("Route 5 Stop House")
   elseif not self:isTrainingOver() then
     return moveToMap("Route 8 Stop House")
@@ -95,7 +110,7 @@ function MarshBadgeQuest:SaffronDojo()
   if isNpcOnCell(7,5) then
     if dialogs.dojoSaffronDone.state then
       if isNpcOnCell(3,4) and isNpcOnCell(10,4) then
-        if DOJO_POKEMON_ID == 1 then -- Hitmonchan
+        if KANTO_DOJO_POKEMON_ID == 1 then -- Hitmonchan
           return talkToNpcOnCell(3, 4)
         else -- Hitmonlee
           return talkToNpcOnCell(10,4)

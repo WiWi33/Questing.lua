@@ -16,34 +16,34 @@ local description = " Complete Guard's Quest"
 local level = 22
 
 local dialogs = {
-	martElevatorFloorB1F = Dialog:new({ 
+	martElevatorFloorB1F = Dialog:new({
 		"on the underground"
 	}),
-	martElevatorFloor1 = Dialog:new({ 
+	martElevatorFloor1 = Dialog:new({
 		"the first floor"
 	}),
-	martElevatorFloor2 = Dialog:new({ 
+	martElevatorFloor2 = Dialog:new({
 		"the second floor"
 	}),
-	martElevatorFloor3 = Dialog:new({ 
+	martElevatorFloor3 = Dialog:new({
 		"the third floor"
 	}),
-	martElevatorFloor4 = Dialog:new({ 
+	martElevatorFloor4 = Dialog:new({
 		"the fourth floor"
 	}),
-	martElevatorFloor5 = Dialog:new({ 
+	martElevatorFloor5 = Dialog:new({
 		"the fifth floor"
 	}),
-	martElevatorFloor6 = Dialog:new({ 
+	martElevatorFloor6 = Dialog:new({
 		"the sixth floor"
 	}),
-	directorQuestPart1 = Dialog:new({ 
+	directorQuestPart1 = Dialog:new({
 		"there is nothing to see here"
 	}),
-	guardQuestPart1 = Dialog:new({ 
+	guardQuestPart1 = Dialog:new({
 		"any information on his whereabouts"
 	}),
-	guardQuestPart2 = Dialog:new({ 
+	guardQuestPart2 = Dialog:new({
 		"where did you find him",
 		"he might be able to help"
 	})
@@ -67,7 +67,7 @@ end
 
 function GoldenrodCityQuest:isDoable()
 	if self:hasMap() then
-		if getMapName() == "Goldenrod City" then 
+		if getMapName() == "Goldenrod City" then
 			return isNpcOnCell(48,34)
 		else
 			return true
@@ -81,7 +81,7 @@ function GoldenrodCityQuest:isDone()
 		return true
 	end
 	return false
-	
+
 end
 
 function GoldenrodCityQuest:pokemart_()
@@ -96,7 +96,7 @@ function GoldenrodCityQuest:pokemart_()
 			if maximumBuyablePokeballs < pokeballToBuy then
 				pokeballToBuy = maximumBuyablePokeballs
 			end
-				return buyItem("Pokeball", pokeballToBuy)
+			return buyItem("Pokeball", pokeballToBuy)
 		end
 	else
 		return moveToMap("Goldenrod Mart 1")
@@ -107,15 +107,15 @@ function GoldenrodCityQuest:PokecenterGoldenrod()
 	if self.need_oddish and (not hasPokemonInTeam("Oddish") and not hasPokemonInTeam("Gloom")) then
 		log("Oddish with Johto Region NOT FOUND, Next quest: llexForestQuest.lua")
 		return moveToMap("Goldenrod City")
-	--Get Oddish From PC 
+		--Get Oddish From PC
 	elseif hasItem("Basement Key") and not hasItem("SquirtBottle") and dialogs.guardQuestPart2.state then
 		if not hasPokemonInTeam("Oddish") and not hasPokemonInTeam("Gloom")then
 			if isPCOpen() then
 				if isCurrentPCBoxRefreshed() then
 					if getCurrentPCBoxSize() ~= 0 then
 						for pokemon=1, getCurrentPCBoxSize() do
-							if getPokemonNameFromPC(getCurrentPCBoxId(),pokemon) == "Oddish" and getPokemonRegionFromPC(getCurrentPCBoxId(),pokemon) == "Johto" then	
-								if not game.hasPokemonWithName("Gastly") == false then		
+							if getPokemonNameFromPC(getCurrentPCBoxId(),pokemon) == "Oddish" and getPokemonRegionFromPC(getCurrentPCBoxId(),pokemon) == "Johto" then
+								if not game.hasPokemonWithName("Gastly") == false then
 									log("LOG: Oddish Found on BOX: " .. getCurrentPCBoxId() .."  Slot: ".. pokemon .. "  Swapping with Gastly on Slot: " .. game.hasPokemonWithName("Gastly"))
 									return swapPokemonFromPC(getCurrentPCBoxId(),pokemon,game.hasPokemonWithName("Gastly")) --swap with gastly useless against Gavin Director
 								else
@@ -135,18 +135,18 @@ function GoldenrodCityQuest:PokecenterGoldenrod()
 			else
 				return usePC()
 			end
-		--END get Oddish or Bellsprout
+			--END get Oddish or Bellsprout
 		else
 			-- have Oddish
 			self:pokecenter("Goldenrod City")
 		end
 	else
 		self:pokecenter("Goldenrod City")
-	end	
+	end
 end
 
 function GoldenrodCityQuest:GoldenrodCity()
-	if self:needPokecenter() or not game.isTeamFullyHealed() or not self.registeredPokecenter == "Pokecenter Goldenrod" then
+	if self:needPokecenter() or not game.isTeamFullyHealed() or self.registeredPokecenter ~= "Pokecenter Goldenrod" then
 		return moveToMap("Pokecenter Goldenrod")
 	elseif self:needPokemart() then
 		return moveToMap("Goldenrod Mart 1")
@@ -160,7 +160,7 @@ function GoldenrodCityQuest:GoldenrodCity()
 		return talkToNpcOnCell(50,34)
 	elseif hasItem("Basement Key") and not hasItem("SquirtBottle") and dialogs.guardQuestPart2.state then --get Oddish on PC and start leveling
 		if not game.hasPokemonWithMove("Sleep Powder") then
-			if hasPokemonInTeam("Oddish") then			
+			if hasPokemonInTeam("Oddish") then
 				return moveToMap("Route 34")
 			else
 				return moveToMap("Pokecenter Goldenrod")
@@ -171,7 +171,7 @@ function GoldenrodCityQuest:GoldenrodCity()
 	elseif isNpcOnCell(48,34) then
 		if dialogs.guardQuestPart2.state then
 			if hasItem("Basement Key") then
-				
+
 			else
 				return moveToMap("Goldenrod City House 2")
 			end
@@ -200,7 +200,7 @@ function GoldenrodCityQuest:GoldenrodUndergroundEntranceTop()
 	else
 		return moveToMap("Goldenrod Underground Path")
 	end
-	
+
 end
 
 function GoldenrodCityQuest:GoldenrodUndergroundPath()
@@ -228,7 +228,7 @@ function GoldenrodCityQuest:GoldenrodCityHouse2()
 end
 
 function GoldenrodCityQuest:Route34()
-	if self:needPokecenter() or not self.registeredPokecenter == "Pokecenter Goldenrod" then
+	if self:needPokecenter() or self.registeredPokecenter ~= "Pokecenter Goldenrod" then
 		return moveToMap("Goldenrod City")
 	elseif self.need_oddish and (not hasPokemonInTeam("Oddish") and not hasPokemonInTeam("Gloom"))then
 		return moveToMap("Route 34 Stop House")
@@ -254,7 +254,7 @@ function GoldenrodCityQuest:Route34()
 end
 
 function GoldenrodCityQuest:Route34StopHouse()
-	if self:needPokecenter() or not self.registeredPokecenter == "Pokecenter Goldenrod" then
+	if self:needPokecenter() or self.registeredPokecenter ~= "Pokecenter Goldenrod" then
 		return moveToMap("Route 34")
 	elseif self.need_oddish and (not hasPokemonInTeam("Oddish") and not hasPokemonInTeam("Gloom"))then
 		self.need_oddish = false
@@ -266,7 +266,7 @@ end
 
 function GoldenrodCityQuest:GoldenrodMartElevator()
 	if not hasItem("Fresh Water") then
-		if not dialogs.martElevatorFloor6.state then		
+		if not dialogs.martElevatorFloor6.state then
 			pushDialogAnswer(5)
 			pushDialogAnswer(3)
 			return talkToNpcOnCell(1,6)
@@ -275,7 +275,7 @@ function GoldenrodCityQuest:GoldenrodMartElevator()
 			return moveToCell(3,6)
 		end
 	elseif hasItem("Basement Key") and not hasItem("SquirtBottle") and game.hasPokemonWithMove("Sleep Powder") and dialogs.guardQuestPart2.state then
-		if not dialogs.martElevatorFloorB1F.state then		
+		if not dialogs.martElevatorFloorB1F.state then
 			pushDialogAnswer(1)
 			return talkToNpcOnCell(1,6)
 		else
@@ -334,11 +334,11 @@ function GoldenrodCityQuest:GoldenrodMartB1F()
 		if isNpcOnCell(13,8) then
 			pushDialogAnswer(2)
 			if  game.hasPokemonWithName("Oddish")  then
-			pushDialogAnswer(game.hasPokemonWithName("Oddish"))
+				pushDialogAnswer(game.hasPokemonWithName("Oddish"))
 			elseif game.hasPokemonWithName("Gloom")  then
-			pushDialogAnswer(game.hasPokemonWithName("Gloom"))
+				pushDialogAnswer(game.hasPokemonWithName("Gloom"))
 			else
-			fatal("Error . - No Oddish or Gloom in this team")
+				fatal("Error . - No Oddish or Gloom in this team")
 			end
 			return talkToNpcOnCell(13,8)
 		else
@@ -347,7 +347,7 @@ function GoldenrodCityQuest:GoldenrodMartB1F()
 	else
 		return moveToMap("Goldenrod Mart Elevator")
 	end
-	
+
 end
 
 function GoldenrodCityQuest:UndergroundWarehouse()
@@ -393,7 +393,7 @@ function GoldenrodCityQuest:UndergroundWarehouse()
 		else
 			return moveToCell(24,22)
 		end
-	elseif not self.checkCrate6 then --Snubbull Crate	
+	elseif not self.checkCrate6 then --Snubbull Crate
 		if getPlayerX() == 13 and getPlayerY() == 24 then
 			talkToNpcOnCell(12,24)
 			self.checkCrate6 = true
@@ -410,7 +410,7 @@ function GoldenrodCityQuest:UndergroundWarehouse()
 			return moveToCell(5,8)
 		end
 	elseif isNpcOnCell(3,16) then --Item: Antidote
-		return talkToNpcOnCell(3,16) 
+		return talkToNpcOnCell(3,16)
 	else
 		self.checkCrate1 = false
 		self.checkCrate2 = false
@@ -434,7 +434,7 @@ function GoldenrodCityQuest:GoldenrodUndergroundBasement()
 			return talkToNpcOnCell(17,13)
 		else
 			return moveToMap("Goldenrod Underground Path")
-		end	
+		end
 	elseif isNpcOnCell(18,12) and isNpcOnCell(22,16) and isNpcOnCell(18,18) and isNpcOnCell(13,16) and isNpcOnCell(9,12) and isNpcOnCell(9,18) and isNpcOnCell(4,16) and isNpcOnCell(4,10) then --Lever A
 		return talkToNpcOnCell(26,13)
 	elseif not isNpcOnCell(18,12) and isNpcOnCell(22,16) and isNpcOnCell(18,18) and isNpcOnCell(13,16) and isNpcOnCell(9,12) and not isNpcOnCell(9,18) and isNpcOnCell(4,16) and isNpcOnCell(4,10) then --Lever C
@@ -462,26 +462,26 @@ function GoldenrodCityQuest:GoldenrodUndergroundBasement()
 			end
 		end
 	elseif not isNpcOnCell(18,12) and not isNpcOnCell(22,16) and isNpcOnCell(18,18) and not isNpcOnCell(13,16) and isNpcOnCell(9,12) and not isNpcOnCell(9,18) and not isNpcOnCell(4,16) and not isNpcOnCell(4,10) then	--Lever C
-			if isNpcOnCell(5,4) then --Galvin Director
-				return talkToNpcOnCell(5,4)
-			else
-				fatal("Error GoldenrodCityQuest:GoldenrodUndergroundBasement()")
-			end
+		if isNpcOnCell(5,4) then --Galvin Director
+			return talkToNpcOnCell(5,4)
+		else
+			fatal("Error GoldenrodCityQuest:GoldenrodUndergroundBasement()")
+		end
 	else
-	fatal("Error ON PUZZLE RESOLUTION  GoldenrodCityQuest:GoldenrodUndergroundBasement()")
+		fatal("Error ON PUZZLE RESOLUTION  GoldenrodCityQuest:GoldenrodUndergroundBasement()")
 	end
 end
 
 function GoldenrodCityQuest:MapName()
-	
+
 end
 
 function GoldenrodCityQuest:MapName()
-	
+
 end
 
 function GoldenrodCityQuest:MapName()
-	
+
 end
 
 return GoldenrodCityQuest
